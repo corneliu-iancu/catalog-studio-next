@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const sampleRestaurants = [
@@ -24,6 +25,11 @@ export default function Home() {
       <header className="text-center mb-12">
         <h1 className="text-4xl font-bold text-blue-900 mb-4">Catalog Studio</h1>
         <p className="text-lg text-gray-700">Restaurant Menu Management & Showcase Platform</p>
+        <div className="mt-6">
+          <Button variant="default" size="lg">
+            shadcn/ui is working! 🎉
+          </Button>
+        </div>
       </header>
 
       <section>

@@ -4,6 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +18,7 @@ export default function SignUpPage() {
     confirmPassword: '',
     fullName: ''
   });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -26,6 +33,13 @@ export default function SignUpPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Validate terms acceptance
+    if (!acceptedTerms) {
+      setError('Please accept the Terms of Service and Privacy Policy');
+      setLoading(false);
+      return;
+    }
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
@@ -74,137 +88,159 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="mt-2 text-sm text-gray-600">Sign up to get started with Catalog Studio</p>
-        </header>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-lg space-y-8">
 
-        <div className="bg-white shadow-lg rounded-lg pb-6">
-          <form onSubmit={handleSignUp} className="px-6 py-8 space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Create your account</h1>
+          <p className="text-muted-foreground">
+            Join Catalog Studio and start showcasing your restaurant
+          </p>
+        </div>
+
+        {/* Sign Up Card */}
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl text-center">Sign Up</CardTitle>
+            <CardDescription className="text-center">
+              Create your restaurant account to get started
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+
+            {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+              <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md border border-destructive/20">
                 {error}
               </div>
             )}
 
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                Full Name *
-              </label>
-              <div className="mt-1">
-                <input
-                  type="text"
+            {/* Sign Up Form */}
+            <form onSubmit={handleSignUp} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
                   id="fullName"
                   name="fullName"
+                  type="text"
                   value={formData.fullName}
                   onChange={handleInputChange}
+                  placeholder="Enter your full name"
                   required
                   disabled={loading}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-                  placeholder="Your full name"
                 />
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address *
-              </label>
-              <div className="mt-1">
-                <input
-                  type="email"
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
                   id="email"
                   name="email"
+                  type="email"
                   value={formData.email}
                   onChange={handleInputChange}
+                  placeholder="Enter your email"
                   required
                   disabled={loading}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-                  placeholder="your@email.com"
                 />
               </div>
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password *
-              </label>
-              <div className="mt-1">
-                <input
-                  type="password"
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
                   id="password"
                   name="password"
+                  type="password"
                   value={formData.password}
                   onChange={handleInputChange}
+                  placeholder="Choose a secure password"
                   required
                   disabled={loading}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-                  placeholder="Choose a secure password"
                 />
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password *
-              </label>
-              <div className="mt-1">
-                <input
-                  type="password"
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
                   id="confirmPassword"
                   name="confirmPassword"
+                  type="password"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
+                  placeholder="Confirm your password"
                   required
                   disabled={loading}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-                  placeholder="Confirm your password"
                 />
+              </div>
+
+              {/* Terms and Conditions */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                  disabled={loading}
+                />
+                <Label htmlFor="terms" className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-primary hover:underline">
+                    Terms of Service
+                  </Link>
+                  {' '}and{' '}
+                  <Link href="/privacy" className="text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                </Label>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading || !acceptedTerms}
+                size="lg"
+              >
+                {loading ? 'Creating Account...' : 'Create Account'}
+              </Button>
+            </form>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Already have an account?
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="terms"
-                name="terms"
-                type="checkbox"
-                required
-                disabled={loading}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:bg-gray-100"
-              />
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-                I agree to the{' '}
-                <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-                  Terms of Service
+            {/* Sign In Link */}
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                <Link
+                  href="/auth/signin"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign in to your account
                 </Link>
-                {' '}and{' '}
-                <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
-                  Privacy Policy
-                </Link>
-              </label>
+              </p>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Creating Account...' : 'Create Account'}
-              </button>
-            </div>
-          </form>
+          </CardContent>
+        </Card>
 
-          <div className="my-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
-                Sign in
-              </Link>
-            </p>
-          </div>
+        {/* Back to Home */}
+        <div className="text-center">
+          <Link
+            href="/"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ← Back to home
+          </Link>
         </div>
+
       </div>
     </div>
   );

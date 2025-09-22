@@ -20,10 +20,10 @@ export default function Home() {
   ];
 
   return (
-    <div>
-      <header>
-        <h1>Catalog Studio</h1>
-        <p>Restaurant Menu Management & Showcase Platform</p>
+    <div className="p-8 bg-blue-50 min-h-screen">
+      <header className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-blue-900 mb-4">Catalog Studio</h1>
+        <p className="text-lg text-gray-700">Restaurant Menu Management & Showcase Platform</p>
       </header>
 
       <section>

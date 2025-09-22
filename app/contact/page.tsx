@@ -22,10 +22,10 @@ export default function ContactPage() {
       </div>
 
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
           {/* Contact Form */}
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle className="text-2xl">Send Us a Message</CardTitle>
               <CardDescription>

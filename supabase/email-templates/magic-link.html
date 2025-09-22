@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In to Catalog Studio</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #0f172a;
+            background-color: #f8fafc;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 40px 32px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .tagline {
+            color: #cbd5e1;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 40px 32px;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 32px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #0f172a;
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background: #1e293b;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 32px 0;
+        }
+        
+        .footer-text {
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .footer-text a {
+            color: #0f172a;
+            text-decoration: none;
+        }
+        
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+        
+        .security-note {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+        
+        .security-note-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #047857;
+            margin-bottom: 8px;
+        }
+        
+        .security-note-text {
+            font-size: 14px;
+            color: #059669;
+            line-height: 1.5;
+        }
+        
+        .feature-highlight {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        
+        .feature-highlight-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        
+        .feature-highlight-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+            }
+            
+            .content {
+                padding: 32px 24px;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+            
+            .feature-highlight {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">Catalog Studio</div>
+                <div class="tagline">Restaurant Menu Management</div>
+            </div>
+            
+            <!-- Content -->
+            <div class="content">
+                <h1 class="title">Sign In to Your Account</h1>
+                
+                <p class="message">
+                    Click the button below to securely sign in to your Catalog Studio account. 
+                    No password required!
+                </p>
+                
+                <div class="button-container">
+                    <a href="{{ .ConfirmationURL }}" class="button">
+                        Sign In to Catalog Studio
+                    </a>
+                </div>
+                
+                <div class="feature-highlight">
+                    <div class="feature-highlight-title">✨ What's New</div>
+                    <div class="feature-highlight-text">
+                        We've updated our interface with a modern, clean design to make managing your restaurant menu even easier!
+                    </div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="footer-text">
+                    If the button doesn't work, copy and paste this link into your browser:<br>
+                    <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+                </div>
+                
+                <div class="security-note">
+                    <div class="security-note-title">🔐 Secure Sign In</div>
+                    <div class="security-note-text">
+                        This magic link will expire in 1 hour and can only be used once. 
+                        If you didn't request this sign-in link, you can safely ignore this email.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 32px;">
+            <p style="font-size: 14px; color: #64748b;">
+                © 2024 Catalog Studio. All rights reserved.<br>
+                <a href="{{ .SiteURL }}" style="color: #0f172a; text-decoration: none;">Visit our website</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

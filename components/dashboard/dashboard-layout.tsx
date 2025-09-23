@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { DashboardHeader } from './dashboard-header';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { CreateRestaurantDialog } from './create-restaurant-dialog';
@@ -15,22 +14,26 @@ interface DashboardLayoutProps {
       avatar_url?: string;
     };
   };
+  showCreateRestaurant?: boolean;
+  onCreateRestaurant?: () => void;
+  onCloseCreateRestaurant?: () => void;
 }
 
-export function DashboardLayout({ children, user }: DashboardLayoutProps) {
-  const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
-
-  const handleCreateRestaurant = () => {
-    setShowCreateRestaurant(true);
-  };
+export function DashboardLayout({
+  children,
+  user,
+  showCreateRestaurant = false,
+  onCreateRestaurant,
+  onCloseCreateRestaurant
+}: DashboardLayoutProps) {
 
   return (
     <RestaurantProvider>
       <div className="h-screen flex flex-col">
         {/* Header */}
-        <DashboardHeader 
-          user={user} 
-          onCreateRestaurant={handleCreateRestaurant}
+        <DashboardHeader
+          user={user}
+          onCreateRestaurant={onCreateRestaurant}
         />
         
         {/* Main Content Area */}
@@ -50,7 +53,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
       {/* Create Restaurant Dialog */}
       <CreateRestaurantDialog
         open={showCreateRestaurant}
-        onOpenChange={setShowCreateRestaurant}
+        onOpenChange={onCloseCreateRestaurant || (() => {})}
       />
     </RestaurantProvider>
   );

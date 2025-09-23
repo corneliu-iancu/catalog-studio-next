@@ -20,9 +20,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-function DashboardContent() {
+function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => void }) {
   const { selectedRestaurant, hasRestaurants, isLoading } = useRestaurant();
-  const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
 
   if (isLoading) {
     return (
@@ -36,7 +35,7 @@ function DashboardContent() {
   }
 
   if (!hasRestaurants) {
-    return <EmptyState onCreateRestaurant={() => setShowCreateRestaurant(true)} />;
+    return <EmptyState onCreateRestaurant={onCreateRestaurant} />;
   }
 
   return (
@@ -234,6 +233,7 @@ function DashboardContent() {
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -244,6 +244,10 @@ export default function DashboardPage() {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
     setLoading(false);
+  };
+
+  const handleCreateRestaurant = () => {
+    setShowCreateRestaurant(true);
   };
 
   if (loading) {
@@ -258,8 +262,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <DashboardLayout user={user}>
-      <DashboardContent />
+    <DashboardLayout
+      user={user}
+      showCreateRestaurant={showCreateRestaurant}
+      onCreateRestaurant={handleCreateRestaurant}
+      onCloseCreateRestaurant={() => setShowCreateRestaurant(false)}
+    >
+      <DashboardContent onCreateRestaurant={handleCreateRestaurant} />
     </DashboardLayout>
   );
 }

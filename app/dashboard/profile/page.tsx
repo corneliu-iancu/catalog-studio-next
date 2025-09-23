@@ -1,53 +1,127 @@
-import Link from 'next/link';
+'use client';
 
-export default function ProfilePage() {
-  // TODO: Fetch current restaurant profile data
-  const profileData = {
-    restaurantName: "Tony's Pizza",
-    slug: "tonys-pizza",
-    description: "Authentic Italian pizza and pasta made with fresh ingredients",
-    cuisine: "italian",
-    ownerName: "Tony Rossi",
-    email: "tony@tonyspizza.com",
-    phone: "(555) 123-4567",
-    address: "123 Main Street, Food City, FC 12345",
-    website: "https://tonyspizza.com",
-    hours: {
-      monday: "11:00 AM - 10:00 PM",
-      tuesday: "11:00 AM - 10:00 PM",
-      wednesday: "11:00 AM - 10:00 PM",
-      thursday: "11:00 AM - 10:00 PM",
-      friday: "11:00 AM - 11:00 PM",
-      saturday: "11:00 AM - 11:00 PM",
-      sunday: "12:00 PM - 9:00 PM"
-    }
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { useRestaurant } from '@/lib/contexts/restaurant-context';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import {
+  Store,
+  Globe,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Edit,
+  ExternalLink,
+  User,
+  UtensilsCrossed
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+
+function RestaurantProfileContent() {
+  const { selectedRestaurant, isLoading } = useRestaurant();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading restaurant profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedRestaurant) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <Store className="h-12 w-12 text-muted-foreground mx-auto" />
+          <div>
+            <h2 className="text-lg font-semibold">No Restaurant Selected</h2>
+            <p className="text-muted-foreground">Please select a restaurant to view its profile.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const formatCuisineType = (cuisine: string | null) => {
+    if (!cuisine) return 'Not specified';
+    return cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
   };
 
   return (
-    <div>
-      <header>
-        <h1>Restaurant Profile</h1>
-        <p>Manage your restaurant information and settings</p>
-      </header>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Restaurant Profile</h1>
+          <p className="text-muted-foreground">
+            Manage your restaurant information and settings
+          </p>
+        </div>
+        <Button>
+          <Edit className="mr-2 h-4 w-4" />
+          Edit Profile
+        </Button>
+      </div>
 
-      <nav>
-        <Link href="/dashboard">← Back to Dashboard</Link>
-      </nav>
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Basic Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Store className="mr-2 h-5 w-5" />
+              Basic Information
+            </CardTitle>
+            <CardDescription>
+              Core details about your restaurant
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Restaurant Name</label>
+              <p className="text-lg font-semibold">{selectedRestaurant.name}</p>
+            </div>
 
-      <form>
-        <fieldset>
-          <legend>Restaurant Information</legend>
-          
-          <div>
-            <label htmlFor="restaurantName">Restaurant Name</label>
-            <input 
-              type="text" 
-              id="restaurantName" 
-              name="restaurantName" 
-              defaultValue={profileData.restaurantName}
-              required 
-            />
-          </div>
+            <Separator />
+
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">URL Slug</label>
+              <div className="flex items-center space-x-2">
+                <p className="font-mono text-sm">catalogstudio.com/{selectedRestaurant.slug}</p>
+                <Button variant="ghost" size="sm">
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Description</label>
+              <p className="text-sm">
+                {selectedRestaurant.description || 'No description provided'}
+              </p>
+            </div>
+
+            <Separator />
+
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Cuisine Type</label>
+              <div className="mt-1">
+                <Badge variant="secondary" className="flex items-center w-fit">
+                  <UtensilsCrossed className="mr-1 h-3 w-3" />
+                  {formatCuisineType(selectedRestaurant.cuisine)}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
           <div>
             <label htmlFor="slug">URL Slug</label>

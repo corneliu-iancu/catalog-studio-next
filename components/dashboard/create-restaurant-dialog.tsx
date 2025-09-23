@@ -35,6 +35,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Store } from 'lucide-react';
+import { getCurrentDomain } from '@/lib/config';
 
 type CuisineType = Database['public']['Enums']['cuisine_type'];
 
@@ -218,7 +219,7 @@ export function CreateRestaurantDialog({ open, onOpenChange }: CreateRestaurantD
                   <FormControl>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm">
-                        catalogstudio.com/
+                        {getCurrentDomain()}/
                       </span>
                       <Input
                         placeholder="marios-italian-kitchen"

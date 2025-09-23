@@ -77,10 +77,84 @@ export type Database = {
           }
         ]
       }
-      categories: {
+      menus: {
         Row: {
           id: string
           restaurant_id: string | null
+          name: string
+          slug: string
+          description: string | null
+          is_active: boolean | null
+          is_default: boolean | null
+          active_from: string | null
+          active_to: string | null
+          active_days: number[] | null
+          start_date: string | null
+          end_date: string | null
+          sort_order: number | null
+          meta_title: string | null
+          meta_description: string | null
+          image_url: string | null
+          image_alt: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          restaurant_id?: string | null
+          name: string
+          slug: string
+          description?: string | null
+          is_active?: boolean | null
+          is_default?: boolean | null
+          active_from?: string | null
+          active_to?: string | null
+          active_days?: number[] | null
+          start_date?: string | null
+          end_date?: string | null
+          sort_order?: number | null
+          meta_title?: string | null
+          meta_description?: string | null
+          image_url?: string | null
+          image_alt?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          restaurant_id?: string | null
+          name?: string
+          slug?: string
+          description?: string | null
+          is_active?: boolean | null
+          is_default?: boolean | null
+          active_from?: string | null
+          active_to?: string | null
+          active_days?: number[] | null
+          start_date?: string | null
+          end_date?: string | null
+          sort_order?: number | null
+          meta_title?: string | null
+          meta_description?: string | null
+          image_url?: string | null
+          image_alt?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menus_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      categories: {
+        Row: {
+          id: string
+          menu_id: string | null
           name: string
           slug: string
           description: string | null
@@ -96,7 +170,7 @@ export type Database = {
         }
         Insert: {
           id?: string
-          restaurant_id?: string | null
+          menu_id?: string | null
           name: string
           slug: string
           description?: string | null
@@ -112,7 +186,7 @@ export type Database = {
         }
         Update: {
           id?: string
-          restaurant_id?: string | null
+          menu_id?: string | null
           name?: string
           slug?: string
           description?: string | null
@@ -128,10 +202,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "categories_restaurant_id_fkey"
-            columns: ["restaurant_id"]
+            foreignKeyName: "categories_menu_id_fkey"
+            columns: ["menu_id"]
             isOneToOne: false
-            referencedRelation: "restaurants"
+            referencedRelation: "menus"
             referencedColumns: ["id"]
           }
         ]
@@ -139,8 +213,6 @@ export type Database = {
       menu_items: {
         Row: {
           id: string
-          restaurant_id: string | null
-          category_id: string | null
           name: string
           slug: string
           description: string
@@ -157,7 +229,6 @@ export type Database = {
           image_alt: string | null
           is_active: boolean | null
           is_featured: boolean | null
-          sort_order: number | null
           meta_title: string | null
           meta_description: string | null
           created_at: string | null
@@ -165,8 +236,6 @@ export type Database = {
         }
         Insert: {
           id?: string
-          restaurant_id?: string | null
-          category_id?: string | null
           name: string
           slug: string
           description: string
@@ -183,7 +252,6 @@ export type Database = {
           image_alt?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
-          sort_order?: number | null
           meta_title?: string | null
           meta_description?: string | null
           created_at?: string | null
@@ -191,8 +259,6 @@ export type Database = {
         }
         Update: {
           id?: string
-          restaurant_id?: string | null
-          category_id?: string | null
           name?: string
           slug?: string
           description?: string
@@ -209,25 +275,48 @@ export type Database = {
           image_alt?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
-          sort_order?: number | null
           meta_title?: string | null
           meta_description?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
+        Relationships: []
+      }
+      category_menu_items: {
+        Row: {
+          id: string
+          category_id: string | null
+          menu_item_id: string | null
+          sort_order: number | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          category_id?: string | null
+          menu_item_id?: string | null
+          sort_order?: number | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          category_id?: string | null
+          menu_item_id?: string | null
+          sort_order?: number | null
+          created_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "menu_items_restaurant_id_fkey"
-            columns: ["restaurant_id"]
-            isOneToOne: false
-            referencedRelation: "restaurants"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "menu_items_category_id_fkey"
+            foreignKeyName: "category_menu_items_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "category_menu_items_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
             referencedColumns: ["id"]
           }
         ]

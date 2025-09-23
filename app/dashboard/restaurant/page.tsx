@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { getCurrentDomain } from '@/lib/config';
 
 function RestaurantProfileContent() {
   const { selectedRestaurant, isLoading } = useRestaurant();
@@ -93,8 +94,13 @@ function RestaurantProfileContent() {
             <div>
               <label className="text-sm font-medium text-muted-foreground">URL Slug</label>
               <div className="flex items-center space-x-2">
-                <p className="font-mono text-sm">catalogstudio.com/{selectedRestaurant.slug}</p>
-                <Button variant="ghost" size="sm">
+                <p className="font-mono text-sm">{getCurrentDomain()}/{selectedRestaurant.slug}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.open(`/${selectedRestaurant.slug}`, '_blank')}
+                  title="Open restaurant page in new tab"
+                >
                   <ExternalLink className="h-3 w-3" />
                 </Button>
               </div>

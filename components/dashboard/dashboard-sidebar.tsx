@@ -6,14 +6,12 @@ import { cn } from '@/lib/utils';
 import {
   BarChart3,
   Home,
-  Menu,
   Palette,
   QrCode,
   Settings,
   Store,
   UtensilsCrossed,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 
 const navigation = [
@@ -58,7 +56,8 @@ const navigation = [
     name: 'Settings',
     href: '/dashboard/settings',
     icon: Settings,
-    description: 'Account and restaurant settings',
+    description: 'Application and account settings',
+    requiresRestaurant: false, // This page doesn't require a restaurant
   },
 ];
 
@@ -79,7 +78,8 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
         <nav className="mt-5 flex-1 px-2 space-y-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
-            const itemDisabled = isDisabled && item.href !== '/dashboard';
+            // Item is disabled if it requires a restaurant and user doesn't have one
+            const itemDisabled = (item.requiresRestaurant !== false && isDisabled) && item.href !== '/dashboard';
             
             return (
               <Link

@@ -5,6 +5,7 @@ import { DashboardSidebar } from './dashboard-sidebar';
 import { CreateRestaurantDialog } from './create-restaurant-dialog';
 import { RestaurantProvider } from '@/lib/contexts/restaurant-context';
 import { MenuProvider } from '@/lib/contexts/menu-context';
+import { ItemsProvider } from '@/lib/contexts/items-context';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -31,7 +32,8 @@ export function DashboardLayout({
   return (
     <RestaurantProvider>
       <MenuProvider>
-        <div className="h-screen flex flex-col">
+        <ItemsProvider>
+          <div className="h-screen flex flex-col">
           {/* Header */}
           <DashboardHeader
             user={user}
@@ -50,13 +52,14 @@ export function DashboardLayout({
               </div>
             </main>
           </div>
-        </div>
+          </div>
 
-        {/* Create Restaurant Dialog */}
-        <CreateRestaurantDialog
-          open={showCreateRestaurant}
-          onOpenChange={onCloseCreateRestaurant || (() => {})}
-        />
+          {/* Create Restaurant Dialog */}
+          <CreateRestaurantDialog
+            open={showCreateRestaurant}
+            onOpenChange={onCloseCreateRestaurant || (() => {})}
+          />
+        </ItemsProvider>
       </MenuProvider>
     </RestaurantProvider>
   );

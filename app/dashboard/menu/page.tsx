@@ -466,6 +466,12 @@ function MenuManagementContent() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/dashboard/menu/categories/${category.id}/items`}>
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Items ({category.item_count || 0})
+                    </Link>
+                  </Button>
                   <Button asChild variant="ghost" size="sm">
                     <Link href={`/dashboard/menu/categories/${category.id}/edit`}>
                       <Edit className="h-4 w-4" />
@@ -478,6 +484,12 @@ function MenuManagementContent() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/menu/categories/${category.id}/items`}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Items
+                        </Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/menu/categories/${category.id}/edit`}>
                           <Edit className="h-4 w-4 mr-2" />

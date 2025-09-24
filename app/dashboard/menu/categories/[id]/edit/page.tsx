@@ -125,13 +125,18 @@ function EditCategoryContent() {
 
     try {
       // Check if slug is unique within the menu (excluding current category)
-      const { data: existingCategory } = await supabase
+      const { data: existingCategory, error: slugCheckError } = await supabase
         .from('categories')
         .select('slug')
         .eq('menu_id', category.menu_id)
         .eq('slug', data.slug)
         .neq('id', category.id)
-        .single();
+        .maybeSingle();
+
+      if (slugCheckError) {
+        console.error('Error checking slug uniqueness:', slugCheckError);
+        throw slugCheckError;
+      }
 
       if (existingCategory) {
         form.setError('slug', {
@@ -376,19 +381,21 @@ function EditCategoryContent() {
 }
 
 export default function EditCategoryPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
-
-  useEffect(() => {
-    getUser();
-  }, []);
 
   const getUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
     setLoading(false);
   };
+
+  useEffect(() => {
+    getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (

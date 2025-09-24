@@ -176,9 +176,18 @@ export function CreateItemDialog({ categoryId, categoryName }: CreateItemDialogP
     try {
       setIsSubmitting(true);
 
-      // For now, we'll still use the simple createItem function
-      // TODO: Update API to handle all the new fields
-      await createItem(categoryId, formData.name.trim());
+      // Create item with all form data
+      await createItem(categoryId, {
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        price: formData.price ? parseFloat(formData.price) : undefined,
+        discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : undefined,
+        ingredients: formData.ingredients.length > 0 ? formData.ingredients : undefined,
+        allergens: formData.allergens.length > 0 ? formData.allergens : undefined,
+        spiceLevel: formData.spiceLevel || undefined,
+        isActive: formData.isActive,
+        isFeatured: formData.isFeatured
+      });
 
       // Show success briefly
       setSuccess(true);

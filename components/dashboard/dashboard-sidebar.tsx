@@ -34,10 +34,10 @@ const navigation = [
     description: 'Create and manage your menu items',
   },
   {
-    name: 'Customization',
-    href: '/dashboard/customization',
+    name: 'Menu Template',
+    href: '/dashboard/template',
     icon: Palette,
-    description: 'Customize your catalog appearance',
+    description: 'Customize your menu appearance and layout',
   },
   {
     name: 'Sharing & QR',

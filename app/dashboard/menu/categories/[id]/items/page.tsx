@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useItems } from '@/lib/contexts/items-context';
 import { createClient } from '@/lib/supabase/client';
@@ -9,7 +9,7 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Loader2, Utensils, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Utensils, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { CreateItemDialog } from '@/components/dashboard/items/create-item-dialog';
 
@@ -78,9 +78,18 @@ function ItemsPageContent() {
   // Fetch items when category is loaded
   useEffect(() => {
     if (categoryId && category) {
+      console.log('Category loaded, fetching items for:', categoryId);
       fetchItemsByCategory(categoryId);
     }
   }, [categoryId, category, fetchItemsByCategory]);
+
+  // Add a retry mechanism for failed loads
+  const retryLoadItems = useCallback(() => {
+    if (categoryId) {
+      console.log('Retrying items load for category:', categoryId);
+      fetchItemsByCategory(categoryId, true); // Force refresh
+    }
+  }, [categoryId, fetchItemsByCategory]);
 
   if (categoryLoading) {
     return (
@@ -157,7 +166,7 @@ function ItemsPageContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="secondary">{items.length} Total Items</Badge>
               <Badge variant="outline">
@@ -167,6 +176,19 @@ function ItemsPageContent() {
                 {items.filter(item => !item.is_active).length} Inactive
               </Badge>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={retryLoadItems}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Refresh
+            </Button>
           </div>
         </CardContent>
       </Card>

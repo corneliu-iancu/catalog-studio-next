@@ -7,12 +7,24 @@ import { useMenu } from './menu-context';
 
 type MenuItem = Database['public']['Tables']['menu_items']['Row'];
 
+interface CreateItemData {
+  name: string;
+  description?: string;
+  price?: number;
+  discountPrice?: number;
+  ingredients?: string[];
+  allergens?: string[];
+  spiceLevel?: string;
+  isActive?: boolean;
+  isFeatured?: boolean;
+}
+
 interface ItemsContextType {
   items: MenuItem[];
   isLoading: boolean;
   selectedCategoryId: string | null;
   fetchItemsByCategory: (categoryId: string) => Promise<void>;
-  createItem: (categoryId: string, name: string) => Promise<void>;
+  createItem: (categoryId: string, itemData: CreateItemData) => Promise<void>;
   deleteItem: (itemId: string, categoryId: string) => Promise<void>;
   refreshItems: () => Promise<void>;
   selectCategory: (categoryId: string) => void;
@@ -31,10 +43,14 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
 
   const fetchItemsByCategory = useCallback(async (categoryId: string, forceRefresh = false) => {
-    if (!categoryId) return;
+    if (!categoryId) {
+      console.warn('fetchItemsByCategory called with empty categoryId');
+      return;
+    }
 
     // Check cache first (unless force refresh)
     if (!forceRefresh && itemsCache[categoryId]) {
+      console.log(`Loading items from cache for category: ${categoryId}`);
       setItems(itemsCache[categoryId]);
       setSelectedCategoryId(categoryId);
       return;
@@ -42,6 +58,7 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setIsLoading(true);
+      console.log(`Fetching items for category: ${categoryId}, forceRefresh: ${forceRefresh}`);
 
       const { data, error } = await supabase
         .from('category_menu_items')
@@ -53,8 +70,13 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
             name,
             description,
             price,
+            discount_price,
+            ingredients,
+            allergens,
+            spice_level,
             image_url,
             is_active,
+            is_featured,
             created_at,
             updated_at
           )
@@ -62,31 +84,48 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
         .eq('category_id', categoryId)
         .order('sort_order', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error fetching items:', error);
+        throw error;
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const menuItems = data?.map((item: any) => item.menu_items) || [];
-      
+      const menuItems = data?.map((item: any) => item.menu_items).filter(Boolean) || [];
+
+      console.log(`Fetched ${menuItems.length} items for category ${categoryId}`);
+
       // Update cache
       setItemsCache(prev => ({
         ...prev,
         [categoryId]: menuItems
       }));
-      
+
       setItems(menuItems);
       setSelectedCategoryId(categoryId);
 
     } catch (error) {
-      console.error('Error fetching items:', error);
-      setItems([]);
+      console.error('Error fetching items for category:', categoryId, error);
+      // Don't clear items if we're just refreshing - keep existing items
+      if (!forceRefresh) {
+        setItems([]);
+      }
     } finally {
       setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supabase]);
+  }, [supabase, itemsCache]);
 
-  const createItem = useCallback(async (categoryId: string, name: string) => {
-    if (!categoryId || !name.trim()) return;
+  const createItem = useCallback(async (categoryId: string, itemData: {
+    name: string;
+    description?: string;
+    price?: number;
+    discountPrice?: number;
+    ingredients?: string[];
+    allergens?: string[];
+    spiceLevel?: string;
+    isActive?: boolean;
+    isFeatured?: boolean;
+  }) => {
+    if (!categoryId || !itemData.name.trim()) return;
 
     try {
       setIsLoading(true);
@@ -101,9 +140,8 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
 
       const nextSortOrder = existingItems?.[0]?.sort_order ? existingItems[0].sort_order + 1 : 1;
 
-      // Create the menu item with required fields
-      // For now, let's use a simpler approach and create via API route
-      const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      // Create slug from name
+      const slug = itemData.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
       const response = await fetch('/api/menu-items', {
         method: 'POST',
@@ -111,10 +149,16 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: name.trim(),
+          name: itemData.name.trim(),
           slug: slug,
-          description: 'No description yet',
-          price: 0,
+          description: itemData.description || '',
+          price: itemData.price || 0,
+          discountPrice: itemData.discountPrice || null,
+          ingredients: itemData.ingredients || [],
+          allergens: itemData.allergens || [],
+          spiceLevel: itemData.spiceLevel || null,
+          isActive: itemData.isActive !== false, // Default to true
+          isFeatured: itemData.isFeatured || false,
           categoryId: categoryId,
           sortOrder: nextSortOrder
         }),
@@ -185,10 +229,14 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
   }, [selectedCategoryId]);
 
   const selectCategory = useCallback((categoryId: string) => {
+    if (!categoryId) {
+      console.warn('selectCategory called with empty categoryId');
+      return;
+    }
+    console.log(`Selecting category: ${categoryId}`);
     setSelectedCategoryId(categoryId);
     fetchItemsByCategory(categoryId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchItemsByCategory]);
 
   const getItemCount = useCallback((categoryId: string) => {
     return itemsCache[categoryId]?.length || 0;
@@ -196,9 +244,11 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
 
   // Clear cache when menu changes
   useEffect(() => {
+    console.log('Menu changed, clearing items cache');
     setItemsCache({});
     setItems([]);
     setSelectedCategoryId(null);
+    setIsLoading(false);
   }, [selectedMenu]);
 
   const value: ItemsContextType = {

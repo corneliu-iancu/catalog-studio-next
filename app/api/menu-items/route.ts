@@ -12,7 +12,20 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, slug, description, price, categoryId, sortOrder } = body;
+    const {
+      name,
+      slug,
+      description,
+      price,
+      discountPrice,
+      ingredients,
+      allergens,
+      spiceLevel,
+      isActive,
+      isFeatured,
+      categoryId,
+      sortOrder
+    } = body;
 
     // Validate required fields
     if (!name || !slug || !categoryId) {
@@ -50,15 +63,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Create the menu item
+    // Create the menu item with all fields
     const { data: newItem, error: itemError } = await supabase
       .from('menu_items')
       .insert({
         name: name.trim(),
         slug: slug,
-        description: description || 'No description yet',
+        description: description || '',
         price: price || 0,
-        is_active: true
+        discount_price: discountPrice || null,
+        ingredients: ingredients ? ingredients.join(', ') : null,
+        allergens: allergens || null,
+        spice_level: spiceLevel || null,
+        is_active: isActive !== false, // Default to true
+        is_featured: isFeatured || false
       })
       .select()
       .single();

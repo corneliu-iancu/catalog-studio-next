@@ -4,6 +4,7 @@ import { DashboardHeader } from './dashboard-header';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { CreateRestaurantDialog } from './create-restaurant-dialog';
 import { RestaurantProvider } from '@/lib/contexts/restaurant-context';
+import { MenuProvider } from '@/lib/contexts/menu-context';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -29,32 +30,34 @@ export function DashboardLayout({
 
   return (
     <RestaurantProvider>
-      <div className="h-screen flex flex-col">
-        {/* Header */}
-        <DashboardHeader
-          user={user}
-          onCreateRestaurant={onCreateRestaurant}
-        />
-        
-        {/* Main Content Area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Sidebar */}
-          <DashboardSidebar />
-          
-          {/* Main Content */}
-          <main className="flex-1 overflow-y-auto bg-background">
-            <div className="h-full">
-              {children}
-            </div>
-          </main>
-        </div>
-      </div>
+      <MenuProvider>
+        <div className="h-screen flex flex-col">
+          {/* Header */}
+          <DashboardHeader
+            user={user}
+            onCreateRestaurant={onCreateRestaurant}
+          />
 
-      {/* Create Restaurant Dialog */}
-      <CreateRestaurantDialog
-        open={showCreateRestaurant}
-        onOpenChange={onCloseCreateRestaurant || (() => {})}
-      />
+          {/* Main Content Area */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Sidebar */}
+            <DashboardSidebar />
+
+            {/* Main Content */}
+            <main className="flex-1 overflow-y-auto bg-background">
+              <div className="h-full">
+                {children}
+              </div>
+            </main>
+          </div>
+        </div>
+
+        {/* Create Restaurant Dialog */}
+        <CreateRestaurantDialog
+          open={showCreateRestaurant}
+          onOpenChange={onCloseCreateRestaurant || (() => {})}
+        />
+      </MenuProvider>
     </RestaurantProvider>
   );
 }

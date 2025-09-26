@@ -1,0 +1,61 @@
+category_name,item_name,description,price,allergens,spice_level,is_featured
+Salads,Salata mixta libaneza,"rosii, castraveti, salata verde, ceapa, ardei gras, ridichii, valeriana, menta, lamaie, ulei de masline, 250g",35,,,false
+Salads,Salata arabeasca taiata marunt,"rosii, castraveti, salata verde, ardei gras, ridichii, lamaie, ulei de masline, 250g",32,,,false
+Salads,Tabbouleh,"patrunjel, bulgur, ceapa, lamaie, ulei de masline, rosii, 200g",28,gluten,,false
+Salads,Salata masline,"masline verzi, cimbru, nuca, rosii, rodii, sos rodie, patrunjel, ulei de masline, 150g",32,nuts,,false
+Salads,Fattoush,"castraveti, salata verde, ardei gras, lamaie, ulei de masline, valeriana, menta, sumac, sos de rodii, rodii, lipie libaneza, 250g",34,gluten,,false
+Cold Appetizers,Humus cu muguri de pin,"naut, pasta de susan, sare, sare de lamaie, apa, ulei de masline, muguri de pin, 150g",30,"sesame, nuts",,false
+Cold Appetizers,Humus Beiruti,"naut, pasta de susan, sare, sare de lamaie, apa, ulei de masline, patrunjel, ardei iute, 150g",27,sesame,medium,false
+Cold Appetizers,Humus cu carne si muguri de pin,"naut, pasta de susan, sare, sare de lamaie, apa, ulei de masline, pulpa de vita, muguri de pin, 200g",40,"sesame, nuts",,false
+Cold Appetizers,Humus cu trufe,"naut, pasta de susan, sare, sare de lamaie, apa, ulei de masline, pasta de trufe, lipie prajita, 180g",39,"sesame, gluten",,false
+Cold Appetizers,Baba Ganoush,"vinete, usturoi, ardei gras, patrunjel, sos de rodie, rodii, ceapa, rosii, lamaie, 200g",25,,,false
+Cold Appetizers,Moutabal,"vinete coapte, tahini, pasta de susan, ulei de masline, rodie, sare de lamaie, sare, 150g",28,sesame,,false
+Cold Appetizers,Labneh,"crema proaspata de iaurt, ulei de masline, 200g",22,dairy,,false
+Cold Appetizers,Labneh cu usturoi si menta,"crema proaspata de iaurt, ulei de masline, menta, usturoi, 200g",24,dairy,,false
+Cold Appetizers,Humus cu creveti,"naut, pasta de susan, lamaie, usturoi, ardei iute, creveti, 250g",70,"sesame, shellfish",medium,false
+Hot Appetizers,Supa crema de linte,"linte, morcov, cartofi, ceapa, piper alb, 300g",22,,,false
+Hot Appetizers,Sambusek cu carne (3 buc),"aluat, carne tocata vita, ceapa, muguri de pin, piper negru, 150g",25,"gluten, nuts",,false
+Hot Appetizers,Sambusek cu branza (3 buc),"aluat, branza, ceapa, patrunjel, menta, 150g",25,"gluten, dairy",,false
+Hot Appetizers,Sambusek mix,"1x carne, 1x branza, 1x rulou branza, 200g",40,"gluten, dairy, nuts",,false
+Hot Appetizers,Humus simplu,"naut, pasta de susan, sare, sare de lamaie, apa, ulei de masline, 150g",25,sesame,,false
+Hot Appetizers,Rulouri cu branza (3 buc),"foietaj, branza, mozzarella, sos rosii, piper alb, 150g",25,"gluten, dairy",,false
+Hot Appetizers,Kebbe prajite (3 buc),"carne tocata, grau marinat, muguri de pin, ceapa, bulgur, crema iaurt, piper negru, 150g",40,"gluten, nuts, dairy",,false
+Hot Appetizers,Branza Halloumi,"branza halloumi, rosii, castraveti, 150g",42,dairy,,false
+Hot Appetizers,Falafel,"naut, usturoi, ceapa, ardei iute, ardei gras, pasta susan, rosii, patrunjel, lamaie, coriandru, 150g",35,sesame,medium,false
+Hot Appetizers,Sujuk,"carnati picanti, rosii, usturoi, 180g",50,,hot,false
+Hot Appetizers,Ficatei de pui,"ficatei de pui in sos lamaie sau rodii, 200g",35,,,false
+Hot Appetizers,Makanek,"carnati in sos de rodii si lamaie, 180g",49,,,false
+Hot Appetizers,Tigaie libaneza de vita,"vita, orez basmati cu fidea, ardei gras, ceapa, ardei iute, usturoi, sos soia, 350g",99,gluten,medium,false
+Hot Appetizers,Sharhat de pui,"piept de pui, usturoi, unt, coriandru, lamaie, 200g",54,,,false
+Hot Appetizers,Sharhat de vita,"muschi de vita, usturoi, lamaie, piper negru, unt, 220g",79,,,false
+Hot Appetizers,Ras Asfour de vita,"muschi de vita, sos de rodii, ceapa, ulei masline, piper negru, rodii, 200g",65,,,false
+Hot Appetizers,Ras Asfour de pui,"piept de pui, ardei gras, sos rodii, ceapa, ulei masline, piper alb, 220g",55,,,false
+Hot Appetizers,Lipie libaneza,"lipie simpla, 200g / 400g",15,gluten,,false
+Hot Appetizers,Hachapuri,"lipie umpluta cu branza, 200g / 400g",55,"gluten, dairy",,false
+Grill,Fistic kebab,"fistic, carne tocata miel si vitel, salata, cartofi prajiti, ceapa, bulgur, rosii coapte, ardei copt, lipie, 300g",90,"gluten, nuts",,false
+Grill,Beyti Sarma,"carne tocata miel si vitel, lipie, rosii coapte, ardei copt, patrunjel, 400g",95,gluten,,false
+Grill,Beyti kebab,"carne tocata miel si vitel, salata, cartofi prajiti, bulgur, rosii coapte, ardei copt, usturoi, lipie, 400g",90,gluten,,false
+Grill,Adana kebab,"carne tocata miel si vitel, salata, cartofi prajiti, ceapa, bulgur, rosii coapte, chilli, lipie, 300g",82,gluten,hot,false
+Grill,Urfa kebab,"carne tocata miel si vitel, salata, cartofi prajiti, ceapa, bulgur, rosii coapte, ardei copt, lipie, 300g",83,gluten,,false
+Grill,Iskender kebab,"carne tocata miel si vitel, lipie, rosii coapte, ardei copt, iaurt, crutoane, 400g",95,"gluten, dairy",,false
+Grill,Frigarui de pui,"piept de pui, salata, cartofi prajiti, rosii coapte, ardei copt, bulgur, patrunjel, lipie, 300g",69,gluten,,false
+Grill,Frigarui de berbecut,"carne berbecut, salata, cartofi prajiti, rosii coapte, ardei copt, bulgur, patrunjel, lipie, 300g",95,gluten,,false
+Grill,Aripioare de pui,"aripioare pui, salata, cartofi prajiti, rosii coapte, ardei copt, ceapa, patrunjel, lipie, 300g",60,gluten,,false
+Grill,Kofte la gratar,"chiftelute turcesti carne miel si vitel, salata, cartofi prajiti, rosii coapte, ardei copt, ceapa, patrunjel, lipie, 300g",78,gluten,,false
+Grill,Kebab de berbecut cu rosii,"carne tocata, rosii, ceapa, patrunjel, cartofi prajiti, bulgur, rosii coapte, ardei copt, lipie, 350g",85,gluten,,false
+Grill,Legume asortate la gratar,"rosii, ceapa, ardei gras, ardei iute, vinete, dovlecei, lipie, 200g",25,gluten,,false
+Grill,Mixed Grill,"cotlet berbecut, adana kebab, frigarui berbecut, frigarui pui, kofte la gratar, kebab cu rosii, cartofi prajiti, bulgur, ceapa, ardei, rosii, lipie, 800g",185,gluten,,false
+Grill,Cotlete de berbecut,"carne berbecut, salata, varza, rosii, ceapa, bulgur, patrunjel, lipie, 300g",125,gluten,,false
+Grill,Pastrama de berbecut,"carne berbecut, bulgur, varza rosie, rosii, ceapa, lipie, 300g",109,gluten,,false
+Sides,Cartofi prajiti,"cartofi prajiti, 200g",18,,,false
+Sides,Batata cu menta si usturoi,"cartofi prajiti cu menta si usturoi, 200g",25,,,false
+Sides,Batata Harra,"cartofi picanti la cuptor, usturoi, coriandru verde, pasta ardei iute, lamaie, 200g",28,,medium,false
+Sides,Orez basmati alb,"orez, coriandru, unt, piper alb, foi dafin, 200g",20,,,false
+Sides,Bulgur,"grau spart, pasta tomate, ceapa, ardei kapia, ardei gras, usturoi, ulei masline, 200g",20,gluten,,false
+Sides,Orez basmati cu fidea,"orez, unt, fidea, ulei, 200g",25,gluten,,false
+Desserts,Kunefe,"cataif, crema branza, apa flori, fistic, unt, sirop zahar, mozzarella, smantana gatit, fidea kunefe, untura, zahar, 280g",45,"gluten, dairy, nuts",,false
+Desserts,Gullac,"foi orez, crema lapte, apa trandafiri, rodie, 200g",35,dairy,,false
+Desserts,Baklava cu fistic si inghetata,"foi baklava, fistic, apa flori, miere, inghetata vanilie, sirop zahar, unt, 150g",65,"gluten, dairy, nuts",,false
+Desserts,Baklava cu nuca,"foi baklava, miez nuca, apa flori, miere, sirop zahar, unt, 150g",35,"gluten, dairy, nuts",,false
+Drinks,Ayran simplu,"iaurt, apa, sare, 300ml",14,dairy,,false
+Drinks,Ayran cu menta,"iaurt, apa, menta, sare, 300ml",16,dairy,,false

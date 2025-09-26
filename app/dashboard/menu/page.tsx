@@ -16,10 +16,11 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getSupportedCurrencies, type SupportedCurrency } from '@/lib/utils/currency';
-import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X } from 'lucide-react';
+import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X, Upload } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import CreateMenuDialog from '@/components/dashboard/create-menu-dialog';
+import { CsvImportDialog } from '@/components/dashboard/csv-import-dialog';
 import { MenuPicker } from '@/components/dashboard/menu-picker';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -35,6 +36,7 @@ function MenuManagementContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [showCsvImport, setShowCsvImport] = useState(false);
   const [recentlyCreatedMenuId, setRecentlyCreatedMenuId] = useState<string | null>(null);
   const [stats, setStats] = useState({
     totalCategories: 0,
@@ -47,6 +49,11 @@ function MenuManagementContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Category deletion state
+  const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
+  const [showDeleteCategoryConfirm, setShowDeleteCategoryConfirm] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -210,6 +217,37 @@ function MenuManagementContent() {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!categoryToDelete) return;
+
+    setDeletingCategoryId(categoryToDelete.id);
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', categoryToDelete.id);
+
+      if (error) throw error;
+
+      toast.success('Category successfully removed');
+      setShowDeleteCategoryConfirm(false);
+      setCategoryToDelete(null);
+      
+      // Refresh categories to reflect the deletion
+      await fetchCategories();
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      toast.error('Failed to delete category');
+    } finally {
+      setDeletingCategoryId(null);
+    }
+  };
+
+  const confirmDeleteCategory = (category: Category) => {
+    setCategoryToDelete(category);
+    setShowDeleteCategoryConfirm(true);
   };
 
   const handleMenuCreated = (newMenu: Menu) => {
@@ -637,6 +675,16 @@ function MenuManagementContent() {
                 View All Items
               </Link>
             </Button>
+            {selectedMenu && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCsvImport(true)}
+                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Import CSV
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -711,7 +759,11 @@ function MenuManagementContent() {
                           Edit Category
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
+                      <DropdownMenuItem 
+                        className="text-destructive"
+                        onClick={() => confirmDeleteCategory(category)}
+                        disabled={deletingCategoryId === category.id}
+                      >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete Category
                       </DropdownMenuItem>
@@ -732,7 +784,20 @@ function MenuManagementContent() {
         isFirstMenu={false}
       />
 
-      {/* Delete Confirmation Dialog */}
+      {selectedMenu && (
+        <CsvImportDialog
+          open={showCsvImport}
+          onOpenChange={setShowCsvImport}
+          menuId={selectedMenu.id}
+          menuName={selectedMenu.name}
+          onImportComplete={() => {
+            fetchCategories();
+            toast.success('CSV import completed successfully!');
+          }}
+        />
+      )}
+
+      {/* Delete Menu Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -750,6 +815,29 @@ function MenuManagementContent() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting ? 'Deleting...' : 'Delete Menu'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Category Confirmation Dialog */}
+      <AlertDialog open={showDeleteCategoryConfirm} onOpenChange={setShowDeleteCategoryConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &ldquo;{categoryToDelete?.name}&rdquo;? This action cannot be undone.
+              All menu items in this category will also be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCategory}
+              disabled={deletingCategoryId !== null}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deletingCategoryId === categoryToDelete?.id ? 'Deleting...' : 'Delete Category'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

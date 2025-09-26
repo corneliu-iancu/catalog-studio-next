@@ -240,7 +240,7 @@ function ItemsPageContent() {
                       {item.is_active ? "Active" : "Inactive"}
                     </Badge>
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={`/dashboard/menu/items/${item.id}/edit`}>
+                      <Link href={`/dashboard/menu/categories/${categoryId}/items/${item.id}/edit`}>
                         <Edit className="h-4 w-4" />
                       </Link>
                     </Button>

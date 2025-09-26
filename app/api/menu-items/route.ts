@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user owns the restaurant
-    const restaurant = categoryData.menus.restaurants;
-    if (restaurant.user_id !== user.id) {
+    const restaurant = (categoryData.menus as any)?.[0]?.restaurants?.[0];
+    if (!restaurant || restaurant.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -129,7 +129,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Verify that the user owns the restaurant that contains this item
-    const { data: itemData, error: itemError } = await supabase
+    const { data: itemDataArray, error: itemError } = await supabase
       .from('category_menu_items')
       .select(`
         menu_item_id,
@@ -145,16 +145,18 @@ export async function DELETE(request: NextRequest) {
         )
       `)
       .eq('menu_item_id', itemId)
-      .eq('category_id', categoryId)
-      .single();
+      .eq('category_id', categoryId);
+
+    // Handle potential duplicates by taking the first result
+    const itemData = itemDataArray && itemDataArray.length > 0 ? itemDataArray[0] : null;
 
     if (itemError || !itemData) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
 
     // Check if user owns the restaurant
-    const restaurant = itemData.categories.menus.restaurants;
-    if (restaurant.user_id !== user.id) {
+    const restaurant = (itemData.categories as any)?.menus?.[0]?.restaurants?.[0];
+    if (!restaurant || restaurant.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 

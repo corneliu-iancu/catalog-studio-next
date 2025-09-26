@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
+import { useMenu } from '@/lib/contexts/menu-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BarChart3,
@@ -22,13 +24,88 @@ import { Button } from '@/components/ui/button';
 
 function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => void }) {
   const { selectedRestaurant, hasRestaurants, isLoading } = useRestaurant();
+  const { selectedMenu } = useMenu();
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
+  const [stats, setStats] = useState({
+    totalCategories: 0,
+    totalItems: 0,
+    activeCategories: 0,
+    menuViews: 0
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+  const supabase = createClient();
+
+  // Fetch dashboard stats
+  const fetchStats = useCallback(async () => {
+    if (!selectedRestaurant || !selectedMenu) {
+      setStats({
+        totalCategories: 0,
+        totalItems: 0,
+        activeCategories: 0,
+        menuViews: 0
+      });
+      setStatsLoading(false);
+      return;
+    }
+
+    try {
+      setStatsLoading(true);
+
+      // Fetch categories with item counts through the junction table
+      const { data: categories, error } = await supabase
+        .from('categories')
+        .select(`
+          *,
+          category_menu_items(count)
+        `)
+        .eq('menu_id', selectedMenu.id)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+
+      // Calculate item counts for each category
+      const categoriesWithCounts = (categories || []).map(category => ({
+        ...category,
+        item_count: category.category_menu_items?.[0]?.count || 0
+      }));
+
+      // Calculate stats
+      const totalCategories = categoriesWithCounts.length;
+      const activeCategories = categoriesWithCounts.filter(c => c.is_active).length;
+      const totalItems = categoriesWithCounts.reduce((sum, c) => sum + (c.item_count || 0), 0);
+
+      setStats({
+        totalCategories,
+        activeCategories,
+        totalItems,
+        menuViews: 0 // TODO: Implement menu views tracking
+      });
+
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      setStats({
+        totalCategories: 0,
+        totalItems: 0,
+        activeCategories: 0,
+        menuViews: 0
+      });
+    } finally {
+      setStatsLoading(false);
+    }
+  }, [selectedRestaurant, selectedMenu, supabase]);
+
+  // Fetch stats when component mounts or dependencies change
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
+          <p className="text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     );
@@ -42,9 +119,9 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">
-          Welcome back! Here's an overview of {selectedRestaurant?.name}.
+          {t('welcome', { restaurantName: selectedRestaurant?.name || '' })}
         </p>
       </div>
 
@@ -52,46 +129,52 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Menu Items</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('stats.totalMenuItems')}</CardTitle>
             <UtensilsCrossed className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">
+              {statsLoading ? '-' : stats.totalItems}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +0 from last month
+              {t('stats.fromLastMonth', { count: 0 })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categories</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('stats.categories')}</CardTitle>
             <Store className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">
+              {statsLoading ? '-' : stats.totalCategories}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +0 from last month
+              {statsLoading ? '-' : `${stats.activeCategories} ${t('stats.active')}`}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Menu Views</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('stats.menuViews')}</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">
+              {statsLoading ? '-' : stats.menuViews}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +0 from last month
+              {t('stats.fromLastMonth', { count: 0 })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Since</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('stats.activeSince')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -102,7 +185,7 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
               }
             </div>
             <p className="text-xs text-muted-foreground">
-              Restaurant created
+              {t('stats.restaurantCreated')}
             </p>
           </CardContent>
         </Card>
@@ -114,12 +197,12 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center">
               <Plus className="mr-2 h-4 w-4" />
-              Add Menu Item
+              {t('quickActions.addMenuItem')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              Create a new dish for your menu
+              {t('quickActions.addMenuItemDesc')}
             </CardDescription>
           </CardContent>
         </Card>
@@ -128,12 +211,12 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center">
               <Store className="mr-2 h-4 w-4" />
-              Add Category
+              {t('quickActions.addCategory')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              Organize your menu with categories
+              {t('quickActions.addCategoryDesc')}
             </CardDescription>
           </CardContent>
         </Card>
@@ -142,12 +225,12 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center">
               <UtensilsCrossed className="mr-2 h-4 w-4" />
-              Manage Menu
+              {t('quickActions.manageMenu')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              Edit existing items and categories
+              {t('quickActions.manageMenuDesc')}
             </CardDescription>
           </CardContent>
         </Card>
@@ -156,12 +239,12 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center">
               <ExternalLink className="mr-2 h-4 w-4" />
-              View Public Menu
+              {t('quickActions.viewPublicMenu')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              See how customers view your menu
+              {t('quickActions.viewPublicMenuDesc')}
             </CardDescription>
           </CardContent>
         </Card>
@@ -171,19 +254,19 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Restaurant Overview</CardTitle>
+            <CardTitle>{t('restaurantOverview.title')}</CardTitle>
             <CardDescription>
-              Basic information about your restaurant
+              {t('restaurantOverview.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
               <h3 className="font-semibold">{selectedRestaurant?.name}</h3>
               <p className="text-sm text-muted-foreground">
-                URL: /{selectedRestaurant?.slug}
+                {t('restaurantOverview.url')} /{selectedRestaurant?.slug}
               </p>
               <p className="text-sm text-muted-foreground">
-                Last updated: {selectedRestaurant?.updated_at
+                {t('restaurantOverview.lastUpdated')} {selectedRestaurant?.updated_at
                   ? new Date(selectedRestaurant.updated_at).toLocaleDateString()
                   : 'N/A'
                 }
@@ -192,7 +275,7 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
             <div className="pt-2">
               <Button variant="outline" size="sm">
                 <Store className="mr-2 h-4 w-4" />
-                Edit Restaurant Profile
+                {t('restaurantOverview.editProfile')}
               </Button>
             </div>
           </CardContent>
@@ -200,9 +283,9 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>{t('recentActivity.title')}</CardTitle>
             <CardDescription>
-              Latest changes to your restaurant
+              {t('recentActivity.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -210,7 +293,7 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
               <div className="flex items-start space-x-3">
                 <div className="h-2 w-2 bg-blue-500 rounded-full mt-2"></div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Restaurant created</p>
+                  <p className="text-sm font-medium">{t('recentActivity.restaurantCreated')}</p>
                   <p className="text-xs text-muted-foreground">
                     {selectedRestaurant?.created_at
                       ? new Date(selectedRestaurant.created_at).toLocaleDateString()
@@ -220,7 +303,7 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
                 </div>
               </div>
               <div className="text-sm text-muted-foreground">
-                Start adding menu items to see more activity here.
+                {t('recentActivity.startAdding')}
               </div>
             </div>
           </CardContent>
@@ -235,6 +318,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
   const supabase = createClient();
+  const tCommon = useTranslations('common');
 
   useEffect(() => {
     getUser();
@@ -255,7 +339,7 @@ export default function DashboardPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{tCommon('loading')}</p>
         </div>
       </div>
     );

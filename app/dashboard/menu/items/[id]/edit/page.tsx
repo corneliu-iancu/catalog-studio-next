@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/lib/types/database';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
@@ -23,7 +24,7 @@ type MenuItem = Database['public']['Tables']['menu_items']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
 // Allergen options
-const ALLERGEN_OPTIONS = [
+const ALLERGEN_OPTIONS = [ // todo: these are predefined. but still we need to make it translatable.
   { value: 'dairy', label: 'Dairy' },
   { value: 'gluten', label: 'Gluten' },
   { value: 'nuts', label: 'Nuts' },
@@ -45,6 +46,9 @@ const SPICE_LEVELS = [
 function EditItemPageContent() {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations('forms');
+  const tCommon = useTranslations('common');
+  const tCards = useTranslations('cards');
   const itemId = params.id as string;
   
   const [item, setItem] = useState<MenuItem | null>(null);
@@ -268,50 +272,50 @@ function EditItemPageContent() {
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
+            <CardTitle>{tCards('titles.basicInformation')}</CardTitle>
             <CardDescription>
-              Core details about this menu item
+              {t('descriptions.basicInformation')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
           <div>
-              <Label htmlFor="name">Item Name</Label>
+              <Label htmlFor="name">{t('itemName')}</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="e.g., Margherita Pizza"
+                placeholder={t('placeholders.itemName')}
             />
           </div>
 
           <div>
-              <Label htmlFor="slug">URL Slug</Label>
+              <Label htmlFor="slug">{t('urlSlug')}</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => handleInputChange('slug', e.target.value)}
-                placeholder="e.g., margherita-pizza"
+                placeholder={t('placeholders.urlSlug')}
               />
           </div>
           
           <div>
-              <Label htmlFor="description">Short Description</Label>
+              <Label htmlFor="description">{t('shortDescription')}</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Brief description for menu display"
+                placeholder={t('placeholders.shortDescription')}
               rows={3}
               />
           </div>
 
             <div>
-              <Label htmlFor="long_description">Detailed Description</Label>
+              <Label htmlFor="long_description">{t('detailedDescription')}</Label>
               <Textarea
                 id="long_description"
                 value={formData.long_description}
                 onChange={(e) => handleInputChange('long_description', e.target.value)}
-                placeholder="Detailed description for item page"
+                placeholder={t('placeholders.detailedDescription')}
                 rows={4}
               />
             </div>

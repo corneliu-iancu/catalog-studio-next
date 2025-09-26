@@ -67,6 +67,13 @@ export function TemplateEngine({ menuData, className }: TemplateEngineProps) {
         '--menu-background': '#fefce8',
         '--menu-text': '#365314',
       },
+      custom: {
+        '--menu-primary': menuData.display_settings.custom_colors?.primary || '#374151',
+        '--menu-secondary': menuData.display_settings.custom_colors?.secondary || '#6b7280',
+        '--menu-accent': menuData.display_settings.custom_colors?.accent || '#059669',
+        '--menu-background': menuData.display_settings.custom_colors?.background || '#ffffff',
+        '--menu-text': menuData.display_settings.custom_colors?.text || '#111827',
+      },
     };
 
     return themeColors[theme] || themeColors.neutral;
@@ -112,38 +119,69 @@ export function MenuHeader({
   showDescription?: boolean;
 }) {
   return (
-    <header className="text-center py-8 px-4">
-      {showLogo && restaurant.logo_url && (
-        <div className="mb-4">
-          <img 
-            src={restaurant.logo_url} 
-            alt={`${restaurant.name} logo`}
-            className="h-16 w-auto mx-auto"
-          />
+    <header className="bg-white py-8">
+      <div className="max-w-4xl mx-auto px-6">
+        
+        {/* Vintage Restaurant Banner */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-6">
+            {/* Left decorative element */}
+            <div className="flex-1 flex justify-end pr-4">
+              <div className="w-12 h-8 bg-gray-800 rounded-full"></div>
+            </div>
+            
+            {/* Restaurant Banner */}
+            <div className="bg-gray-800 text-white px-8 py-3 rounded-full">
+              <span className="text-xl font-bold tracking-wider uppercase">RESTAURANT</span>
+            </div>
+            
+            {/* Right decorative element */}
+            <div className="flex-1 flex justify-start pl-4">
+              <div className="w-12 h-8 bg-gray-800 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Food & Drinks with decorative lines */}
+          <div className="flex items-center justify-center mb-8">
+            <div className="flex-1 border-t-2 border-gray-800 max-w-24"></div>
+            <div className="flex-1 border-t border-gray-800 max-w-24"></div>
+            <div className="flex-1 border-t-2 border-gray-800 max-w-24"></div>
+            <span className="px-6 text-lg font-semibold tracking-widest uppercase">FOOD & DRINKS</span>
+            <div className="flex-1 border-t-2 border-gray-800 max-w-24"></div>
+            <div className="flex-1 border-t border-gray-800 max-w-24"></div>
+            <div className="flex-1 border-t-2 border-gray-800 max-w-24"></div>
+          </div>
+
+          {/* MENU Title */}
+          <h1 className="text-6xl md:text-7xl font-bold text-gray-800 tracking-wider mb-8">
+            MENU
+          </h1>
         </div>
-      )}
-      
-      <h1 className="text-4xl md:text-5xl font-bold text-[var(--menu-primary)] mb-2">
-        {restaurant.name}
-      </h1>
-      
-      {restaurant.cuisine && (
-        <p className="text-lg text-[var(--menu-secondary)] mb-4">
-          {restaurant.cuisine} Cuisine
-        </p>
-      )}
-      
-      {showDescription && (restaurant.description || menu.description) && (
-        <p className="text-lg max-w-2xl mx-auto text-[var(--menu-text)]/80">
-          {restaurant.description || menu.description}
-        </p>
-      )}
-      
-      {restaurant.address && (
-        <p className="text-sm text-[var(--menu-text)]/60 mt-4">
-          📍 {restaurant.address}
-        </p>
-      )}
+
+        {/* Restaurant Info */}
+        <div className="text-center text-gray-600 space-y-2">
+          <h2 className="text-2xl font-semibold text-gray-800">{restaurant.name}</h2>
+          
+          {restaurant.cuisine && (
+            <p className="text-lg italic">{restaurant.cuisine} Cuisine</p>
+          )}
+          
+          {showDescription && (restaurant.description || menu.description) && (
+            <p className="text-base max-w-2xl mx-auto mt-4">
+              {restaurant.description || menu.description}
+            </p>
+          )}
+
+          {restaurant.address && (
+            <p className="text-sm">{restaurant.address}</p>
+          )}
+          
+          {restaurant.phone && (
+            <p className="text-sm">{restaurant.phone}</p>
+          )}
+        </div>
+        
+      </div>
     </header>
   );
 }

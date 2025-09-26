@@ -26,6 +26,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getSupportedCurrencies, type SupportedCurrency } from '@/lib/utils/currency';
 import { Loader2 } from 'lucide-react';
 
 type Menu = Database['public']['Tables']['menus']['Row'];
@@ -35,6 +37,7 @@ const menuSchema = z.object({
   slug: z.string().min(1, 'Slug is required').max(255, 'Slug too long')
     .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
   description: z.string().max(1000, 'Description too long').optional().or(z.literal('')),
+  currency: z.enum(['RON', 'EUR', 'USD']),
   isActive: z.boolean(),
   isDefault: z.boolean(),
   metaTitle: z.string().max(255, 'Meta title too long').optional().or(z.literal('')),
@@ -67,6 +70,7 @@ export default function CreateMenuDialog({
       name: '',
       slug: '',
       description: '',
+      currency: 'RON',
       isActive: true,
       isDefault: isFirstMenu, // First menu is automatically default
       metaTitle: '',
@@ -125,6 +129,7 @@ export default function CreateMenuDialog({
           name: data.name,
           slug: data.slug,
           description: data.description || null,
+          currency: data.currency,
           is_active: data.isActive,
           is_default: data.isDefault,
           meta_title: data.metaTitle || null,
@@ -215,6 +220,34 @@ export default function CreateMenuDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {getSupportedCurrencies().map((currency) => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.symbol} {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Currency for menu item prices
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

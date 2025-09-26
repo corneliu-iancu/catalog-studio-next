@@ -14,6 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getSupportedCurrencies, type SupportedCurrency } from '@/lib/utils/currency';
 import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -49,6 +51,7 @@ function MenuManagementContent() {
     name: '',
     slug: '',
     description: '',
+    currency: 'RON' as SupportedCurrency,
     is_active: true,
     is_default: false
   });
@@ -116,6 +119,7 @@ function MenuManagementContent() {
         name: selectedMenu.name || '',
         slug: selectedMenu.slug || '',
         description: selectedMenu.description || '',
+        currency: (selectedMenu.currency as SupportedCurrency) || 'RON',
         is_active: selectedMenu.is_active ?? true,
         is_default: selectedMenu.is_default ?? false
       });
@@ -173,6 +177,7 @@ function MenuManagementContent() {
         name: selectedMenu.name || '',
         slug: selectedMenu.slug || '',
         description: selectedMenu.description || '',
+        currency: (selectedMenu.currency as SupportedCurrency) || 'RON',
         is_active: selectedMenu.is_active ?? true,
         is_default: selectedMenu.is_default ?? false
       });
@@ -483,6 +488,33 @@ function MenuManagementContent() {
                 ) : (
                   <p className="text-sm">
                     {selectedMenu.description || 'No description provided'}
+                  </p>
+                )}
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Currency</Label>
+                {isEditing ? (
+                  <Select 
+                    value={formData.currency} 
+                    onValueChange={(value) => handleInputChange('currency', value as SupportedCurrency)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getSupportedCurrencies().map((currency) => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.symbol} {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <p className="text-sm">
+                    {getSupportedCurrencies().find(c => c.value === selectedMenu.currency)?.label || 'Romanian Leu (RON)'}
                   </p>
                 )}
               </div>

@@ -41,7 +41,7 @@ export class MenuShowcaseService {
       // First, fetch the default menu
       const { data: menuData, error: menuError } = await this.supabase
         .from('menus')
-        .select('id, name, description')
+        .select('id, name, description, currency')
         .eq('restaurant_id', restaurant.id)
         .eq('is_active', true)
         .eq('is_default', true)
@@ -104,22 +104,54 @@ export class MenuShowcaseService {
       }
 
       // Transform the data structure
+      console.log('Raw categories data:', JSON.stringify(categoriesData, null, 2));
+      
       const categories = (categoriesData || [])
-        .map(category => ({
-          id: category.id,
-          name: category.name,
-          slug: category.slug,
-          description: category.description,
-          image_url: category.image_url,
-          sort_order: category.sort_order,
-          items: (category.category_menu_items || [])
-            .map(cmi => ({
-              ...cmi.menu_items,
-              sort_order: cmi.sort_order
-            }))
-            .filter(item => item.id) // Filter out null items
-            .sort((a, b) => a.sort_order - b.sort_order)
-        }))
+        .map(category => {
+          console.log(`Processing category: ${category.name}`);
+          console.log('category_menu_items:', category.category_menu_items);
+          
+          const items = (category.category_menu_items || [])
+            .filter(cmi => {
+              console.log('cmi:', cmi);
+              console.log('cmi.menu_items type:', typeof cmi.menu_items);
+              console.log('cmi.menu_items isArray:', Array.isArray(cmi.menu_items));
+              console.log('cmi.menu_items:', cmi.menu_items);
+              return cmi.menu_items;
+            })
+            .map(cmi => {
+              // Handle both object and array cases
+              const menuItem = Array.isArray(cmi.menu_items) ? cmi.menu_items[0] : cmi.menu_items;
+              return {
+                id: menuItem.id,
+                name: menuItem.name,
+                slug: menuItem.slug,
+                description: menuItem.description,
+                long_description: menuItem.long_description,
+                price: menuItem.price,
+                discount_price: menuItem.discount_price,
+                image_url: menuItem.image_url,
+                ingredients: menuItem.ingredients,
+                allergens: menuItem.allergens,
+                spice_level: menuItem.spice_level,
+                is_featured: menuItem.is_featured,
+                sort_order: cmi.sort_order
+              };
+            })
+            .sort((a, b) => a.sort_order - b.sort_order);
+            
+          console.log(`Items for ${category.name}:`, items);
+          
+          return {
+            id: category.id,
+            name: category.name,
+            slug: category.slug,
+            description: category.description,
+            image_url: category.image_url,
+            sort_order: category.sort_order,
+            items
+          };
+        })
         .sort((a, b) => a.sort_order - b.sort_order);
 
       // Get display settings (with defaults)
@@ -131,6 +163,7 @@ export class MenuShowcaseService {
           id: menuData.id,
           name: menuData.name,
           description: menuData.description,
+          currency: menuData.currency,
           categories
         },
         display_settings: displaySettings
@@ -240,6 +273,7 @@ export class MenuShowcaseService {
 
   /**
    * Generate mock data for development/preview
+   * todo: remove this after testing...
    */
   generateMockMenuData(restaurantSlug: string): PublicMenuData {
     return {
@@ -267,6 +301,7 @@ export class MenuShowcaseService {
         id: 'mock-menu-id',
         name: 'Main Menu',
         description: 'Our carefully crafted selection of dishes made with the finest ingredients.',
+        currency: 'USD',
         categories: [
           {
             id: 'appetizers',

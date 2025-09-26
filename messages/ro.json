@@ -1,0 +1,100 @@
+{
+  "navigation": {
+    "overview": "Prezentare generală",
+    "restaurantProfile": "Profilul Restaurantului", 
+    "menuManagement": "Gestionarea Meniurilor",
+    "menuTemplate": "Șablonul Meniului",
+    "sharingQr": "Partajare și QR",
+    "analytics": "Analize",
+    "settings": "Setări",
+    "descriptions": {
+      "overview": "Prezentarea generală a panoului și acțiuni rapide",
+      "restaurantProfile": "Gestionează informațiile și setările restaurantului",
+      "menuManagement": "Creează și gestionează elementele meniului",
+      "menuTemplate": "Personalizează aspectul și layout-ul meniului",
+      "sharingQr": "Generează coduri QR și linkuri de partajare",
+      "analytics": "Vezi performanța și informațiile",
+      "settings": "Setările aplicației și contului"
+    },
+    "soon": "Curând",
+    "createRestaurant": "Creează un restaurant pentru a accesa toate funcțiile"
+  },
+  "forms": {
+    "itemName": "Numele Articolului",
+    "urlSlug": "URL Slug", 
+    "shortDescription": "Descriere Scurtă",
+    "detailedDescription": "Descriere Detaliată",
+    "basicInformation": "Informații de Bază",
+    "pricingDetails": "Prețuri și Detalii",
+    "ingredients": "Ingrediente",
+    "spiceLevel": "Nivelul de Condimente",
+    "placeholders": {
+      "itemName": "ex., Pizza Margherita",
+      "urlSlug": "ex., pizza-margherita",
+      "shortDescription": "Descriere scurtă pentru afișarea în meniu",
+      "detailedDescription": "Descriere detaliată pentru pagina articolului",
+      "optional": "Opțional",
+      "selectCategory": "Selectează o categorie",
+      "selectSpiceLevel": "Selectează nivelul de condimente",
+      "searchIngredients": "Tastează pentru a căuta ingrediente..."
+    },
+    "descriptions": {
+      "basicInformation": "Detalii principale despre acest element de meniu",
+      "pricingDetails": "Prețuri și detalii suplimentare ale articolului"
+    }
+  },
+  "common": {
+    "save": "Salvează",
+    "cancel": "Anulează", 
+    "delete": "Șterge",
+    "edit": "Editează",
+    "create": "Creează",
+    "loading": "Se încarcă...",
+    "soon": "Curând",
+    "active": "Activ",
+    "inactive": "Inactiv"
+  },
+  "cards": {
+    "titles": {
+      "basicInformation": "Informații de Bază",
+      "pricingDetails": "Prețuri și Detalii"
+    }
+  },
+  "dashboard": {
+    "title": "Panou de Control",
+    "welcome": "Bun venit înapoi! Iată o prezentare generală a {restaurantName}.",
+    "loading": "Se încarcă panoul de control...",
+    "stats": {
+      "totalMenuItems": "Total Elemente Meniu",
+      "categories": "Categorii", 
+      "menuViews": "Vizualizări Meniu",
+      "activeSince": "Activ Din",
+      "fromLastMonth": "+{count} din luna trecută",
+      "restaurantCreated": "Restaurant creat",
+      "active": "active"
+    },
+    "quickActions": {
+      "addMenuItem": "Adaugă Element Meniu",
+      "addMenuItemDesc": "Creează un nou fel de mâncare pentru meniul tău",
+      "addCategory": "Adaugă Categorie", 
+      "addCategoryDesc": "Organizează-ți meniul cu categorii",
+      "manageMenu": "Gestionează Meniul",
+      "manageMenuDesc": "Editează elemente și categorii existente",
+      "viewPublicMenu": "Vezi Meniul Public",
+      "viewPublicMenuDesc": "Vezi cum văd clienții meniul tău"
+    },
+    "restaurantOverview": {
+      "title": "Prezentare Generală Restaurant",
+      "description": "Informații de bază despre restaurantul tău",
+      "url": "URL:",
+      "lastUpdated": "Ultima actualizare:",
+      "editProfile": "Editează Profilul Restaurantului"
+    },
+    "recentActivity": {
+      "title": "Activitate Recentă",
+      "description": "Ultimele modificări ale restaurantului tău", 
+      "restaurantCreated": "Restaurant creat",
+      "startAdding": "Începe să adaugi elemente de meniu pentru a vedea mai multă activitate aici."
+    }
+  }
+}

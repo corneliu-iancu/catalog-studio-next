@@ -75,6 +75,7 @@ export interface PublicMenuData {
     id: string;
     name: string;
     description?: string;
+    currency?: string;
     categories: MenuCategory[];
   };
   display_settings: MenuDisplaySettings;

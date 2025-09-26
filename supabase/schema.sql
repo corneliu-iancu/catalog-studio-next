@@ -33,7 +33,7 @@ CREATE TABLE restaurants (
   
   -- Settings
   settings JSONB DEFAULT '{
-    "currency": "USD",
+    "currency": "RON",
     "showNutrition": true,
     "showAllergens": true,
     "showIngredients": true
@@ -62,6 +62,7 @@ CREATE TABLE menus (
   end_date DATE,    -- Optional end date for seasonal menus
 
   -- Display settings
+  currency VARCHAR(3) DEFAULT 'RON' CHECK (currency IN ('RON', 'EUR', 'USD')),
   sort_order INTEGER DEFAULT 0,
 
   -- SEO fields

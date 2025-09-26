@@ -1,0 +1,100 @@
+{
+  "navigation": {
+    "overview": "Resumen",
+    "restaurantProfile": "Perfil del Restaurante", 
+    "menuManagement": "Gestión del Menú",
+    "menuTemplate": "Plantilla del Menú",
+    "sharingQr": "Compartir y QR",
+    "analytics": "Análisis",
+    "settings": "Configuración",
+    "soon": "Pronto",
+    "descriptions": {
+      "overview": "Resumen del panel y acciones rápidas",
+      "restaurantProfile": "Gestionar información y configuración del restaurante",
+      "menuManagement": "Crear y gestionar elementos del menú",
+      "menuTemplate": "Personalizar la apariencia y diseño del menú",
+      "sharingQr": "Generar códigos QR y enlaces para compartir",
+      "analytics": "Ver rendimiento e información",
+      "settings": "Configuración de aplicación y cuenta"
+    },
+    "createRestaurant": "Crea un restaurante para acceder a todas las funciones"
+  },
+  "forms": {
+    "itemName": "Nombre del Artículo",
+    "urlSlug": "URL Slug", 
+    "shortDescription": "Descripción Corta",
+    "detailedDescription": "Descripción Detallada",
+    "basicInformation": "Información Básica",
+    "pricingDetails": "Precios y Detalles",
+    "ingredients": "Ingredientes",
+    "spiceLevel": "Nivel de Picante",
+    "placeholders": {
+      "itemName": "ej., Pizza Margherita",
+      "urlSlug": "ej., pizza-margherita",
+      "shortDescription": "Breve descripción para mostrar en el menú",
+      "detailedDescription": "Descripción detallada para la página del artículo",
+      "optional": "Opcional",
+      "selectCategory": "Seleccionar una categoría",
+      "selectSpiceLevel": "Seleccionar nivel de picante",
+      "searchIngredients": "Escribe para buscar ingredientes..."
+    },
+    "descriptions": {
+      "basicInformation": "Detalles principales sobre este elemento del menú",
+      "pricingDetails": "Precios y detalles adicionales del artículo"
+    }
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar", 
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "loading": "Cargando...",
+    "soon": "Pronto",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "cards": {
+    "titles": {
+      "basicInformation": "Información Básica",
+      "pricingDetails": "Precios y Detalles"
+    }
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "welcome": "¡Bienvenido de vuelta! Aquí tienes un resumen de {restaurantName}.",
+    "loading": "Cargando panel de control...",
+    "stats": {
+      "totalMenuItems": "Total de Elementos del Menú",
+      "categories": "Categorías", 
+      "menuViews": "Visualizaciones del Menú",
+      "activeSince": "Activo Desde",
+      "fromLastMonth": "+{count} desde el mes pasado",
+      "restaurantCreated": "Restaurante creado",
+      "active": "activas"
+    },
+    "quickActions": {
+      "addMenuItem": "Agregar Elemento del Menú",
+      "addMenuItemDesc": "Crear un nuevo plato para tu menú",
+      "addCategory": "Agregar Categoría", 
+      "addCategoryDesc": "Organiza tu menú con categorías",
+      "manageMenu": "Gestionar Menú",
+      "manageMenuDesc": "Editar elementos y categorías existentes",
+      "viewPublicMenu": "Ver Menú Público",
+      "viewPublicMenuDesc": "Ve cómo los clientes ven tu menú"
+    },
+    "restaurantOverview": {
+      "title": "Resumen del Restaurante",
+      "description": "Información básica sobre tu restaurante",
+      "url": "URL:",
+      "lastUpdated": "Última actualización:",
+      "editProfile": "Editar Perfil del Restaurante"
+    },
+    "recentActivity": {
+      "title": "Actividad Reciente",
+      "description": "Últimos cambios en tu restaurante", 
+      "restaurantCreated": "Restaurante creado",
+      "startAdding": "Comienza agregando elementos del menú para ver más actividad aquí."
+    }
+  }
+}

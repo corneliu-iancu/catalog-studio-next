@@ -1,6 +1,7 @@
 'use client';
 
 import { PublicMenuData } from '@/lib/types/templates';
+import { formatPrice, type SupportedCurrency } from '@/lib/utils/currency';
 
 import { TemplateWrapper, MenuHeader, CategorySection, MenuItem } from '../template-engine';
 
@@ -11,108 +12,135 @@ interface ClassicTemplateProps {
 export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
   const { restaurant, menu, display_settings } = menuData;
 
+  // Get menu currency or default to USD
+  const menuCurrency = (menu.currency as SupportedCurrency) || 'USD';
+
+
   return (
-    <TemplateWrapper className="classic-template">
-      {/* Header */}
-      <MenuHeader 
-        restaurant={restaurant} 
-        menu={menu}
-        showLogo={true}
-        showDescription={true}
-      />
+    <TemplateWrapper className="classic-template bg-gray-50">
+      {/* Decorative Border Container */}
+      <div className="max-w-5xl mx-auto p-8">
+        <div className="bg-white border-4 border-gray-800 relative">
+          {/* Corner decorations */}
+          <div className="absolute -top-2 -left-2 w-8 h-8 bg-gray-800"></div>
+          <div className="absolute -top-2 -right-2 w-8 h-8 bg-gray-800"></div>
+          <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-gray-800"></div>
+          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gray-800"></div>
 
-      {/* Menu Content */}
-      <main className="max-w-4xl mx-auto px-4 pb-12">
-        {menu.categories.map((category) => (
-          <CategorySection 
-            key={category.id} 
-            category={category}
-            showDescription={display_settings.show_descriptions}
-          >
-            <div className="space-y-4">
-              {category.items.map((item) => (
-                <div key={item.id} className="border-b border-[var(--menu-text)]/10 pb-4 last:border-b-0">
-                  <MenuItem
-                    item={item}
-                    showImage={display_settings.show_images}
-                    showDescription={display_settings.show_descriptions}
-                    showPrice={display_settings.show_prices}
-                    showAllergens={display_settings.show_allergens}
-                    showSpiceLevel={display_settings.show_spice_levels}
-                    layout="horizontal"
-                  />
-                </div>
-              ))}
-            </div>
-          </CategorySection>
-        ))}
-      </main>
+          {/* Header */}
+          <MenuHeader 
+            restaurant={restaurant} 
+            menu={menu}
+            showLogo={false}
+            showDescription={true}
+          />
 
-      {/* Footer */}
-      <footer className="bg-[var(--menu-primary)]/5 py-8 mt-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h3 className="text-xl font-semibold text-[var(--menu-primary)] mb-4">
-            Visit Us
-          </h3>
-          
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            {restaurant.address && (
-              <div>
-                <h4 className="font-medium mb-2">Address</h4>
-                <p className="text-[var(--menu-text)]/70">{restaurant.address}</p>
-              </div>
-            )}
+          {/* Main Menu Content */}
+          <main className="px-12 pb-8">
             
-            {restaurant.phone && (
-              <div>
-                <h4 className="font-medium mb-2">Phone</h4>
-                <p className="text-[var(--menu-text)]/70">{restaurant.phone}</p>
-              </div>
-            )}
-            
-            {restaurant.hours && (
-              <div>
-                <h4 className="font-medium mb-2">Hours</h4>
-                <div className="text-[var(--menu-text)]/70">
-                  {Object.entries(restaurant.hours).map(([day, hours]) => (
-                    <div key={day} className="flex justify-between">
-                      <span>{day}:</span>
-                      <span>{hours}</span>
+            {/* Categories - Each with Two Column Layout */}
+            {menu.categories.map((category, categoryIndex) => (
+              <div key={category.id} className="mb-16">
+                
+                {/* Category Header */}
+                <div className="text-center mb-8">
+                  <div className="flex items-center justify-center">
+                    <div className="w-12 h-8 bg-gray-800 rounded-full mr-4"></div>
+                    <div className="bg-gray-800 text-white px-6 py-2 rounded-full">
+                      <span className="text-lg font-bold tracking-wider uppercase">{category.name}</span>
                     </div>
-                  ))}
+                    <div className="w-12 h-8 bg-gray-800 rounded-full ml-4"></div>
+                  </div>
+                </div>
+
+                {/* Category Items in Two Columns */}
+                <div className="relative">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    
+                    {/* Left Column */}
+                    <div className="space-y-4">
+                      {category.items
+                        .filter((_, index) => index % 2 === 0)
+                        .map((item) => (
+                          <div key={item.id} className="mb-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="px-2 h-8 bg-gray-800 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                                  {formatPrice(item.price, menuCurrency)}
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="font-bold text-lg uppercase tracking-wide text-gray-800">{item.name}</h3>
+                                  <div className="border-b border-dotted border-gray-400 my-1"></div>
+                                  {display_settings.show_descriptions && (
+                                    <p className="text-sm text-gray-600 italic mt-1">
+                                      {item.description.length > 100 
+                                        ? `${item.description.substring(0, 100)}...` 
+                                        : item.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-4">
+                      {category.items
+                        .filter((_, index) => index % 2 === 1)
+                        .map((item) => (
+                          <div key={item.id} className="mb-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="px-2 h-8 bg-gray-800 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                                  {formatPrice(item.price, menuCurrency)}
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="font-bold text-lg uppercase tracking-wide text-gray-800">{item.name}</h3>
+                                  <div className="border-b border-dotted border-gray-400 my-1"></div>
+                                  {display_settings.show_descriptions && (
+                                    <p className="text-sm text-gray-600 italic mt-1">
+                                      {item.description.length > 100 
+                                        ? `${item.description.substring(0, 100)}...` 
+                                        : item.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  {/* Vertical Dotted Line for each category */}
+                  {category.items.length > 1 && (
+                    <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px border-l border-dotted border-gray-400 transform -translate-x-1/2"></div>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
+            ))}
+
+          </main>
         </div>
-      </footer>
+      </div>
 
       {/* Custom Styles for Classic Template */}
       <style jsx>{`
         .classic-template {
           font-family: 'Georgia', serif;
+          min-height: 100vh;
         }
         
-        .classic-template h1 {
+        .classic-template h1, .classic-template h2, .classic-template h3 {
           font-family: 'Georgia', serif;
-          letter-spacing: -0.02em;
-        }
-        
-        .classic-template h2 {
-          font-family: 'Georgia', serif;
-          border-bottom: 2px solid var(--menu-primary);
-          padding-bottom: 0.5rem;
-          display: inline-block;
-        }
-        
-        .classic-template .menu-item {
-          transition: all 0.2s ease;
-        }
-        
-        .classic-template .menu-item:hover {
-          transform: translateX(4px);
-          background-color: var(--menu-background);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
       `}</style>
     </TemplateWrapper>

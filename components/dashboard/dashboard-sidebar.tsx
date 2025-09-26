@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import {
   BarChart3,
@@ -14,49 +15,50 @@ import {
 } from 'lucide-react';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 
-const navigation = [
+// Navigation items with translation keys
+const getNavigation = (t: any) => [
   {
-    name: 'Overview',
+    nameKey: 'overview',
     href: '/dashboard',
     icon: Home,
-    description: 'Dashboard overview and quick actions',
+    descriptionKey: 'descriptions.overview',
   },
   {
-    name: 'Restaurant Profile',
+    nameKey: 'restaurantProfile',
     href: '/dashboard/restaurant',
     icon: Store,
-    description: 'Manage restaurant information and settings',
+    descriptionKey: 'descriptions.restaurantProfile',
   },
   {
-    name: 'Menu Management',
+    nameKey: 'menuManagement',
     href: '/dashboard/menu',
     icon: UtensilsCrossed,
-    description: 'Create and manage your menu items',
+    descriptionKey: 'descriptions.menuManagement',
   },
   {
-    name: 'Menu Template',
+    nameKey: 'menuTemplate',
     href: '/dashboard/template',
     icon: Palette,
-    description: 'Customize your menu appearance and layout',
+    descriptionKey: 'descriptions.menuTemplate',
   },
   {
-    name: 'Sharing & QR',
+    nameKey: 'sharingQr',
     href: '/dashboard/sharing',
     icon: QrCode,
-    description: 'Generate QR codes and sharing links',
+    descriptionKey: 'descriptions.sharingQr',
   },
   {
-    name: 'Analytics',
+    nameKey: 'analytics',
     href: '/dashboard/analytics',
     icon: BarChart3,
-    description: 'View performance and insights',
+    descriptionKey: 'descriptions.analytics',
     disabled: true, // Not implemented yet
   },
   {
-    name: 'Settings',
+    nameKey: 'settings',
     href: '/dashboard/settings',
     icon: Settings,
-    description: 'Application and account settings',
+    descriptionKey: 'descriptions.settings',
     requiresRestaurant: false, // This page doesn't require a restaurant
   },
 ];
@@ -68,9 +70,13 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ className }: DashboardSidebarProps) {
   const pathname = usePathname();
   const { hasRestaurants, selectedRestaurant } = useRestaurant();
+  const t = useTranslations('navigation');
 
   // Determine if navigation items should be disabled
   const isDisabled = !hasRestaurants || !selectedRestaurant;
+  
+  // Get navigation items with translations
+  const navigation = getNavigation(t);
 
   return (
     <div className={cn('flex h-full w-64 flex-col bg-muted/10', className)}>
@@ -83,7 +89,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
             
             return (
               <Link
-                key={item.name}
+                key={item.nameKey}
                 href={itemDisabled ? '#' : item.href}
                 className={cn(
                   'group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors',
@@ -113,16 +119,16 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span>{item.name}</span>
+                    <span>{t(item.nameKey)}</span>
                     {item.disabled && (
                       <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded">
-                        Soon
+                        {t('soon')}
                       </span>
                     )}
                   </div>
                   {!isActive && (
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                      {item.description}
+                      {t(item.descriptionKey)}
                     </p>
                   )}
                 </div>
@@ -136,7 +142,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
           <div className="mx-2 mt-4 p-3 bg-muted rounded-lg border border-dashed">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Store className="h-4 w-4" />
-              <span>Create a restaurant to access all features</span>
+              <span>{t('createRestaurant')}</span>
             </div>
           </div>
         )}

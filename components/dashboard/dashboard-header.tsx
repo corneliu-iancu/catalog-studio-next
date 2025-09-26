@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { RestaurantSelector } from './restaurant-selector';
+import { LanguageSelector } from './language-selector';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -70,8 +71,11 @@ export function DashboardHeader({ user, onCreateRestaurant }: DashboardHeaderPro
           <RestaurantSelector onCreateRestaurant={onCreateRestaurant} />
         </div>
 
-        {/* Right side - Notifications and User Menu */}
+        {/* Right side - Language, Notifications and User Menu */}
         <div className="flex items-center space-x-4">
+          {/* Language Selector */}
+          <LanguageSelector />
+          
           {/* Notifications */}
           <Button variant="ghost" size="sm" className="relative">
             <Bell className="h-4 w-4" />

@@ -1,0 +1,100 @@
+{
+  "navigation": {
+    "overview": "Overview",
+    "restaurantProfile": "Restaurant Profile", 
+    "menuManagement": "Menu Management",
+    "menuTemplate": "Menu Template",
+    "sharingQr": "Sharing & QR",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "soon": "Soon",
+    "descriptions": {
+      "overview": "Dashboard overview and quick actions",
+      "restaurantProfile": "Manage restaurant information and settings",
+      "menuManagement": "Create and manage your menu items",
+      "menuTemplate": "Customize your menu appearance and layout",
+      "sharingQr": "Generate QR codes and sharing links",
+      "analytics": "View performance and insights",
+      "settings": "Application and account settings"
+    },
+    "createRestaurant": "Create a restaurant to access all features"
+  },
+  "forms": {
+    "itemName": "Item Name",
+    "urlSlug": "URL Slug", 
+    "shortDescription": "Short Description",
+    "detailedDescription": "Detailed Description",
+    "basicInformation": "Basic Information",
+    "pricingDetails": "Pricing & Details",
+    "ingredients": "Ingredients",
+    "spiceLevel": "Spice Level",
+    "placeholders": {
+      "itemName": "e.g., Margherita Pizza",
+      "urlSlug": "e.g., margherita-pizza",
+      "shortDescription": "Brief description for menu display",
+      "detailedDescription": "Detailed description for item page",
+      "optional": "Optional",
+      "selectCategory": "Select a category",
+      "selectSpiceLevel": "Select spice level",
+      "searchIngredients": "Type to search ingredients..."
+    },
+    "descriptions": {
+      "basicInformation": "Core details about this menu item",
+      "pricingDetails": "Pricing and additional item details"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel", 
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "soon": "Soon",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "cards": {
+    "titles": {
+      "basicInformation": "Basic Information",
+      "pricingDetails": "Pricing & Details"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back! Here's an overview of {restaurantName}.",
+    "loading": "Loading dashboard...",
+    "stats": {
+      "totalMenuItems": "Total Menu Items",
+      "categories": "Categories", 
+      "menuViews": "Menu Views",
+      "activeSince": "Active Since",
+      "fromLastMonth": "+{count} from last month",
+      "restaurantCreated": "Restaurant created",
+      "active": "active"
+    },
+    "quickActions": {
+      "addMenuItem": "Add Menu Item",
+      "addMenuItemDesc": "Create a new dish for your menu",
+      "addCategory": "Add Category", 
+      "addCategoryDesc": "Organize your menu with categories",
+      "manageMenu": "Manage Menu",
+      "manageMenuDesc": "Edit existing items and categories",
+      "viewPublicMenu": "View Public Menu",
+      "viewPublicMenuDesc": "See how customers view your menu"
+    },
+    "restaurantOverview": {
+      "title": "Restaurant Overview",
+      "description": "Basic information about your restaurant",
+      "url": "URL:",
+      "lastUpdated": "Last updated:",
+      "editProfile": "Edit Restaurant Profile"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "description": "Latest changes to your restaurant", 
+      "restaurantCreated": "Restaurant created",
+      "startAdding": "Start adding menu items to see more activity here."
+    }
+  }
+}

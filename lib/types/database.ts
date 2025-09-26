@@ -91,6 +91,7 @@ export type Database = {
           active_days: number[] | null
           start_date: string | null
           end_date: string | null
+          currency: string | null
           sort_order: number | null
           meta_title: string | null
           meta_description: string | null
@@ -112,6 +113,7 @@ export type Database = {
           active_days?: number[] | null
           start_date?: string | null
           end_date?: string | null
+          currency?: string | null
           sort_order?: number | null
           meta_title?: string | null
           meta_description?: string | null
@@ -133,6 +135,7 @@ export type Database = {
           active_days?: number[] | null
           start_date?: string | null
           end_date?: string | null
+          currency?: string | null
           sort_order?: number | null
           meta_title?: string | null
           meta_description?: string | null

@@ -6,6 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { 
   Store, 
   Globe, 
@@ -16,14 +19,100 @@ import {
   Edit,
   ExternalLink,
   User,
-  UtensilsCrossed
+  UtensilsCrossed,
+  Save,
+  X
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getCurrentDomain } from '@/lib/config';
+import { toast } from 'sonner';
 
 function RestaurantProfileContent() {
-  const { selectedRestaurant, isLoading } = useRestaurant();
+  const { selectedRestaurant, isLoading, refreshRestaurants } = useRestaurant();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    cuisine: '',
+    owner_name: '',
+    email: '',
+    phone: '',
+    website: '',
+    address: ''
+  });
+
+  useEffect(() => {
+    if (selectedRestaurant) {
+      setFormData({
+        name: selectedRestaurant.name || '',
+        slug: selectedRestaurant.slug || '',
+        description: selectedRestaurant.description || '',
+        cuisine: selectedRestaurant.cuisine || '',
+        owner_name: selectedRestaurant.owner_name || '',
+        email: selectedRestaurant.email || '',
+        phone: selectedRestaurant.phone || '',
+        website: selectedRestaurant.website || '',
+        address: selectedRestaurant.address || ''
+      });
+    }
+  }, [selectedRestaurant]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!selectedRestaurant) return;
+
+    setIsSaving(true);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('restaurants')
+        .update(formData)
+        .eq('id', selectedRestaurant.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Restaurant profile updated successfully');
+      setIsEditing(false);
+      
+      // Update the restaurant context with the new data
+      if (refreshRestaurants) {
+        await refreshRestaurants();
+      }
+    } catch (error) {
+      console.error('Error updating restaurant:', error);
+      toast.error('Failed to update restaurant profile');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (selectedRestaurant) {
+      setFormData({
+        name: selectedRestaurant.name || '',
+        slug: selectedRestaurant.slug || '',
+        description: selectedRestaurant.description || '',
+        cuisine: selectedRestaurant.cuisine || '',
+        owner_name: selectedRestaurant.owner_name || '',
+        email: selectedRestaurant.email || '',
+        phone: selectedRestaurant.phone || '',
+        website: selectedRestaurant.website || '',
+        address: selectedRestaurant.address || ''
+      });
+    }
+    setIsEditing(false);
+  };
 
   if (isLoading) {
     return (
@@ -65,10 +154,25 @@ function RestaurantProfileContent() {
             Manage your restaurant information and settings
           </p>
         </div>
-        <Button>
-          <Edit className="mr-2 h-4 w-4" />
-          Edit Profile
-        </Button>
+        <div className="flex space-x-2">
+          {isEditing ? (
+            <>
+              <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={isSaving}>
+                <Save className="mr-2 h-4 w-4" />
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setIsEditing(true)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Profile
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -85,46 +189,79 @@ function RestaurantProfileContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Restaurant Name</label>
-              <p className="text-lg font-semibold">{selectedRestaurant.name}</p>
+              <Label className="text-sm font-medium text-muted-foreground">Restaurant Name</Label>
+              {isEditing ? (
+                <Input
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter restaurant name"
+                />
+              ) : (
+                <p className="text-lg font-semibold">{selectedRestaurant.name}</p>
+              )}
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">URL Slug</label>
-              <div className="flex items-center space-x-2">
-                <p className="font-mono text-sm">{getCurrentDomain()}/{selectedRestaurant.slug}</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.open(`/${selectedRestaurant.slug}`, '_blank')}
-                  title="Open restaurant page in new tab"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
-              </div>
+              <Label className="text-sm font-medium text-muted-foreground">URL Slug</Label>
+              {isEditing ? (
+                <Input
+                  value={formData.slug}
+                  onChange={(e) => handleInputChange('slug', e.target.value)}
+                  placeholder="Enter URL slug"
+                />
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <p className="font-mono text-sm">{getCurrentDomain()}/{selectedRestaurant.slug}</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.open(`/${selectedRestaurant.slug}`, '_blank')}
+                    title="Open restaurant page in new tab"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Description</label>
-              <p className="text-sm">
-                {selectedRestaurant.description || 'No description provided'}
-              </p>
+              <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+              {isEditing ? (
+                <Textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Enter restaurant description"
+                  rows={3}
+                />
+              ) : (
+                <p className="text-sm">
+                  {selectedRestaurant.description || 'No description provided'}
+                </p>
+              )}
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Cuisine Type</label>
-              <div className="mt-1">
-                <Badge variant="secondary" className="flex items-center w-fit">
-                  <UtensilsCrossed className="mr-1 h-3 w-3" />
-                  {formatCuisineType(selectedRestaurant.cuisine)}
-                </Badge>
-              </div>
+              <Label className="text-sm font-medium text-muted-foreground">Cuisine Type</Label>
+              {isEditing ? (
+                <Input
+                  value={formData.cuisine}
+                  onChange={(e) => handleInputChange('cuisine', e.target.value)}
+                  placeholder="Enter cuisine type"
+                />
+              ) : (
+                <div className="mt-1">
+                  <Badge variant="secondary" className="flex items-center w-fit">
+                    <UtensilsCrossed className="mr-1 h-3 w-3" />
+                    {formatCuisineType(selectedRestaurant.cuisine)}
+                  </Badge>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -142,49 +279,84 @@ function RestaurantProfileContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Owner Name</label>
-              <p className="font-medium">{selectedRestaurant.owner_name}</p>
+              <Label className="text-sm font-medium text-muted-foreground">Owner Name</Label>
+              {isEditing ? (
+                <Input
+                  value={formData.owner_name}
+                  onChange={(e) => handleInputChange('owner_name', e.target.value)}
+                  placeholder="Enter owner name"
+                />
+              ) : (
+                <p className="font-medium">{selectedRestaurant.owner_name}</p>
+              )}
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <p className="text-sm">{selectedRestaurant.email}</p>
-              </div>
+              <Label className="text-sm font-medium text-muted-foreground">Email</Label>
+              {isEditing ? (
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="Enter email address"
+                />
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm">{selectedRestaurant.email}</p>
+                </div>
+              )}
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Phone</label>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <p className="text-sm">{selectedRestaurant.phone || 'Not provided'}</p>
-              </div>
+              <Label className="text-sm font-medium text-muted-foreground">Phone</Label>
+              {isEditing ? (
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="Enter phone number"
+                />
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm">{selectedRestaurant.phone || 'Not provided'}</p>
+                </div>
+              )}
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Website</label>
-              <div className="flex items-center space-x-2">
-                <Globe className="h-4 w-4 text-muted-foreground" />
-                {selectedRestaurant.website ? (
-                  <a 
-                    href={selectedRestaurant.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {selectedRestaurant.website}
-                  </a>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Not provided</p>
-                )}
-              </div>
+              <Label className="text-sm font-medium text-muted-foreground">Website</Label>
+              {isEditing ? (
+                <Input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => handleInputChange('website', e.target.value)}
+                  placeholder="Enter website URL"
+                />
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  {selectedRestaurant.website ? (
+                    <a 
+                      href={selectedRestaurant.website} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline"
+                    >
+                      {selectedRestaurant.website}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Not provided</p>
+                  )}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -202,10 +374,19 @@ function RestaurantProfileContent() {
           </CardHeader>
           <CardContent>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Address</label>
-              <p className="text-sm mt-1">
-                {selectedRestaurant.address || 'No address provided'}
-              </p>
+              <Label className="text-sm font-medium text-muted-foreground">Address</Label>
+              {isEditing ? (
+                <Textarea
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder="Enter full address"
+                  rows={3}
+                />
+              ) : (
+                <p className="text-sm mt-1">
+                  {selectedRestaurant.address || 'No address provided'}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -270,7 +451,7 @@ function RestaurantProfileContent() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
               <Edit className="mr-2 h-4 w-4" />
               Edit Basic Info
             </Button>

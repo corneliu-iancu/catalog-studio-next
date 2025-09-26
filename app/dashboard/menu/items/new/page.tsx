@@ -1,264 +1,483 @@
-import Link from 'next/link';
+'use client';
 
-export default function NewMenuItemPage() {
-  // TODO: Fetch categories for dropdown
-  const categories = [
-    { id: 1, name: 'Appetizers', slug: 'appetizers' },
-    { id: 2, name: 'Main Courses', slug: 'main-courses' },
-    { id: 3, name: 'Desserts', slug: 'desserts' },
-    { id: 4, name: 'Beverages', slug: 'beverages' }
-  ];
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Database } from '@/lib/types/database';
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft, Loader2, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { toast } from 'sonner';
+import { useMenu } from '@/lib/contexts/menu-context';
+
+type Category = Database['public']['Tables']['categories']['Row'];
+
+// Allergen options
+const ALLERGEN_OPTIONS = [
+  { value: 'dairy', label: 'Dairy' },
+  { value: 'gluten', label: 'Gluten' },
+  { value: 'nuts', label: 'Nuts' },
+  { value: 'eggs', label: 'Eggs' },
+  { value: 'soy', label: 'Soy' },
+  { value: 'shellfish', label: 'Shellfish' },
+  { value: 'fish', label: 'Fish' },
+  { value: 'sesame', label: 'Sesame' }
+];
+
+// Spice level options
+const SPICE_LEVELS = [
+  { value: 'mild', label: 'Mild' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'hot', label: 'Hot' },
+  { value: 'very-hot', label: 'Very Hot' }
+];
+
+function NewItemPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get('categoryId');
+  
+  const { selectedMenu } = useMenu();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    long_description: '',
+    price: '',
+    discount_price: '',
+    ingredients: '',
+    allergens: [] as string[],
+    spice_level: 'none',
+    is_active: true,
+    is_featured: false,
+    categoryId: categoryId || ''
+  });
+
+  const supabase = createClient();
+
+  // Fetch categories for the current menu
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!selectedMenu) return;
+      
+      try {
+        setLoading(true);
+        
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('menu_id', selectedMenu.id)
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+
+        setCategories(data || []);
+
+        // If categoryId is provided, find and set the category
+        if (categoryId && data) {
+          const category = data.find(c => c.id === categoryId);
+          if (category) {
+            setSelectedCategory(category);
+            setFormData(prev => ({ ...prev, categoryId }));
+          }
+        }
+        
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to load categories');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, [selectedMenu, categoryId, supabase]);
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Auto-generate slug from name
+    if (field === 'name') {
+      const slug = value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      setFormData(prev => ({ ...prev, slug }));
+    }
+  };
+
+  const handleAllergenToggle = (allergen: string) => {
+    setFormData(prev => ({
+      ...prev,
+      allergens: prev.allergens.includes(allergen)
+        ? prev.allergens.filter(a => a !== allergen)
+        : [...prev.allergens, allergen]
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!formData.categoryId) {
+      toast.error('Please select a category');
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast.error('Please enter an item name');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // Create the menu item
+      const { data: newItem, error: itemError } = await supabase
+        .from('menu_items')
+        .insert({
+          name: formData.name.trim(),
+          slug: formData.slug.trim(),
+          description: formData.description.trim(),
+          long_description: formData.long_description.trim() || null,
+          price: parseFloat(formData.price) || 0,
+          discount_price: formData.discount_price ? parseFloat(formData.discount_price) : null,
+          ingredients: formData.ingredients.trim() || null,
+          allergens: formData.allergens.length > 0 ? formData.allergens : null,
+          spice_level: formData.spice_level && formData.spice_level !== 'none' ? formData.spice_level : null,
+          is_active: formData.is_active,
+          is_featured: formData.is_featured
+        })
+        .select()
+        .single();
+
+      if (itemError) throw itemError;
+
+      // Link the item to the category
+      const { error: linkError } = await supabase
+        .from('category_menu_items')
+        .insert({
+          category_id: formData.categoryId,
+          menu_item_id: newItem.id,
+          sort_order: 1
+        });
+
+      if (linkError) {
+        // Try to clean up the created item
+        await supabase.from('menu_items').delete().eq('id', newItem.id);
+        throw linkError;
+      }
+
+      toast.success('Item created successfully');
+      router.push(`/dashboard/menu/categories/${formData.categoryId}/items`);
+      
+    } catch (error) {
+      console.error('Error creating item:', error);
+      toast.error('Failed to create item');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const backUrl = selectedCategory 
+    ? `/dashboard/menu/categories/${selectedCategory.id}/items`
+    : '/dashboard/menu';
 
   return (
-    <div>
-      <header>
-        <h1>Add New Menu Item</h1>
-        <p>Create a new item for your menu</p>
-      </header>
-
-      <nav>
-        <Link href="/dashboard/menu/items">← Back to Menu Items</Link>
-      </nav>
-
-      <form>
-        <fieldset>
-          <legend>Basic Information</legend>
-          
-          <div>
-            <label htmlFor="name">Item Name</label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
-              placeholder="e.g., Margherita Pizza"
-              required 
-            />
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Link href="/dashboard/menu" className="hover:text-foreground">
+              Menu
+            </Link>
+            {selectedCategory && (
+              <>
+                <span>›</span>
+                <Link href={backUrl} className="hover:text-foreground">
+                  {selectedCategory.name}
+                </Link>
+              </>
+            )}
+            <span>›</span>
+            <span>Add Item</span>
           </div>
-
-          <div>
-            <label htmlFor="slug">URL Slug</label>
-            <input 
-              type="text" 
-              id="slug" 
-              name="slug" 
-              placeholder="e.g., margherita-pizza"
-              required 
-            />
-            <small>This will be used in the URL: /restaurant/category/item-slug</small>
-          </div>
-
-          <div>
-            <label htmlFor="category">Category</label>
-            <select id="category" name="category" required>
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="description">Short Description</label>
-            <textarea 
-              id="description" 
-              name="description" 
-              rows={2}
-              placeholder="Brief description that appears in category listings"
-              required
-            ></textarea>
-          </div>
-
-          <div>
-            <label htmlFor="longDescription">Detailed Description</label>
-            <textarea 
-              id="longDescription" 
-              name="longDescription" 
-              rows={4}
-              placeholder="Detailed description for the item page"
-            ></textarea>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Pricing</legend>
-          
-          <div>
-            <label htmlFor="price">Regular Price</label>
-            <input 
-              type="number" 
-              id="price" 
-              name="price" 
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-              required 
-            />
-          </div>
-
-          <div>
-            <label htmlFor="discountPrice">Sale Price (Optional)</label>
-            <input 
-              type="number" 
-              id="discountPrice" 
-              name="discountPrice" 
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-            />
-            <small>Leave empty if not on sale</small>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Ingredients & Allergens</legend>
-          
-          <div>
-            <label htmlFor="ingredients">Ingredients</label>
-            <textarea 
-              id="ingredients" 
-              name="ingredients" 
-              rows={3}
-              placeholder="List ingredients separated by commas"
-            ></textarea>
-            <small>e.g., Fresh mozzarella, tomato sauce, basil, olive oil</small>
-          </div>
-
-          <div>
-            <label htmlFor="allergens">Allergens</label>
-            <div>
-              <label><input type="checkbox" name="allergens" value="dairy" /> Dairy</label>
-              <label><input type="checkbox" name="allergens" value="gluten" /> Gluten</label>
-              <label><input type="checkbox" name="allergens" value="nuts" /> Nuts</label>
-              <label><input type="checkbox" name="allergens" value="eggs" /> Eggs</label>
-              <label><input type="checkbox" name="allergens" value="soy" /> Soy</label>
-              <label><input type="checkbox" name="allergens" value="shellfish" /> Shellfish</label>
-              <label><input type="checkbox" name="allergens" value="fish" /> Fish</label>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Nutritional Information (Optional)</legend>
-          
-          <div>
-            <label htmlFor="calories">Calories</label>
-            <input type="number" id="calories" name="calories" min="0" />
-          </div>
-
-          <div>
-            <label htmlFor="protein">Protein (g)</label>
-            <input type="text" id="protein" name="protein" placeholder="e.g., 12g" />
-          </div>
-
-          <div>
-            <label htmlFor="carbs">Carbohydrates (g)</label>
-            <input type="text" id="carbs" name="carbs" placeholder="e.g., 45g" />
-          </div>
-
-          <div>
-            <label htmlFor="fat">Fat (g)</label>
-            <input type="text" id="fat" name="fat" placeholder="e.g., 18g" />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Additional Details</legend>
-          
-          <div>
-            <label htmlFor="preparationTime">Preparation Time</label>
-            <input 
-              type="text" 
-              id="preparationTime" 
-              name="preparationTime" 
-              placeholder="e.g., 15-20 minutes"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="spiceLevel">Spice Level</label>
-            <select id="spiceLevel" name="spiceLevel">
-              <option value="">Not specified</option>
-              <option value="mild">Mild</option>
-              <option value="medium">Medium</option>
-              <option value="hot">Hot</option>
-              <option value="very-hot">Very Hot</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="servingSize">Serving Size</label>
-            <input 
-              type="text" 
-              id="servingSize" 
-              name="servingSize" 
-              placeholder="e.g., Serves 2-3 people"
-            />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Item Image</legend>
-          
-          <div>
-            <label htmlFor="image">Product Image</label>
-            <input type="file" id="image" name="image" accept="image/*" />
-            <small>Recommended size: 800x800px or larger, square aspect ratio</small>
-          </div>
-
-          <div>
-            <label htmlFor="imageAlt">Image Alt Text</label>
-            <input 
-              type="text" 
-              id="imageAlt" 
-              name="imageAlt" 
-              placeholder="Describe the image for accessibility"
-            />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Display Settings</legend>
-          
-          <div>
-            <label>
-              <input type="checkbox" name="isActive" defaultChecked />
-              Active (visible to customers)
-            </label>
-          </div>
-
-          <div>
-            <label>
-              <input type="checkbox" name="isFeatured" />
-              Featured item
-            </label>
-          </div>
-
-          <div>
-            <label htmlFor="sortOrder">Sort Order</label>
-            <input 
-              type="number" 
-              id="sortOrder" 
-              name="sortOrder" 
-              min="0"
-              defaultValue="0"
-            />
-            <small>Lower numbers appear first within the category</small>
-          </div>
-        </fieldset>
-
-        <div>
-          <button type="submit">Create Menu Item</button>
-          <button type="button">Save as Draft</button>
-          <Link href="/dashboard/menu/items">Cancel</Link>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Add New Menu Item
+          </h1>
+          <p className="text-muted-foreground">
+            Create a new item for your menu
+          </p>
         </div>
-      </form>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href={backUrl}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Cancel
+            </Link>
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            <Plus className="h-4 w-4 mr-2" />
+            {saving ? 'Creating...' : 'Create Item'}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Basic Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Basic Information</CardTitle>
+            <CardDescription>
+              Core details about this menu item
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="categoryId">Category</Label>
+              <Select
+                value={formData.categoryId}
+                onValueChange={(value) => {
+                  handleInputChange('categoryId', value);
+                  const category = categories.find(c => c.id === value);
+                  setSelectedCategory(category || null);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="name">Item Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="e.g., Margherita Pizza"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="slug">URL Slug</Label>
+              <Input
+                id="slug"
+                value={formData.slug}
+                onChange={(e) => handleInputChange('slug', e.target.value)}
+                placeholder="e.g., margherita-pizza"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="description">Short Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Brief description for menu display"
+                rows={3}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="long_description">Detailed Description</Label>
+              <Textarea
+                id="long_description"
+                value={formData.long_description}
+                onChange={(e) => handleInputChange('long_description', e.target.value)}
+                placeholder="Detailed description for item page"
+                rows={4}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pricing & Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Pricing & Details</CardTitle>
+            <CardDescription>
+              Set pricing and item specifications
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="price">Price</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => handleInputChange('price', e.target.value)}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="discount_price">Discount Price</Label>
+                <Input
+                  id="discount_price"
+                  type="number"
+                  step="0.01"
+                  value={formData.discount_price}
+                  onChange={(e) => handleInputChange('discount_price', e.target.value)}
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="ingredients">Ingredients</Label>
+              <Textarea
+                id="ingredients"
+                value={formData.ingredients}
+                onChange={(e) => handleInputChange('ingredients', e.target.value)}
+                placeholder="List main ingredients"
+                rows={3}
+              />
+            </div>
+            
+            <div>
+              <Label>Spice Level</Label>
+              <Select
+                value={formData.spice_level}
+                onValueChange={(value) => handleInputChange('spice_level', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select spice level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {SPICE_LEVELS.map((level) => (
+                    <SelectItem key={level.value} value={level.value}>
+                      {level.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Allergens */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Allergens</CardTitle>
+            <CardDescription>
+              Mark any allergens this item contains
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3">
+              {ALLERGEN_OPTIONS.map((allergen) => (
+                <div
+                  key={allergen.value}
+                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                    formData.allergens.includes(allergen.value)
+                      ? 'bg-primary/10 border-primary'
+                      : 'hover:bg-muted'
+                  }`}
+                  onClick={() => handleAllergenToggle(allergen.value)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{allergen.label}</span>
+                    {formData.allergens.includes(allergen.value) && (
+                      <Badge variant="default" className="text-xs">
+                        Selected
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Status Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Status Settings</CardTitle>
+            <CardDescription>
+              Control item visibility and features
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="is_active">Active Item</Label>
+                <p className="text-sm text-muted-foreground">
+                  Whether this item appears on your menu
+                </p>
+              </div>
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+              />
+            </div>
+            
+            <Separator />
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="is_featured">Featured Item</Label>
+                <p className="text-sm text-muted-foreground">
+                  Highlight this item as a special recommendation
+                </p>
+              </div>
+              <Switch
+                id="is_featured"
+                checked={formData.is_featured}
+                onCheckedChange={(checked) => handleInputChange('is_featured', checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
 
-export const metadata = {
-  title: 'Add New Menu Item - Dashboard',
-  description: 'Create a new menu item for your restaurant.',
-};
+export default function NewMenuItemPage() {
+  return (
+    <DashboardLayout>
+      <NewItemPageContent />
+    </DashboardLayout>
+  );
+}

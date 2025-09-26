@@ -9,11 +9,18 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Settings, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import CreateMenuDialog from '@/components/dashboard/create-menu-dialog';
 import { MenuPicker } from '@/components/dashboard/menu-picker';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 type Menu = Database['public']['Tables']['menus']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'] & {
@@ -31,6 +38,19 @@ function MenuManagementContent() {
     totalCategories: 0,
     totalItems: 0,
     activeCategories: 0
+  });
+
+  // Menu editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    is_active: true,
+    is_default: false
   });
 
   const supabase = createClient();
@@ -88,6 +108,104 @@ function MenuManagementContent() {
   useEffect(() => {
     fetchCategories();
   }, [selectedMenu, fetchCategories]);
+
+  // Update form data when selected menu changes
+  useEffect(() => {
+    if (selectedMenu) {
+      setFormData({
+        name: selectedMenu.name || '',
+        slug: selectedMenu.slug || '',
+        description: selectedMenu.description || '',
+        is_active: selectedMenu.is_active ?? true,
+        is_default: selectedMenu.is_default ?? false
+      });
+    }
+  }, [selectedMenu]);
+
+  // Form handling functions
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!selectedMenu) return;
+
+    setIsSaving(true);
+    try {
+      // If setting this menu as default, unset other default menus first
+      if (formData.is_default && !selectedMenu.is_default) {
+        await supabase
+          .from('menus')
+          .update({ is_default: false })
+          .eq('restaurant_id', selectedMenu.restaurant_id);
+      }
+
+      const { data, error } = await supabase
+        .from('menus')
+        .update(formData)
+        .eq('id', selectedMenu.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Menu updated successfully');
+      setIsEditing(false);
+      
+      // Update the menu context with the new data
+      if (refreshMenus) {
+        await refreshMenus();
+      }
+    } catch (error) {
+      console.error('Error updating menu:', error);
+      toast.error('Failed to update menu');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (selectedMenu) {
+      setFormData({
+        name: selectedMenu.name || '',
+        slug: selectedMenu.slug || '',
+        description: selectedMenu.description || '',
+        is_active: selectedMenu.is_active ?? true,
+        is_default: selectedMenu.is_default ?? false
+      });
+    }
+    setIsEditing(false);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedMenu) return;
+
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('menus')
+        .delete()
+        .eq('id', selectedMenu.id);
+
+      if (error) throw error;
+
+      toast.success('Menu deleted successfully');
+      setShowDeleteConfirm(false);
+      
+      // Refresh menus and let context select a new one
+      if (refreshMenus) {
+        await refreshMenus();
+      }
+    } catch (error) {
+      console.error('Error deleting menu:', error);
+      toast.error('Failed to delete menu');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleMenuCreated = (newMenu: Menu) => {
     refreshMenus(); // Refresh menus from context
@@ -276,8 +394,166 @@ function MenuManagementContent() {
         </div>
       </div>
 
+      {/* Menu Information */}
+      {selectedMenu && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center">
+                  <ChefHat className="mr-2 h-5 w-5" />
+                  Menu Information
+                </CardTitle>
+                <CardDescription>
+                  Basic details about this menu
+                </CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                {isEditing ? (
+                  <>
+                    <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
+                      <X className="mr-2 h-4 w-4" />
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave} disabled={isSaving}>
+                      <Save className="mr-2 h-4 w-4" />
+                      {isSaving ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" onClick={() => setIsEditing(true)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit Menu
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Menu Name</Label>
+                {isEditing ? (
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    placeholder="Enter menu name"
+                  />
+                ) : (
+                  <p className="text-lg font-semibold">{selectedMenu.name}</p>
+                )}
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">URL Slug</Label>
+                {isEditing ? (
+                  <Input
+                    value={formData.slug}
+                    onChange={(e) => handleInputChange('slug', e.target.value)}
+                    placeholder="Enter URL slug"
+                  />
+                ) : (
+                  <p className="font-mono text-sm">{selectedMenu.slug}</p>
+                )}
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+                {isEditing ? (
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    placeholder="Enter menu description"
+                    rows={3}
+                  />
+                ) : (
+                  <p className="text-sm">
+                    {selectedMenu.description || 'No description provided'}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Status Settings</Label>
+                {isEditing ? (
+                  <div className="space-y-3 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_active"
+                        checked={formData.is_active}
+                        onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+                      />
+                      <Label htmlFor="is_active">Active Menu</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_default"
+                        checked={formData.is_default}
+                        onCheckedChange={(checked) => handleInputChange('is_default', checked)}
+                      />
+                      <Label htmlFor="is_default">Default Menu</Label>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2 mt-2">
+                    {selectedMenu.is_default && (
+                      <Badge variant="default">Default</Badge>
+                    )}
+                    <Badge variant={selectedMenu.is_active ? "default" : "secondary"}>
+                      {selectedMenu.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Created</Label>
+                <p className="text-sm">
+                  {selectedMenu.created_at ? new Date(selectedMenu.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }) : 'Not available'}
+                </p>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+                <p className="text-sm">
+                  {selectedMenu.updated_at ? new Date(selectedMenu.updated_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }) : 'Not available'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
@@ -302,100 +578,7 @@ function MenuManagementContent() {
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Menu Status</CardTitle>
-            <Settings className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <Badge variant={selectedMenu?.is_active ? "default" : "secondary"}>
-                {selectedMenu?.is_active ? "Active" : "Inactive"}
-              </Badge>
-              {selectedMenu?.is_default && (
-                <Badge variant="outline">Default</Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      {/* Menu Details */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <ChefHat className="h-5 w-5" />
-                {selectedMenu?.name}
-              </CardTitle>
-              <CardDescription>
-                {selectedMenu?.description || 'No description provided'}
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Menu
-              </Button>
-              <Button variant="outline" size="sm">
-                <Eye className="h-4 w-4 mr-2" />
-                Preview
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Status:</span>
-              <div className="flex items-center gap-1 mt-1">
-                <Badge variant={selectedMenu?.is_active ? "default" : "secondary"} className="text-xs">
-                  {selectedMenu?.is_active ? "Active" : "Inactive"}
-                </Badge>
-                {selectedMenu?.is_default && (
-                  <Badge variant="outline" className="text-xs">Default</Badge>
-                )}
-              </div>
-            </div>
-
-            {(selectedMenu?.active_from || selectedMenu?.active_to) && (
-              <div>
-                <span className="text-muted-foreground">Schedule:</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <Clock className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-xs">
-                    {selectedMenu?.active_from || '00:00'} - {selectedMenu?.active_to || '23:59'}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {(selectedMenu?.start_date || selectedMenu?.end_date) && (
-              <div>
-                <span className="text-muted-foreground">Season:</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <Calendar className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-xs">
-                    {selectedMenu?.start_date ? new Date(selectedMenu.start_date).toLocaleDateString() : 'No start'} -
-                    {selectedMenu?.end_date ? new Date(selectedMenu.end_date).toLocaleDateString() : 'No end'}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <div>
-              <span className="text-muted-foreground">Categories:</span>
-              <div className="mt-1">
-                <span className="text-sm font-medium">{stats.totalCategories}</span>
-                <span className="text-xs text-muted-foreground ml-1">
-                  ({stats.activeCategories} active)
-                </span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Quick Actions */}
       <Card>
@@ -516,6 +699,29 @@ function MenuManagementContent() {
         onMenuCreated={handleMenuCreated}
         isFirstMenu={false}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Menu</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &ldquo;{selectedMenu?.name}&rdquo;? This action cannot be undone.
+              All categories and menu items in this menu will also be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Menu'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

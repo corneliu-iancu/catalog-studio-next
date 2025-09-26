@@ -2,184 +2,142 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/lib/types/database';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Loader2, Save } from 'lucide-react';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
-const categorySchema = z.object({
-  name: z.string().min(1, 'Category name is required').max(255, 'Name too long'),
-  slug: z.string().min(1, 'Slug is required').max(255, 'Slug too long')
-    .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
-  description: z.string().max(1000, 'Description too long').optional().or(z.literal('')),
-  sortOrder: z.number().min(0, 'Sort order must be 0 or greater'),
-  isActive: z.boolean(),
-  isFeatured: z.boolean(),
-  metaTitle: z.string().max(255, 'Meta title too long').optional().or(z.literal('')),
-  metaDescription: z.string().max(500, 'Meta description too long').optional().or(z.literal('')),
-});
-
-type CategoryFormData = z.infer<typeof categorySchema>;
-
-function EditCategoryContent() {
+function EditCategoryPageContent() {
   const params = useParams();
   const router = useRouter();
+  const categoryId = params.id as string;
+  
   const [category, setCategory] = useState<Category | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const supabase = createClient();
-
-  const form = useForm<CategoryFormData>({
-    resolver: zodResolver(categorySchema),
-    defaultValues: {
-      name: '',
-      slug: '',
-      description: '',
-      sortOrder: 0,
-      isActive: true,
-      isFeatured: false,
-      metaTitle: '',
-      metaDescription: '',
-    },
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    sort_order: 0,
+    is_active: true,
+    is_featured: false
   });
 
-  // Fetch category data
+  const supabase = createClient();
+
+  // Fetch category details
   useEffect(() => {
     const fetchCategory = async () => {
+      if (!categoryId) return;
+      
       try {
+        setLoading(true);
+        
         const { data, error } = await supabase
           .from('categories')
           .select('*')
-          .eq('id', params.id)
-          .single();
+          .eq('id', categoryId)
+          .maybeSingle();
 
         if (error) throw error;
 
+        if (!data) {
+          toast.error('Category not found');
+          router.push('/dashboard/menu');
+          return;
+        }
+
         setCategory(data);
 
-        // Populate form with existing data
-        form.reset({
-          name: data.name,
-          slug: data.slug,
+        // Set form data
+        setFormData({
+          name: data.name || '',
+          slug: data.slug || '',
           description: data.description || '',
-          sortOrder: data.sort_order || 0,
-          isActive: data.is_active || false,
-          isFeatured: data.is_featured || false,
-          metaTitle: data.meta_title || '',
-          metaDescription: data.meta_description || '',
+          sort_order: data.sort_order || 0,
+          is_active: data.is_active ?? true,
+          is_featured: data.is_featured ?? false
         });
-
+        
       } catch (error) {
         console.error('Error fetching category:', error);
+        toast.error('Failed to load category details');
         router.push('/dashboard/menu');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    if (params.id) {
-      fetchCategory();
-    }
-  }, [params.id, form, router, supabase]);
+    fetchCategory();
+  }, [categoryId, supabase, router]);
 
-  // Auto-generate slug from name
-  const handleNameChange = (name: string) => {
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
-    form.setValue('slug', slug);
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
 
-    // Auto-generate meta title
-    if (name) {
-      form.setValue('metaTitle', `${name} - Menu Category`);
+    // Auto-generate slug from name
+    if (field === 'name') {
+      const slug = value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      setFormData(prev => ({ ...prev, slug }));
     }
   };
 
-  const onSubmit = async (data: CategoryFormData) => {
+  const handleSave = async () => {
     if (!category) return;
 
-    setIsSubmitting(true);
-
+    setSaving(true);
     try {
-      // Check if slug is unique within the menu (excluding current category)
-      const { data: existingCategory, error: slugCheckError } = await supabase
-        .from('categories')
-        .select('slug')
-        .eq('menu_id', category.menu_id)
-        .eq('slug', data.slug)
-        .neq('id', category.id)
-        .maybeSingle();
-
-      if (slugCheckError) {
-        console.error('Error checking slug uniqueness:', slugCheckError);
-        throw slugCheckError;
-      }
-
-      if (existingCategory) {
-        form.setError('slug', {
-          message: 'This slug is already used by another category in this menu'
-        });
-        return;
-      }
-
-      // Update the category
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('categories')
         .update({
-          name: data.name,
-          slug: data.slug,
-          description: data.description || null,
-          sort_order: data.sortOrder,
-          is_active: data.isActive,
-          is_featured: data.isFeatured,
-          meta_title: data.metaTitle || null,
-          meta_description: data.metaDescription || null,
+          name: formData.name.trim(),
+          slug: formData.slug.trim(),
+          description: formData.description.trim() || null,
+          sort_order: formData.sort_order,
+          is_active: formData.is_active,
+          is_featured: formData.is_featured
         })
-        .eq('id', category.id);
+        .eq('id', categoryId)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      router.push('/dashboard/menu');
-
+      toast.success('Category updated successfully');
     } catch (error) {
       console.error('Error updating category:', error);
-      form.setError('root', {
-        message: 'Failed to update category. Please try again.'
-      });
+      toast.error('Failed to update category');
     } finally {
-      setIsSubmitting(false);
+      setSaving(false);
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading category...</p>
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading category...</span>
         </div>
       </div>
     );
@@ -190,7 +148,7 @@ function EditCategoryContent() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
           <h3 className="text-lg font-semibold">Category Not Found</h3>
-          <p className="text-muted-foreground">The category you&apos;re looking for doesn&apos;t exist.</p>
+          <p className="text-muted-foreground">The category you're looking for doesn't exist.</p>
           <Button asChild>
             <Link href="/dashboard/menu">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -202,217 +160,188 @@ function EditCategoryContent() {
     );
   }
 
+  const backUrl = `/dashboard/menu/categories/${categoryId}/items`;
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/dashboard/menu">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Menu
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Edit Category</h1>
-          <p className="text-muted-foreground">Update category details and settings</p>
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Link href="/dashboard/menu" className="hover:text-foreground">
+              Menu
+            </Link>
+            <span>›</span>
+            <Link href={backUrl} className="hover:text-foreground">
+              {category.name}
+            </Link>
+            <span>›</span>
+            <span>Edit Category</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Edit {category.name}
+          </h1>
+          <p className="text-muted-foreground">
+            Update the details for this category
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href={backUrl}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Cancel
+            </Link>
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            <Save className="h-4 w-4 mr-2" />
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Category Information</CardTitle>
-          <CardDescription>
-            Update the basic information for this category
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="e.g., Appetizers, Main Courses"
-                          {...field}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            handleNameChange(e.target.value);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL Slug</FormLabel>
-                      <FormControl>
-                        <Input placeholder="appetizers" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Used in the category URL. Only lowercase letters, numbers, and hyphens.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Brief description of this category..."
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Basic Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Basic Information</CardTitle>
+            <CardDescription>
+              Core details about this category
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="name">Category Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="e.g., Appetizers"
               />
+            </div>
+            
+            <div>
+              <Label htmlFor="slug">URL Slug</Label>
+              <Input
+                id="slug"
+                value={formData.slug}
+                onChange={(e) => handleInputChange('slug', e.target.value)}
+                placeholder="e.g., appetizers"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Brief description of this category"
+                rows={3}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField
-                  control={form.control}
-                  name="sortOrder"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sort Order</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="0"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Lower numbers appear first
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isActive"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                      <div className="space-y-0.5">
-                        <FormLabel>Active</FormLabel>
-                        <FormDescription className="text-xs">
-                          Category is visible to customers
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isFeatured"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                      <div className="space-y-0.5">
-                        <FormLabel>Featured</FormLabel>
-                        <FormDescription className="text-xs">
-                          Highlight this category
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+        {/* Display Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Display Settings</CardTitle>
+            <CardDescription>
+              Control how this category appears
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="sort_order">Sort Order</Label>
+              <Input
+                id="sort_order"
+                type="number"
+                value={formData.sort_order}
+                onChange={(e) => handleInputChange('sort_order', parseInt(e.target.value) || 0)}
+                placeholder="0"
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Lower numbers appear first
+              </p>
+            </div>
+            
+            <Separator />
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="is_active">Active Category</Label>
+                <p className="text-sm text-muted-foreground">
+                  Whether this category appears on your menu
+                </p>
               </div>
-
-              {form.formState.errors.root && (
-                <div className="text-sm text-destructive">
-                  {form.formState.errors.root.message}
-                </div>
-              )}
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push('/dashboard/menu')}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
-                </Button>
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+              />
+            </div>
+            
+            <Separator />
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="is_featured">Featured Category</Label>
+                <p className="text-sm text-muted-foreground">
+                  Highlight this category as special
+                </p>
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+              <Switch
+                id="is_featured"
+                checked={formData.is_featured}
+                onCheckedChange={(checked) => handleInputChange('is_featured', checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Category Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Category Information</CardTitle>
+            <CardDescription>
+              Details about this category
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-muted-foreground">Created</Label>
+              <p className="text-sm">
+                {category.created_at ? new Date(category.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                }) : 'Not available'}
+              </p>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+              <p className="text-sm">
+                {category.updated_at ? new Date(category.updated_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                }) : 'Not available'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
 
 export default function EditCategoryPage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
-
-  const getUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <DashboardLayout user={user}>
-      <div className="p-6">
-        <EditCategoryContent />
-      </div>
+    <DashboardLayout>
+      <EditCategoryPageContent />
     </DashboardLayout>
   );
 }

@@ -9,9 +9,8 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Loader2, RefreshCw, Utensils, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Utensils, Trash2, Edit, Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { CreateItemDialog } from '@/components/dashboard/items/create-item-dialog';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -87,7 +86,7 @@ function ItemsPageContent() {
   const retryLoadItems = useCallback(() => {
     if (categoryId) {
       console.log('Retrying items load for category:', categoryId);
-      fetchItemsByCategory(categoryId, true); // Force refresh
+      fetchItemsByCategory(categoryId);
     }
   }, [categoryId, fetchItemsByCategory]);
 
@@ -141,10 +140,18 @@ function ItemsPageContent() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <CreateItemDialog
-            categoryId={categoryId}
-            categoryName={category.name}
-          />
+          <Button asChild>
+            <Link href={`/dashboard/menu/items/new?categoryId=${categoryId}`}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Item
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/dashboard/menu/categories/${categoryId}/edit`}>
+              <Settings className="h-4 w-4 mr-2" />
+              Edit Category
+            </Link>
+          </Button>
           <Button asChild variant="outline">
             <Link href="/dashboard/menu">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -232,6 +239,11 @@ function ItemsPageContent() {
                     <Badge variant={item.is_active ? "default" : "secondary"}>
                       {item.is_active ? "Active" : "Inactive"}
                     </Badge>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href={`/dashboard/menu/items/${item.id}/edit`}>
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -266,10 +278,12 @@ function ItemsPageContent() {
                   Items can include dishes, drinks, or any products you offer.
                 </p>
               </div>
-              <CreateItemDialog
-                categoryId={categoryId}
-                categoryName={category.name}
-              />
+              <Button asChild>
+                <Link href={`/dashboard/menu/items/new?categoryId=${categoryId}`}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Your First Item
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

@@ -19,7 +19,7 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
   return (
     <TemplateWrapper className="classic-template bg-gray-50">
       {/* Decorative Border Container */}
-      <div className="max-w-5xl mx-auto p-8">
+      <div className="max-w-5xl mx-auto p-2 md:p-8">
         <div className="bg-white border-4 border-gray-800 relative">
           {/* Corner decorations */}
           <div className="absolute -top-2 -left-2 w-8 h-8 bg-gray-800"></div>
@@ -36,7 +36,7 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
           />
 
           {/* Main Menu Content */}
-          <main className="px-12 pb-8">
+          <main className="px-4 md:px-12 pb-8">
             
             {/* Categories - Each with Two Column Layout */}
             {menu.categories.map((category, categoryIndex) => (
@@ -70,9 +70,9 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
                                 </div>
                                 <div className="flex-1">
                                   <h3 className="font-bold text-lg uppercase tracking-wide text-gray-800">{item.name}</h3>
-                                  <div className="border-b border-dotted border-gray-400 my-1"></div>
+                                  <div className="border-b border-dashed border-gray-400 my-1"></div>
                                   {display_settings.show_descriptions && (
-                                    <p className="text-sm text-gray-600 italic mt-1">
+                                    <p className="text-sm text-gray-600 mt-1">
                                       {item.description.length > 100 
                                         ? `${item.description.substring(0, 100)}...` 
                                         : item.description}
@@ -101,9 +101,9 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
                                 </div>
                                 <div className="flex-1">
                                   <h3 className="font-bold text-lg uppercase tracking-wide text-gray-800">{item.name}</h3>
-                                  <div className="border-b border-dotted border-gray-400 my-1"></div>
+                                  <div className="border-b border-dashed border-gray-400 my-1"></div>
                                   {display_settings.show_descriptions && (
-                                    <p className="text-sm text-gray-600 italic mt-1">
+                                    <p className="text-sm text-gray-600 mt-1">
                                       {item.description.length > 100 
                                         ? `${item.description.substring(0, 100)}...` 
                                         : item.description}

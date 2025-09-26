@@ -267,6 +267,14 @@ export class MenuShowcaseService {
         template: 'classic' as const,
         theme: 'earth' as const,
         preview: '/templates/classic-earth.jpg'
+      },
+      {
+        id: 'minimal-basic',
+        name: 'Minimal Basic',
+        description: 'Minimal template showing only restaurant name',
+        template: 'minimal' as const,
+        theme: 'neutral' as const,
+        preview: '/templates/minimal-basic.jpg'
       }
     ];
   }

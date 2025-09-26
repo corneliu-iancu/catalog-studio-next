@@ -20,9 +20,7 @@ export default async function MerchantPage({ params }: MerchantPageProps) {
   }
 
   return (
-    <div className="min-h-screen">
-      <TemplateEngine menuData={menuData} />
-    </div>
+    <TemplateEngine menuData={menuData} />
   );
 }
 

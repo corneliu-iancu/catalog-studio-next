@@ -1,6 +1,6 @@
 // Template system types for menu showcase
 
-export type TemplateType = 'classic'  // Traditional restaurant menu layout
+export type TemplateType = 'classic' | 'minimal'  // Traditional restaurant menu layout | Minimal layout with just restaurant name
 
 export type ColorTheme = 
   | 'warm'         // Warm oranges, reds, browns
@@ -168,5 +168,13 @@ export const AVAILABLE_TEMPLATES: TemplateConfig[] = [
       { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
       { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
     ]
+  },
+  {
+    id: 'minimal-basic',
+    name: 'Minimal Basic',
+    description: 'Minimal template showing only restaurant name',
+    type: 'minimal',
+    theme: 'neutral',
+    features: []
   }
 ];

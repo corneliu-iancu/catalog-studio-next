@@ -2,6 +2,7 @@
 
 import { PublicMenuData } from '@/lib/types/templates';
 import { ClassicTemplate } from './templates/classic-template';
+import { MinimalTemplate } from './templates/minimal-template';
 
 interface TemplateEngineProps {
   menuData: PublicMenuData;
@@ -11,84 +12,18 @@ interface TemplateEngineProps {
 export function TemplateEngine({ menuData, className }: TemplateEngineProps) {
   const { display_settings } = menuData;
 
-  // Always use the Classic template (simplified)
+  // Render the appropriate template based on display settings
   const renderTemplate = () => {
-    return <ClassicTemplate menuData={menuData} />;
-  };
-
-  // Generate CSS custom properties for theming
-  const generateThemeStyles = () => {
-    const { theme, custom_colors } = display_settings;
-    
-    if (theme === 'custom' && custom_colors) {
-      return {
-        '--menu-primary': custom_colors.primary,
-        '--menu-secondary': custom_colors.secondary,
-        '--menu-accent': custom_colors.accent,
-        '--menu-background': custom_colors.background,
-        '--menu-text': custom_colors.text,
-      } as React.CSSProperties;
+    switch (display_settings.template) {
+      case 'minimal':
+        return <MinimalTemplate menuData={menuData} />;
+      case 'classic':
+      default:
+        return <MinimalTemplate menuData={menuData} />;
     }
-
-    // Predefined theme colors
-    const themeColors = {
-      warm: {
-        '--menu-primary': '#d97706',
-        '--menu-secondary': '#f59e0b',
-        '--menu-accent': '#dc2626',
-        '--menu-background': '#fef7ed',
-        '--menu-text': '#451a03',
-      },
-      cool: {
-        '--menu-primary': '#0369a1',
-        '--menu-secondary': '#0284c7',
-        '--menu-accent': '#0891b2',
-        '--menu-background': '#f0f9ff',
-        '--menu-text': '#0c4a6e',
-      },
-      neutral: {
-        '--menu-primary': '#374151',
-        '--menu-secondary': '#6b7280',
-        '--menu-accent': '#111827',
-        '--menu-background': '#f9fafb',
-        '--menu-text': '#111827',
-      },
-      vibrant: {
-        '--menu-primary': '#dc2626',
-        '--menu-secondary': '#ea580c',
-        '--menu-accent': '#c026d3',
-        '--menu-background': '#fef2f2',
-        '--menu-text': '#7f1d1d',
-      },
-      earth: {
-        '--menu-primary': '#92400e',
-        '--menu-secondary': '#a3a3a3',
-        '--menu-accent': '#365314',
-        '--menu-background': '#fefce8',
-        '--menu-text': '#365314',
-      },
-      custom: {
-        '--menu-primary': menuData.display_settings.custom_colors?.primary || '#374151',
-        '--menu-secondary': menuData.display_settings.custom_colors?.secondary || '#6b7280',
-        '--menu-accent': menuData.display_settings.custom_colors?.accent || '#059669',
-        '--menu-background': menuData.display_settings.custom_colors?.background || '#ffffff',
-        '--menu-text': menuData.display_settings.custom_colors?.text || '#111827',
-      },
-    };
-
-    return themeColors[theme] || themeColors.neutral;
   };
 
-  return (
-    <div 
-      className={`menu-showcase ${className || ''}`}
-      // style={generateThemeStyles()}
-      data-template={display_settings.template}
-      data-theme={display_settings.theme}
-    >
-      {renderTemplate()}
-    </div>
-  );
+  return renderTemplate();
 }
 
 // Template wrapper component for consistent styling

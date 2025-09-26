@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { IngredientSelector } from '@/components/ui/ingredient-selector';
 import { ArrowLeft, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -362,16 +363,12 @@ function NewItemPageContent() {
               </div>
             </div>
             
-            <div>
-              <Label htmlFor="ingredients">Ingredients</Label>
-              <Textarea
-                id="ingredients"
-                value={formData.ingredients}
-                onChange={(e) => handleInputChange('ingredients', e.target.value)}
-                placeholder="List main ingredients"
-                rows={3}
-              />
-            </div>
+            <IngredientSelector
+              value={formData.ingredients}
+              onChange={(value) => handleInputChange('ingredients', value)}
+              label="Ingredients"
+              placeholder="Type to search ingredients..."
+            />
             
             <div>
               <Label>Spice Level</Label>

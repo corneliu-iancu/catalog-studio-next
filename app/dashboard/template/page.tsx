@@ -44,7 +44,7 @@ function TemplatePageContent() {
       // In the future, this would fetch from the database
       const defaultSettings: MenuDisplaySettings = {
         template: 'classic',
-        theme: 'warm',
+        theme: 'oriental',
         show_prices: true,
         show_descriptions: true,
         show_images: true,

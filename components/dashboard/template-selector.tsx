@@ -132,11 +132,7 @@ export function TemplateSelector({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="warm">Warm (Orange/Red)</SelectItem>
-                    <SelectItem value="cool">Cool (Blue/Green)</SelectItem>
-                    <SelectItem value="neutral">Neutral (Gray/Black)</SelectItem>
-                    <SelectItem value="vibrant">Vibrant (Bright Colors)</SelectItem>
-                    <SelectItem value="earth">Earth (Natural Tones)</SelectItem>
+                    <SelectItem value="oriental">Oriental (Middle Eastern)</SelectItem>
                   </SelectContent>
                 </Select>
               </CardContent>
@@ -157,7 +153,8 @@ export function TemplateSelector({
                     onValueChange={(value: 'small' | 'medium' | 'large') => 
                       updateSettings({ 
                         typography: { 
-                          ...settings.typography, 
+                          heading_font: settings.typography?.heading_font || 'Georgia',
+                          body_font: settings.typography?.body_font || 'Inter',
                           font_size: value 
                         } 
                       })

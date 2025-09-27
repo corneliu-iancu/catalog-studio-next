@@ -11,6 +11,7 @@ interface TemplateEngineProps {
 
 export function TemplateEngine({ menuData, className }: TemplateEngineProps) {
   const { display_settings } = menuData;
+  display_settings.theme = 'oriental';
 
   // Render the appropriate template based on display settings
   const renderTemplate = () => {
@@ -19,7 +20,7 @@ export function TemplateEngine({ menuData, className }: TemplateEngineProps) {
         return <MinimalTemplate menuData={menuData} />;
       case 'classic':
       default:
-        return <MinimalTemplate menuData={menuData} />;
+        return <ClassicTemplate menuData={menuData} />;
     }
   };
 

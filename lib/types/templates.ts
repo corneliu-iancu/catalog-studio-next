@@ -9,6 +9,7 @@ export type ColorTheme =
   | 'vibrant'      // Bright, energetic colors
   | 'earth'        // Natural, organic tones
   | 'custom'       // User-defined colors
+  | 'oriental'     // Middle Eastern-inspired design
 
 export interface TemplateConfig {
   id: string;
@@ -100,81 +101,26 @@ export interface MenuItem {
   price: number;
   discount_price?: number;
   image_url?: string;
-  ingredients?: string[];
+  ingredients?: string; // Fixed: should be string, not string[] (matches database schema)
   allergens?: string[];
   spice_level?: 'mild' | 'medium' | 'hot' | 'very-hot';
   is_featured: boolean;
   sort_order: number;
 }
 
-// Template registry - simplified to just Classic template with different themes
+// Template registry - single default template
 export const AVAILABLE_TEMPLATES: TemplateConfig[] = [
   {
-    id: 'classic-warm',
-    name: 'Classic Warm',
-    description: 'Traditional menu with warm, inviting colors',
+    id: 'default',
+    name: 'Default Template',
+    description: 'Elegant menu with rich Middle Eastern-inspired design',
     type: 'classic',
-    theme: 'warm',
+    theme: 'oriental',
     features: [
       { id: 'categories', name: 'Category Sections', description: 'Organized by menu categories', enabled: true },
       { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
       { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
+      { id: 'ornate_patterns', name: 'Ornate Patterns', description: 'Beautiful Middle Eastern decorative elements', enabled: true },
     ]
-  },
-  {
-    id: 'classic-cool',
-    name: 'Classic Cool',
-    description: 'Traditional menu with cool, calming colors',
-    type: 'classic',
-    theme: 'cool',
-    features: [
-      { id: 'categories', name: 'Category Sections', description: 'Organized by menu categories', enabled: true },
-      { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
-      { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
-    ]
-  },
-  {
-    id: 'classic-neutral',
-    name: 'Classic Neutral',
-    description: 'Traditional menu with neutral, professional colors',
-    type: 'classic',
-    theme: 'neutral',
-    features: [
-      { id: 'categories', name: 'Category Sections', description: 'Organized by menu categories', enabled: true },
-      { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
-      { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
-    ]
-  },
-  {
-    id: 'classic-vibrant',
-    name: 'Classic Vibrant',
-    description: 'Traditional menu with vibrant, energetic colors',
-    type: 'classic',
-    theme: 'vibrant',
-    features: [
-      { id: 'categories', name: 'Category Sections', description: 'Organized by menu categories', enabled: true },
-      { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
-      { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
-    ]
-  },
-  {
-    id: 'classic-earth',
-    name: 'Classic Earth',
-    description: 'Traditional menu with natural, earthy colors',
-    type: 'classic',
-    theme: 'earth',
-    features: [
-      { id: 'categories', name: 'Category Sections', description: 'Organized by menu categories', enabled: true },
-      { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
-      { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
-    ]
-  },
-  {
-    id: 'minimal-basic',
-    name: 'Minimal Basic',
-    description: 'Minimal template showing only restaurant name',
-    type: 'minimal',
-    theme: 'neutral',
-    features: []
   }
 ];

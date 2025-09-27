@@ -183,7 +183,7 @@ export class MenuShowcaseService {
     // In the future, this could be stored in a restaurant_settings table
     return {
       template: 'classic',
-      theme: 'warm',
+      theme: 'oriental',
       show_prices: true,
       show_descriptions: true,
       show_images: true,
@@ -224,57 +224,17 @@ export class MenuShowcaseService {
   }
 
   /**
-   * Get available templates (simplified to just Classic with different themes)
+   * Get available templates (single default template)
    */
   getAvailableTemplates() {
     return [
       {
-        id: 'classic-warm',
-        name: 'Classic Warm',
-        description: 'Traditional menu with warm, inviting colors',
+        id: 'default',
+        name: 'Default Template',
+        description: 'Elegant menu with rich Middle Eastern-inspired design',
         template: 'classic' as const,
-        theme: 'warm' as const,
-        preview: '/templates/classic-warm.jpg'
-      },
-      {
-        id: 'classic-cool',
-        name: 'Classic Cool',
-        description: 'Traditional menu with cool, calming colors',
-        template: 'classic' as const,
-        theme: 'cool' as const,
-        preview: '/templates/classic-cool.jpg'
-      },
-      {
-        id: 'classic-neutral',
-        name: 'Classic Neutral',
-        description: 'Traditional menu with neutral, professional colors',
-        template: 'classic' as const,
-        theme: 'neutral' as const,
-        preview: '/templates/classic-neutral.jpg'
-      },
-      {
-        id: 'classic-vibrant',
-        name: 'Classic Vibrant',
-        description: 'Traditional menu with vibrant, energetic colors',
-        template: 'classic' as const,
-        theme: 'vibrant' as const,
-        preview: '/templates/classic-vibrant.jpg'
-      },
-      {
-        id: 'classic-earth',
-        name: 'Classic Earth',
-        description: 'Traditional menu with natural, earthy colors',
-        template: 'classic' as const,
-        theme: 'earth' as const,
-        preview: '/templates/classic-earth.jpg'
-      },
-      {
-        id: 'minimal-basic',
-        name: 'Minimal Basic',
-        description: 'Minimal template showing only restaurant name',
-        template: 'minimal' as const,
-        theme: 'neutral' as const,
-        preview: '/templates/minimal-basic.jpg'
+        theme: 'oriental' as const,
+        preview: '/templates/default.jpg'
       }
     ];
   }
@@ -326,7 +286,7 @@ export class MenuShowcaseService {
                 description: 'Toasted bread topped with fresh tomatoes, basil, and garlic',
                 price: 12.99,
                 image_url: '/food-bruschetta.jpg',
-                ingredients: ['Tomatoes', 'Basil', 'Garlic', 'Olive Oil', 'Bread'],
+                ingredients: 'Tomatoes, Basil, Garlic, Olive Oil, Bread',
                 allergens: ['gluten'],
                 is_featured: true,
                 sort_order: 1
@@ -339,7 +299,7 @@ export class MenuShowcaseService {
                 price: 15.99,
                 discount_price: 12.99,
                 image_url: '/food-calamari.jpg',
-                ingredients: ['Squid', 'Flour', 'Marinara Sauce'],
+                ingredients: 'Squid, Flour, Marinara Sauce',
                 allergens: ['gluten', 'shellfish'],
                 spice_level: 'mild',
                 is_featured: false,
@@ -362,7 +322,7 @@ export class MenuShowcaseService {
                 description: 'Classic pizza with fresh mozzarella, tomatoes, and basil',
                 price: 18.99,
                 image_url: '/food-margherita.jpg',
-                ingredients: ['Mozzarella', 'Tomatoes', 'Basil', 'Pizza Dough'],
+                ingredients: 'Mozzarella, Tomatoes, Basil, Pizza Dough',
                 allergens: ['dairy', 'gluten'],
                 is_featured: true,
                 sort_order: 1
@@ -374,7 +334,7 @@ export class MenuShowcaseService {
                 description: 'Breaded chicken breast with marinara sauce and melted cheese',
                 price: 24.99,
                 image_url: '/food-chicken-parm.jpg',
-                ingredients: ['Chicken', 'Marinara Sauce', 'Mozzarella', 'Breadcrumbs'],
+                ingredients: 'Chicken, Marinara Sauce, Mozzarella, Breadcrumbs',
                 allergens: ['dairy', 'gluten', 'eggs'],
                 is_featured: false,
                 sort_order: 2
@@ -385,7 +345,7 @@ export class MenuShowcaseService {
       },
       display_settings: {
         template: 'classic',
-        theme: 'warm',
+        theme: 'oriental',
         show_prices: true,
         show_descriptions: true,
         show_images: true,

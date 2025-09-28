@@ -13,8 +13,12 @@ import {
   Store,
   UtensilsCrossed,
   Upload,
+  X,
 } from 'lucide-react';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
+import { Button } from '@/components/ui/button';
+import { RestaurantSelector } from './restaurant-selector';
+import { LanguageSelector } from './language-selector';
 
 // Navigation items with translation keys
 const getNavigation = (t: any) => [
@@ -73,9 +77,12 @@ const getNavigation = (t: any) => [
 
 interface DashboardSidebarProps {
   className?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onCreateRestaurant?: () => void;
 }
 
-export function DashboardSidebar({ className }: DashboardSidebarProps) {
+export function DashboardSidebar({ className, isOpen = true, onClose, onCreateRestaurant }: DashboardSidebarProps) {
   const pathname = usePathname();
   const { hasRestaurants, selectedRestaurant } = useRestaurant();
   const t = useTranslations('navigation');
@@ -87,9 +94,56 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
   const navigation = getNavigation(t);
 
   return (
-    <div className={cn('flex min-h-full w-64 flex-col bg-muted/10', className)}>
-      <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-        <nav className="mt-5 flex-1 px-2 space-y-1">
+    <>
+      {/* Mobile backdrop overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={cn(
+        'fixed inset-y-0 left-0 z-50 flex min-h-full w-64 flex-col bg-background border-r shadow-lg transition-transform duration-300 ease-in-out lg:static lg:shadow-none lg:transform-none lg:bg-muted/10',
+        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        className
+      )}>
+        {/* Mobile header section with selectors */}
+        <div className="lg:hidden border-b bg-muted/5">
+          {/* Close button */}
+          <div className="flex justify-end p-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close sidebar</span>
+            </Button>
+          </div>
+          
+          {/* Restaurant and Language selectors */}
+          <div className="px-4 pb-4 space-y-3">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                Restaurant
+              </label>
+              <RestaurantSelector onCreateRestaurant={onCreateRestaurant} />
+            </div>
+            
+            <div>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
+                Language
+              </label>
+              <LanguageSelector />
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex-1 flex flex-col pt-2 lg:pt-5 pb-4 overflow-y-auto">
+        <nav className="mt-3 lg:mt-5 flex-1 px-2 space-y-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             // Item is disabled if it requires a restaurant and user doesn't have one
@@ -155,6 +209,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

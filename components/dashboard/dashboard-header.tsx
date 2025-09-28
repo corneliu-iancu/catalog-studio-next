@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, LogOut, Settings, User } from 'lucide-react';
+import { Bell, LogOut, Settings, User as UserIcon, Menu } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,19 +17,15 @@ import { RestaurantSelector } from './restaurant-selector';
 import { LanguageSelector } from './language-selector';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
 
 interface DashboardHeaderProps {
-  user?: {
-    email?: string;
-    user_metadata?: {
-      full_name?: string;
-      avatar_url?: string;
-    };
-  };
+  user: User | null;
   onCreateRestaurant?: () => void;
+  onToggleSidebar?: () => void;
 }
 
-export function DashboardHeader({ user, onCreateRestaurant }: DashboardHeaderProps) {
+export function DashboardHeader({ user, onCreateRestaurant, onToggleSidebar }: DashboardHeaderProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const supabase = createClient();
   const router = useRouter();
@@ -49,32 +45,48 @@ export function DashboardHeader({ user, onCreateRestaurant }: DashboardHeaderPro
   const userInitials = user?.user_metadata?.full_name
     ? user.user_metadata.full_name
         .split(' ')
-        .map(name => name[0])
+        .map((name: string) => name[0])
         .join('')
         .toUpperCase()
     : user?.email?.[0]?.toUpperCase() || 'U';
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-16 items-center justify-between px-6">
-        {/* Left side - Logo and Restaurant Selector */}
-        <div className="flex items-center space-x-6">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+        {/* Left side - Mobile Menu, Logo and Restaurant Selector */}
+        <div className="flex items-center space-x-3 sm:space-x-6">
+          {/* Mobile menu button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="lg:hidden"
+            onClick={onToggleSidebar}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+          
           <div className="flex items-center space-x-2">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">CS</span>
             </div>
-            <span className="font-semibold text-lg">Catalog Studio</span>
+            <span className="font-semibold text-lg hidden sm:inline">Catalog Studio</span>
+            <span className="font-semibold text-base sm:hidden">CS</span>
           </div>
           
-          <div className="h-6 w-px bg-border" />
+          <div className="h-6 w-px bg-border hidden sm:block" />
           
-          <RestaurantSelector onCreateRestaurant={onCreateRestaurant} />
+          <div className="hidden lg:block">
+            <RestaurantSelector onCreateRestaurant={onCreateRestaurant} />
+          </div>
         </div>
 
         {/* Right side - Language, Notifications and User Menu */}
-        <div className="flex items-center space-x-4">
-          {/* Language Selector */}
-          <LanguageSelector />
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Language Selector - Hidden on mobile */}
+          <div className="hidden lg:block">
+            <LanguageSelector />
+          </div>
           
           {/* Notifications */}
           <Button variant="ghost" size="sm" className="relative">
@@ -110,7 +122,7 @@ export function DashboardHeader({ user, onCreateRestaurant }: DashboardHeaderPro
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/account">
-                  <User className="mr-2 h-4 w-4" />
+                  <UserIcon className="mr-2 h-4 w-4" />
                   <span>Account</span>
                 </Link>
               </DropdownMenuItem>

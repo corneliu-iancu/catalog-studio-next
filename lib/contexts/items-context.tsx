@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/lib/types/database';
 import { useMenu } from './menu-context';
@@ -23,7 +23,7 @@ interface ItemsContextType {
   items: MenuItem[];
   isLoading: boolean;
   selectedCategoryId: string | null;
-  fetchItemsByCategory: (categoryId: string) => Promise<void>;
+  fetchItemsByCategory: (categoryId: string, forceRefresh?: boolean) => Promise<void>;
   createItem: (categoryId: string, itemData: CreateItemData) => Promise<void>;
   deleteItem: (itemId: string, categoryId: string) => Promise<void>;
   refreshItems: () => Promise<void>;
@@ -39,6 +39,17 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [itemsCache, setItemsCache] = useState<Record<string, MenuItem[]>>({});
   
+  // Use ref to access current cache without adding to dependencies
+  const itemsCacheRef = useRef<Record<string, MenuItem[]>>({});
+  
+  // Track previous menu to detect actual changes vs initialization
+  const previousMenuRef = useRef<string | null>(null);
+  
+  // Keep ref in sync with state
+  useEffect(() => {
+    itemsCacheRef.current = itemsCache;
+  }, [itemsCache]);
+  
   const { selectedMenu } = useMenu();
   const supabase = createClient();
 
@@ -48,10 +59,10 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Check cache first (unless force refresh)
-    if (!forceRefresh && itemsCache[categoryId]) {
+    // Check cache first using ref (unless force refresh)
+    if (!forceRefresh && itemsCacheRef.current[categoryId]) {
       console.log(`Loading items from cache for category: ${categoryId}`);
-      setItems(itemsCache[categoryId]);
+      setItems(itemsCacheRef.current[categoryId]);
       setSelectedCategoryId(categoryId);
       return;
     }
@@ -100,6 +111,7 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
         [categoryId]: menuItems
       }));
 
+      console.log('Setting items in state:', menuItems.length);
       setItems(menuItems);
       setSelectedCategoryId(categoryId);
 
@@ -112,7 +124,7 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [supabase, itemsCache]);
+  }, [supabase]); // Only supabase in dependencies
 
   const createItem = useCallback(async (categoryId: string, itemData: {
     name: string;
@@ -239,16 +251,28 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
   }, [fetchItemsByCategory]);
 
   const getItemCount = useCallback((categoryId: string) => {
-    return itemsCache[categoryId]?.length || 0;
-  }, [itemsCache]);
+    return itemsCacheRef.current[categoryId]?.length || 0;
+  }, []);
 
-  // Clear cache when menu changes
+  // Clear cache when menu actually changes (not just initializes)
   useEffect(() => {
-    console.log('Menu changed, clearing items cache');
-    setItemsCache({});
-    setItems([]);
-    setSelectedCategoryId(null);
-    setIsLoading(false);
+    const currentMenuId = selectedMenu?.id || null;
+    const previousMenuId = previousMenuRef.current;
+    
+    // Only clear if menu actually changed (not null -> menu initialization)
+    if (previousMenuId !== null && previousMenuId !== currentMenuId) {
+      console.log('Menu changed, clearing items cache. Previous:', previousMenuId, 'Current:', currentMenuId);
+      setItemsCache({});
+      itemsCacheRef.current = {}; // Clear ref as well
+      setItems([]);
+      setSelectedCategoryId(null);
+      setIsLoading(false);
+    } else if (previousMenuId === null && currentMenuId !== null) {
+      console.log('Menu initialized for first time:', currentMenuId, '- not clearing items');
+    }
+    
+    // Update ref to track previous menu
+    previousMenuRef.current = currentMenuId;
   }, [selectedMenu]);
 
   const value: ItemsContextType = {

@@ -2,16 +2,15 @@
 
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Download, Upload, AlertCircle, CheckCircle, FileText, X } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle, FileText } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 import { CsvImportService } from '@/lib/services/csv-import';
-import type { ImportValidationResult, ProcessedImportData } from '@/lib/types/csv-import';
+import type { ImportValidationResult } from '@/lib/types/csv-import';
 
 interface CsvImportDialogProps {
   open: boolean;

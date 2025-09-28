@@ -63,7 +63,7 @@ export function RestaurantSelector({ onCreateRestaurant }: RestaurantSelectorPro
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[250px] justify-between"
+          className="justify-between"
         >
           <div className="flex items-center space-x-2">
             <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">

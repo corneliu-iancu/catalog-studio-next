@@ -1,21 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import { DashboardHeader } from './dashboard-header';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { CreateRestaurantDialog } from './create-restaurant-dialog';
 import { RestaurantProvider } from '@/lib/contexts/restaurant-context';
 import { MenuProvider } from '@/lib/contexts/menu-context';
 import { ItemsProvider } from '@/lib/contexts/items-context';
+import type { User } from '@supabase/supabase-js';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  user?: {
-    email?: string;
-    user_metadata?: {
-      full_name?: string;
-      avatar_url?: string;
-    };
-  };
+  user: User | null;
   showCreateRestaurant?: boolean;
   onCreateRestaurant?: () => void;
   onCloseCreateRestaurant?: () => void;
@@ -28,6 +24,17 @@ export function DashboardLayout({
   onCreateRestaurant,
   onCloseCreateRestaurant
 }: DashboardLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+
+  // todo: bad code here. 
+  const handleToggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false);
+  };
 
   return (
     <RestaurantProvider>
@@ -38,12 +45,17 @@ export function DashboardLayout({
           <DashboardHeader
             user={user}
             onCreateRestaurant={onCreateRestaurant}
+            onToggleSidebar={handleToggleSidebar}
           />
 
           {/* Main Content Area */}
           <div className="flex-1 flex overflow-hidden">
             {/* Sidebar */}
-            <DashboardSidebar />
+            <DashboardSidebar 
+              isOpen={sidebarOpen}
+              onClose={handleCloseSidebar}
+              onCreateRestaurant={onCreateRestaurant}
+            />
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto bg-background">

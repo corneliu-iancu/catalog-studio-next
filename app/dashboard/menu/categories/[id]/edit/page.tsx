@@ -107,7 +107,7 @@ function EditCategoryPageContent() {
 
     setSaving(true);
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('categories')
         .update({
           name: formData.name.trim(),

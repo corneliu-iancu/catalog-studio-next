@@ -11,10 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Loader2, RefreshCw, Utensils, Trash2, Edit, Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
+import type { User } from '@supabase/supabase-js';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
-function ItemsPageContent() {
+function ItemsPageContent({ user }: { user: User | null }) {
   const params = useParams();
   const router = useRouter();
   const categoryId = params.id as string;
@@ -23,6 +24,7 @@ function ItemsPageContent() {
   
   const [category, setCategory] = useState<Category | null>(null);
   const [categoryLoading, setCategoryLoading] = useState(true);
+  const [categoryLoaded, setCategoryLoaded] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
 
   const supabase = createClient();
@@ -46,6 +48,9 @@ function ItemsPageContent() {
     const fetchCategory = async () => {
       if (!categoryId) return;
       
+      // Reset loaded state when categoryId changes
+      setCategoryLoaded(false);
+      
       try {
         setCategoryLoading(true);
         const { data, error } = await supabase
@@ -63,8 +68,10 @@ function ItemsPageContent() {
         }
 
         setCategory(data);
+        setCategoryLoaded(true);
       } catch (error) {
         console.error('Error fetching category:', error);
+        setCategoryLoaded(false);
         router.push('/dashboard/menu');
       } finally {
         setCategoryLoading(false);
@@ -76,19 +83,20 @@ function ItemsPageContent() {
 
   // Fetch items when category is loaded
   useEffect(() => {
-    if (categoryId && category) {
+    if (categoryId && categoryLoaded) {
       console.log('Category loaded, fetching items for:', categoryId);
+      console.log('Current items count before fetch:', items.length);
       fetchItemsByCategory(categoryId);
     }
-  }, [categoryId, category, fetchItemsByCategory]);
+  }, [categoryId, categoryLoaded]); // Use boolean flag instead of object reference
 
   // Add a retry mechanism for failed loads
   const retryLoadItems = useCallback(() => {
     if (categoryId) {
       console.log('Retrying items load for category:', categoryId);
-      fetchItemsByCategory(categoryId);
+      fetchItemsByCategory(categoryId, true); // Force refresh on retry
     }
-  }, [categoryId, fetchItemsByCategory]);
+  }, [categoryId]); // Removed fetchItemsByCategory from dependencies
 
   if (categoryLoading) {
     return (
@@ -293,9 +301,34 @@ function ItemsPageContent() {
 }
 
 export default function ItemsPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <DashboardLayout>
-      <ItemsPageContent />
+    <DashboardLayout user={user}>
+      <ItemsPageContent user={user} />
     </DashboardLayout>
   );
 }

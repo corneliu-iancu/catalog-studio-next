@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IngredientSelector } from '@/components/ui/ingredient-selector';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
 import { ArrowLeft, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -65,7 +66,9 @@ function NewItemPageContent() {
     spice_level: 'none',
     is_active: true,
     is_featured: false,
-    categoryId: categoryId || ''
+    categoryId: categoryId || '',
+    image_url: '',
+    image_alt: ''
   });
 
   const supabase = createClient();
@@ -136,6 +139,14 @@ function NewItemPageContent() {
     }));
   };
 
+  const handleImageUploaded = (s3Key: string, publicUrl: string) => {
+    setFormData(prev => ({
+      ...prev,
+      image_url: publicUrl,
+      image_alt: `Image for ${prev.name || 'menu item'}`
+    }));
+  };
+
   const handleSave = async () => {
     if (!formData.categoryId) {
       toast.error('Please select a category');
@@ -163,7 +174,9 @@ function NewItemPageContent() {
           allergens: formData.allergens.length > 0 ? formData.allergens : null,
           spice_level: formData.spice_level && formData.spice_level !== 'none' ? formData.spice_level : null,
           is_active: formData.is_active,
-          is_featured: formData.is_featured
+          is_featured: formData.is_featured,
+          image_url: formData.image_url || null,
+          image_alt: formData.image_alt || null
         })
         .select()
         .single();
@@ -389,6 +402,23 @@ function NewItemPageContent() {
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Image Upload */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Item Image</CardTitle>
+            <CardDescription>
+              Upload an image for this menu item
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ImageUploadField
+              currentImageUrl={formData.image_url}
+              onImageUploaded={handleImageUploaded}
+              folder="menu-items"
+            />
           </CardContent>
         </Card>
 

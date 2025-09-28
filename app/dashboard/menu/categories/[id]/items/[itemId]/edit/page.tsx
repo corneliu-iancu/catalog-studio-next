@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IngredientSelector } from '@/components/ui/ingredient-selector';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
 import { ArrowLeft, Save, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -68,7 +69,9 @@ function EditItemPageContent() {
     allergens: [] as string[],
     spice_level: 'none',
     is_active: true,
-    is_featured: false
+    is_featured: false,
+    image_url: '',
+    image_alt: ''
   });
 
   const supabase = createClient();
@@ -110,7 +113,9 @@ function EditItemPageContent() {
           allergens: itemData.allergens || [],
           spice_level: itemData.spice_level || 'none',
           is_active: itemData.is_active ?? true,
-          is_featured: itemData.is_featured ?? false
+          is_featured: itemData.is_featured ?? false,
+          image_url: itemData.image_url || '',
+          image_alt: itemData.image_alt || ''
         });
 
         // Fetch the specific category from URL
@@ -166,7 +171,9 @@ function EditItemPageContent() {
           allergens: formData.allergens.length > 0 ? formData.allergens : null,
           spice_level: formData.spice_level === 'none' ? null : formData.spice_level,
           is_active: formData.is_active,
-          is_featured: formData.is_featured
+          is_featured: formData.is_featured,
+          image_url: formData.image_url || null,
+          image_alt: formData.image_alt || null
         })
         .eq('id', itemId)
         .select()
@@ -188,6 +195,14 @@ function EditItemPageContent() {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+  };
+
+  const handleImageUploaded = (s3Key: string, publicUrl: string) => {
+    setFormData(prev => ({
+      ...prev,
+      image_url: publicUrl,
+      image_alt: `Image for ${prev.name || 'menu item'}`
     }));
   };
 
@@ -410,6 +425,23 @@ function EditItemPageContent() {
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Image Upload */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Item Image</CardTitle>
+            <CardDescription>
+              Upload or change the image for this menu item
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ImageUploadField
+              currentImageUrl={formData.image_url}
+              onImageUploaded={handleImageUploaded}
+              folder="menu-items"
+            />
           </CardContent>
         </Card>
 

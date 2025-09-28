@@ -182,7 +182,7 @@ function EditItemPageContent() {
       if (error) throw error;
 
       toast.success('Item updated successfully');
-      router.push(`/dashboard/menu/categories/${categoryId}/items`);
+      // Stay on edit page to allow further edits
     } catch (error) {
       console.error('Error updating item:', error);
       toast.error('Failed to update item');
@@ -235,7 +235,7 @@ function EditItemPageContent() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 pb-12">
       {/* Breadcrumb Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -265,7 +265,7 @@ function EditItemPageContent() {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-none">
         {/* Basic Information */}
         <Card>
           <CardHeader>

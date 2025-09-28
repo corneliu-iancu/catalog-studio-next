@@ -33,7 +33,7 @@ export function DashboardLayout({
     <RestaurantProvider>
       <MenuProvider>
         <ItemsProvider>
-          <div className="h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col">
           {/* Header */}
           <DashboardHeader
             user={user}
@@ -47,9 +47,7 @@ export function DashboardLayout({
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto bg-background">
-              <div className="h-full">
-                {children}
-              </div>
+              {children}
             </main>
           </div>
           </div>

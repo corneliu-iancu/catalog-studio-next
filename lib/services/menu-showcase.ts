@@ -183,7 +183,6 @@ export class MenuShowcaseService {
     // In the future, this could be stored in a restaurant_settings table
     return {
       template: 'classic',
-      theme: 'oriental',
       show_prices: true,
       show_descriptions: true,
       show_images: true,
@@ -233,7 +232,6 @@ export class MenuShowcaseService {
         name: 'Default Template',
         description: 'Elegant menu with rich Middle Eastern-inspired design',
         template: 'classic' as const,
-        theme: 'oriental' as const,
         preview: '/templates/default.jpg'
       }
     ];
@@ -345,7 +343,6 @@ export class MenuShowcaseService {
       },
       display_settings: {
         template: 'classic',
-        theme: 'oriental',
         show_prices: true,
         show_descriptions: true,
         show_images: true,

@@ -44,7 +44,6 @@ function TemplatePageContent() {
       // In the future, this would fetch from the database
       const defaultSettings: MenuDisplaySettings = {
         template: 'classic',
-        theme: 'oriental',
         show_prices: true,
         show_descriptions: true,
         show_images: true,
@@ -111,7 +110,7 @@ function TemplatePageContent() {
     if (!selectedRestaurant) return;
     
     // Open preview in new tab
-    const previewUrl = `/${selectedRestaurant.slug}?preview=true&template=${previewSettings.template}&theme=${previewSettings.theme}`;
+    const previewUrl = `/${selectedRestaurant.slug}?preview=true&template=${previewSettings.template}`;
     window.open(previewUrl, '_blank');
   };
 
@@ -211,8 +210,7 @@ function TemplatePageContent() {
           <CardDescription>
             Your menu is currently using the{' '}
             <span className="font-medium capitalize">{settings.template}</span> template
-            with the{' '}
-            <span className="font-medium capitalize">{settings.theme}</span> theme.
+            with clean, elegant styling.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -222,7 +220,7 @@ function TemplatePageContent() {
             </div>
             <div>
               <h3 className="font-semibold capitalize">
-                {settings.template} - {settings.theme}
+                {settings.template}
               </h3>
               <p className="text-sm text-muted-foreground">
                 {settings.show_images ? 'With images' : 'Text only'} •{' '}

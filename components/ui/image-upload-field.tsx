@@ -134,7 +134,12 @@ export function ImageUploadField({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleChangeImage}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleChangeImage();
+                  }}
                 >
                   Change Image
                 </Button>
@@ -142,7 +147,12 @@ export function ImageUploadField({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleRemoveImage}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRemoveImage();
+                    }}
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -207,7 +217,10 @@ export function ImageUploadField({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         if (imgRef.current) {
                           const { width, height } = imgRef.current.getBoundingClientRect();
                           const size = Math.min(width, height) * 0.9;
@@ -226,7 +239,10 @@ export function ImageUploadField({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         if (imgRef.current) {
                           const { width, height } = imgRef.current.getBoundingClientRect();
                           setCrop({
@@ -249,7 +265,10 @@ export function ImageUploadField({
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => {
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       reset();
                       if (!currentImageUrl) {
                         setShowUploader(true);
@@ -261,7 +280,12 @@ export function ImageUploadField({
                     Cancel
                   </Button>
                   <Button 
-                    onClick={handleUpload} 
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleUpload();
+                    }} 
                     disabled={isUploading}
                     className="min-w-[120px]"
                   >

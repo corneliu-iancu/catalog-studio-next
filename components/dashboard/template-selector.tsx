@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Palette, Layout, Settings, Eye } from 'lucide-react';
-import { MenuDisplaySettings, ColorTheme } from '@/lib/types/templates';
+import { MenuDisplaySettings } from '@/lib/types/templates';
 import { menuShowcaseService } from '@/lib/services/menu-showcase';
 
 interface TemplateSelectorProps {
@@ -36,8 +36,7 @@ export function TemplateSelector({
     const template = availableTemplates.find(t => t.id === templateId);
     if (template) {
       updateSettings({
-        template: template.template,
-        theme: template.theme
+        template: template.template
       });
     }
   };
@@ -82,7 +81,7 @@ export function TemplateSelector({
                 <Card 
                   key={template.id}
                   className={`cursor-pointer transition-all hover:shadow-md ${
-                    settings.template === template.template && settings.theme === template.theme
+                    settings.template === template.template
                       ? 'ring-2 ring-primary' 
                       : ''
                   }`}
@@ -102,9 +101,6 @@ export function TemplateSelector({
                       <Badge variant="secondary" className="text-xs">
                         {template.template}
                       </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {template.theme}
-                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -116,27 +112,7 @@ export function TemplateSelector({
         {/* Appearance Settings */}
         <TabsContent value="appearance" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Color Theme</CardTitle>
-                <CardDescription>
-                  Choose the color scheme for your menu
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Select 
-                  value={settings.theme} 
-                  onValueChange={(value: ColorTheme) => updateSettings({ theme: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="oriental">Oriental (Middle Eastern)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
+            {/* Theme selection removed - using single clean template */}
 
             <Card>
               <CardHeader>

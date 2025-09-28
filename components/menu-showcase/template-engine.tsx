@@ -2,7 +2,6 @@
 
 import { PublicMenuData } from '@/lib/types/templates';
 import { ClassicTemplate } from './templates/classic-template';
-import { MinimalTemplate } from './templates/minimal-template';
 
 interface TemplateEngineProps {
   menuData: PublicMenuData;
@@ -11,13 +10,11 @@ interface TemplateEngineProps {
 
 export function TemplateEngine({ menuData, className }: TemplateEngineProps) {
   const { display_settings } = menuData;
-  display_settings.theme = 'oriental';
+  // Single clean template styling
 
   // Render the appropriate template based on display settings
   const renderTemplate = () => {
     switch (display_settings.template) {
-      case 'minimal':
-        return <MinimalTemplate menuData={menuData} />;
       case 'classic':
       default:
         return <ClassicTemplate menuData={menuData} />;

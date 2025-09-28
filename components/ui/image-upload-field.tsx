@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { FileDropzone } from '@/components/ui/file-dropzone';
 import { useImageUpload } from '@/lib/hooks/useImageUpload';
 import { CompressionSettings } from '@/lib/types/image-upload';
+import { useDisplayImage } from '@/lib/utils/image-display';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
-import { Upload, Image as ImageIcon, X, Check } from 'lucide-react';
+import { Upload, Image as ImageIcon, X, Check, Loader2 } from 'lucide-react';
 import 'react-image-crop/dist/ReactCrop.css';
 
 interface ImageUploadFieldProps {
@@ -51,6 +52,8 @@ export function ImageUploadField({
     reset, 
     processAndUpload 
   } = useImageUpload();
+  
+  const { displayUrl, loading: imageLoading } = useDisplayImage(currentImageUrl || null);
 
   const [crop, setCrop] = useState<Crop>({
     unit: '%',
@@ -105,11 +108,21 @@ export function ImageUploadField({
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                <img 
-                  src={currentImageUrl} 
-                  alt="Current image"
-                  className="w-full h-full object-cover"
-                />
+                {imageLoading ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : displayUrl ? (
+                  <img 
+                    src={displayUrl} 
+                    alt="Current image"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    <ImageIcon className="h-4 w-4" />
+                  </div>
+                )}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium">Current image</p>

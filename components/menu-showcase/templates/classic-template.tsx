@@ -3,12 +3,52 @@
 import { useState } from 'react';
 import { PublicMenuData } from '@/lib/types/templates';
 import { formatPrice, type SupportedCurrency } from '@/lib/utils/currency';
+import { useDisplayImage } from '@/lib/utils/image-display';
+import { ImageIcon, Loader2 } from 'lucide-react';
 
 import { TemplateWrapper, MenuHeader, CategorySection, MenuItem } from '../template-engine';
 import { ProductPage } from '../product-page';
 
 interface ClassicTemplateProps {
   menuData: PublicMenuData;
+}
+
+// Component for displaying menu item images with fallback
+function ItemImage({ imageUrl, itemName, isOrientalTheme, size = 'md' }: { 
+  imageUrl?: string | null; 
+  itemName: string;
+  isOrientalTheme: boolean;
+  size?: 'sm' | 'md' | 'lg';
+}) {
+  const { displayUrl, loading } = useDisplayImage(imageUrl);
+  
+  const sizeClasses = {
+    sm: 'w-12 h-12',
+    md: 'w-16 h-16', 
+    lg: 'w-20 h-20'
+  };
+  
+  const iconSizes = {
+    sm: 'h-4 w-4',
+    md: 'h-6 w-6',
+    lg: 'h-8 w-8'
+  };
+
+  return (
+    <div className={`${sizeClasses[size]} ${isOrientalTheme ? 'bg-gradient-to-br from-amber-100 to-emerald-100 border border-amber-200' : 'bg-gray-100 border border-gray-200'} rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center`}>
+      {loading ? (
+        <Loader2 className={`${iconSizes[size]} ${isOrientalTheme ? 'text-amber-600' : 'text-gray-400'} animate-spin`} />
+      ) : displayUrl ? (
+        <img 
+          src={displayUrl} 
+          alt={`${itemName} image`}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <ImageIcon className={`${iconSizes[size]} ${isOrientalTheme ? 'text-amber-600' : 'text-gray-400'}`} />
+      )}
+    </div>
+  );
 }
 
 export function ClassicTemplate({ menuData }: ClassicTemplateProps) {

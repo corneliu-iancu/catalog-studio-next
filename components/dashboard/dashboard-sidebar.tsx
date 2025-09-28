@@ -12,6 +12,7 @@ import {
   Settings,
   Store,
   UtensilsCrossed,
+  Upload,
 } from 'lucide-react';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 
@@ -60,6 +61,13 @@ const getNavigation = (t: any) => [
     icon: Settings,
     descriptionKey: 'descriptions.settings',
     requiresRestaurant: false, // This page doesn't require a restaurant
+  },
+  {
+    nameKey: 'imageUploadDemo',
+    href: '/dashboard/image-upload-demo',
+    icon: Upload,
+    descriptionKey: 'descriptions.imageUploadDemo',
+    requiresRestaurant: false, // Demo page doesn't require a restaurant
   },
 ];
 
@@ -119,7 +127,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span>{t(item.nameKey)}</span>
+                    <span>{item.nameKey === 'imageUploadDemo' ? 'Image Upload Demo' : t(item.nameKey)}</span>
                     {item.disabled && (
                       <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded">
                         {t('soon')}
@@ -128,7 +136,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                   </div>
                   {!isActive && (
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                      {t(item.descriptionKey)}
+                      {item.nameKey === 'imageUploadDemo' ? 'Test image upload component' : t(item.descriptionKey)}
                     </p>
                   )}
                 </div>

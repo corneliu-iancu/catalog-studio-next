@@ -160,7 +160,7 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <p className="text-lg text-muted-foreground mb-6">
-                Ready to showcase your restaurant's menu online? Start building your digital menu presence today.
+                {`Ready to showcase your restaurant's menu online? Start building your digital menu presence today.`}
               </p>
               <Button asChild size="lg">
                 <Link href="/auth/signup">Sign Up Today</Link>
@@ -177,7 +177,7 @@ export default function AboutPage() {
             <CardHeader>
               <CardTitle className="text-2xl">Contact Us</CardTitle>
               <CardDescription>
-                Have questions or need support? We're here to help!
+                {`Have questions or need support? We're here to help!`}
               </CardDescription>
             </CardHeader>
             <CardContent>

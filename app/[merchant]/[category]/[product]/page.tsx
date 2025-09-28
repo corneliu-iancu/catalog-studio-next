@@ -149,7 +149,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 export async function generateMetadata({ params }: ProductPageProps) {
-  const { merchant, category, product } = await params;
+  const { merchant, product } = await params;
   const restaurantName = merchant.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
   const productName = product.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
   

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ProductPage } from '@/components/menu-showcase/product-page';
 import { menuShowcaseService } from '@/lib/services/menu-showcase';
+import type { SupportedCurrency } from '@/lib/utils/currency';
 
 interface ProductPageProps {
   params: Promise<{
@@ -35,8 +36,7 @@ export default async function ItemPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Get menu currency or default to USD
-  const menuCurrency = (menuData.menu.currency as 'USD' | 'EUR' | 'GBP' | 'JPY' | 'CAD' | 'AUD') || 'USD';
+  const menuCurrency = (menuData.menu.currency as SupportedCurrency) || 'USD';
 
   return (
     <ProductPage

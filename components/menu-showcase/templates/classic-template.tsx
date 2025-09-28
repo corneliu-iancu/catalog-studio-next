@@ -1,15 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { PublicMenuData, MenuItem as MenuItemType } from '@/lib/types/templates';
 import { formatPrice, type SupportedCurrency } from '@/lib/utils/currency';
 import { useDisplayImage } from '@/lib/utils/image-display';
-import { ImageIcon, Loader2, Star, Clock, ChefHat } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ImageIcon, Loader2, Star, ChefHat } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 
-import { TemplateWrapper, MenuHeader, CategorySection } from '../template-engine';
+import { TemplateWrapper, MenuHeader } from '../template-engine';
 
 interface ClassicTemplateProps {
   menuData: PublicMenuData;
@@ -62,7 +59,7 @@ export function ItemImage({ imageUrl, itemName, size = 'md' }: {
   );
 }
 
-// Modern, card-based MenuItem component with shadcn styling
+// Traditional menu-style MenuItem component 
 function MenuItemCard({ 
   item, 
   menuCurrency, 
@@ -75,75 +72,66 @@ function MenuItemCard({
   onItemClick: (item: MenuItemType) => void;
 }) {
   return (
-    <Card 
-      className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 border-0 bg-gradient-to-r from-white to-gray-50/30 mb-6"
+    <div 
+      className="group cursor-pointer hover:bg-gray-50/50 transition-colors duration-200 py-3 px-4"
       onClick={() => onItemClick(item)}
     >
-      <CardContent className="p-0">
-        <div className="flex gap-4 p-4">
-          {/* Modern Image with better aspect ratio */}
-          <div className="relative flex-shrink-0">
-            <ItemImage 
-              imageUrl={item.image_url} 
-              itemName={item.name}
-              size="md"
-            />
-            {item.is_featured && (
-              <div className="absolute -top-2 -right-2 bg-amber-500 text-white rounded-full p-1.5 shadow-lg">
-                <Star className="w-3 h-3 fill-current" />
-              </div>
-            )}
-          </div>
-
-          {/* Content Section */}
-          <div className="flex-1 min-w-0 space-y-2">
-            {/* Header with name and price */}
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="font-semibold text-lg text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-2">
-                {item.name}
-              </h3>
-              <Badge 
-                variant="secondary" 
-                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold text-sm px-3 py-1.5 whitespace-nowrap shadow-sm"
-              >
-                {formatPrice(item.price, menuCurrency)}
-              </Badge>
+      <div className="flex gap-3 items-start">
+        {/* Smaller Image */}
+        <div className="relative flex-shrink-0">
+          <ItemImage 
+            imageUrl={item.image_url} 
+            itemName={item.name}
+            size="sm"
+          />
+          {item.is_featured && (
+            <div className="absolute -top-1 -right-1 bg-amber-500 text-white rounded-full p-0.5">
+              <Star className="w-2 h-2 fill-current" />
             </div>
-
-            {/* Description */}
-            {showDescriptions && item.description && (
-              <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
-                {item.description.length > 120 
-                  ? `${item.description.substring(0, 120)}...` 
-                  : item.description}
-              </p>
-            )}
-
-            {/* Bottom row with meta info */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-4 text-xs text-gray-500">
-                {item.spice_level && (
-                  <div className="flex items-center gap-1">
-                    <ChefHat className="w-3 h-3" />
-                    <span className="capitalize">{item.spice_level}</span>
-                  </div>
-                )}
-                {item.ingredients && (
-                  <div className="flex items-center gap-1 max-w-32">
-                    <span className="truncate">{item.ingredients}</span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Subtle arrow indicator */}
-              <div className="text-gray-400 group-hover:text-gray-600 transition-colors">
-                <div className="w-2 h-2 rounded-full bg-current transform group-hover:scale-110 transition-transform"></div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Content Section */}
+        <div className="flex-1 min-w-0">
+          {/* Header with name and price on same line */}
+          <div className="flex items-baseline justify-between gap-2 mb-1">
+            <h3 className="font-medium text-base text-gray-900 leading-tight">
+              {item.name}
+            </h3>
+            <div className="flex-1 border-b border-dotted border-gray-300 mx-2 mb-1"></div>
+            <span className="font-semibold text-base text-gray-900 whitespace-nowrap">
+              {formatPrice(item.price, menuCurrency)}
+            </span>
+          </div>
+
+          {/* Description */}
+          {showDescriptions && item.description && (
+            <p className="text-xs text-gray-600 leading-snug mb-1 line-clamp-2">
+              {item.description.length > 100 
+                ? `${item.description.substring(0, 100)}...` 
+                : item.description}
+            </p>
+          )}
+
+          {/* Meta info in compact format */}
+          {(item.spice_level || item.ingredients) && (
+            <div className="flex items-center gap-3 text-xs text-gray-500">
+              {item.spice_level && (
+                <span className="capitalize flex items-center gap-1">
+                  <ChefHat className="w-3 h-3" />
+                  {item.spice_level}
+                </span>
+              )}
+              {item.ingredients && (
+                <span className="truncate max-w-32">
+                  {item.ingredients}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -180,7 +168,7 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
           <main className="px-4 md:px-12 pb-8">
             
             {/* Categories - Each with Two Column Layout */}
-            {menu.categories.map((category, categoryIndex) => (
+            {menu.categories.map((category) => (
               <div key={category.id} className="mb-16">
                 
                 {/* Category Header */}
@@ -194,17 +182,19 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
                   </div>
                 </div>
 
-                {/* Modern Card Grid Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                  {category.items.map((item) => (
-                    <MenuItemCard
-                      key={item.id}
-                      item={item}
-                      menuCurrency={menuCurrency}
-                      showDescriptions={display_settings.show_descriptions}
-                      onItemClick={handleItemClick}
-                    />
-                  ))}
+                {/* Traditional Menu List Layout */}
+                <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg shadow-sm">
+                  <div className="divide-y divide-gray-100">
+                    {category.items.map((item) => (
+                      <MenuItemCard
+                        key={item.id}
+                        item={item}
+                        menuCurrency={menuCurrency}
+                        showDescriptions={display_settings.show_descriptions}
+                        onItemClick={handleItemClick}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}

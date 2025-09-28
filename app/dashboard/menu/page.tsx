@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 import { useMenu } from '@/lib/contexts/menu-context';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { Database } from '@/lib/types/database';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Button } from '@/components/ui/button';
@@ -847,7 +848,7 @@ function MenuManagementContent() {
 }
 
 export default function MenuManagementPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 

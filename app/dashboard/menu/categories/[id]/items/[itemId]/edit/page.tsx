@@ -158,7 +158,7 @@ function EditItemPageContent() {
 
     try {
       setSaving(true);
-      const { data, error } = await supabase
+        const { error } = await supabase
         .from('menu_items')
         .update({
           name: formData.name.trim(),

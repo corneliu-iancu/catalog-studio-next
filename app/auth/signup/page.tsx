@@ -80,7 +80,7 @@ export default function SignUpPage() {
         // Email confirmation required
         setError('Please check your email to verify your account, then sign in.');
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);

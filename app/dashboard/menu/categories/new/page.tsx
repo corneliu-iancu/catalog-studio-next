@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 import { useMenu } from '@/lib/contexts/menu-context';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
@@ -379,7 +380,7 @@ function CreateCategoryContent() {
 }
 
 export default function NewCategoryPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 

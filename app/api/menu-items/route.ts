@@ -1,6 +1,31 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Type definitions for Supabase relations
+interface RestaurantData {
+  id: string;
+  user_id: string;
+  name: string;
+}
+
+interface MenuData {
+  id: string;
+  restaurants: RestaurantData[];
+}
+
+interface CategoryWithMenus {
+  id: string;
+  name: string;
+  menus: MenuData[];
+}
+
+interface ItemWithCategories {
+  id: string;
+  categories: {
+    menus: MenuData[];
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -58,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user owns the restaurant
-    const restaurant = (categoryData.menus as any)?.[0]?.restaurants?.[0];
+    const restaurant = (categoryData as CategoryWithMenus)?.menus?.[0]?.restaurants?.[0];
     if (!restaurant || restaurant.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
@@ -155,7 +180,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if user owns the restaurant
-    const restaurant = (itemData.categories as any)?.menus?.[0]?.restaurants?.[0];
+    const restaurant = (itemData as ItemWithCategories)?.categories?.menus?.[0]?.restaurants?.[0];
     if (!restaurant || restaurant.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }

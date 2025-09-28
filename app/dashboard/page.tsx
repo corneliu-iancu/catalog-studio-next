@@ -4,19 +4,17 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 import { useMenu } from '@/lib/contexts/menu-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  BarChart3,
   Eye,
   Plus,
   Store,
   UtensilsCrossed,
-  Users,
-  TrendingUp,
   Calendar,
   ExternalLink
 } from 'lucide-react';
@@ -314,7 +312,7 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
 }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
   const supabase = createClient();

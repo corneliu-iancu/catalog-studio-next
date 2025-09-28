@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { getCurrentDomain } from '@/lib/config';
 import { toast } from 'sonner';
 
@@ -73,7 +74,7 @@ function RestaurantProfileContent() {
     setIsSaving(true);
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('restaurants')
         .update(formData)
         .eq('id', selectedRestaurant.id)
@@ -475,7 +476,7 @@ function RestaurantProfileContent() {
 }
 
 export default function RestaurantPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 

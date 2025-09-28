@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
       }
 
       setMessage('Check your email for a password reset link. If you don\'t see it, check your spam folder.');
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

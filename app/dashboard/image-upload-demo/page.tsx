@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,8 +173,7 @@ function ImageUploadDemoContent() {
                                 const { naturalWidth, naturalHeight } = imgRef.current;
                                 
                                 // Calculate crop in displayed image coordinates
-                                const scaleX = naturalWidth / width;
-                                const scaleY = naturalHeight / height;
+                                // Calculate crop area
                                 const size = Math.min(width, height) * 0.8;
                                 
                                 setCrop({
@@ -379,13 +379,7 @@ function ImageUploadDemoContent() {
 
 export default function ImageUploadDemoPage() {
   const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
-  const [user, setUser] = useState<{
-    email?: string;
-    user_metadata?: {
-      full_name?: string;
-      avatar_url?: string;
-    };
-  } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
 
   useEffect(() => {

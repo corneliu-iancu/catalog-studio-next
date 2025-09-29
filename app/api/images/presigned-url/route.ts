@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Generate presigned URL (expires in 5 minutes)
+    // Generate presigned URL (expires in 24 hours to handle time sync issues)
     const presignedUrl = await getSignedUrl(s3Client, command, { 
-      expiresIn: 300 
+      expiresIn: 86400 // 24 hours
     });
 
     // Public URL for accessing the uploaded file

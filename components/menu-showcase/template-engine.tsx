@@ -2,6 +2,8 @@
 
 import { PublicMenuData } from '@/lib/types/templates';
 import { ClassicTemplate } from './templates/classic-template';
+import { Badge } from '../ui/badge';
+import { UtensilsCrossed, MapPin, Phone } from 'lucide-react';
 
 interface TemplateEngineProps {
   menuData: PublicMenuData;
@@ -39,6 +41,11 @@ export function TemplateWrapper({
   );
 }
 
+export const formatCuisineType = (cuisine: string | null) => {
+  if (!cuisine) return 'Not specified';
+  return cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
+};
+
 // Common components used across templates
 export function MenuHeader({ 
   restaurant, 
@@ -52,7 +59,7 @@ export function MenuHeader({
   showDescription?: boolean;
 }) {
   return (
-    <header className="bg-white py-8">
+    <header className="py-8">
       <div className="max-w-4xl mx-auto px-6">
         
         {/* Vintage Restaurant Banner */}
@@ -96,21 +103,32 @@ export function MenuHeader({
           <h2 className="text-2xl font-semibold text-gray-800">{restaurant.name}</h2>
           
           {restaurant.cuisine && (
-            <p className="text-lg italic">{restaurant.cuisine} Cuisine</p>
+            <div className="flex items-center justify-center">
+            <Badge variant="secondary" className="flex items-center w-fit">
+                <UtensilsCrossed className="mr-1 h-3 w-3" />
+                {formatCuisineType(restaurant.cuisine)}
+              </Badge>
+            </div>
           )}
           
           {showDescription && (restaurant.description || menu.description) && (
-            <p className="text-base max-w-2xl mx-auto mt-4">
+            <p className="text-base max-w-2xl mx-auto !mt-8 !mb-8">
               {restaurant.description || menu.description}
             </p>
           )}
 
           {restaurant.address && (
-            <p className="text-sm">{restaurant.address}</p>
+            <p className="text-sm flex items-center justify-center gap-1">
+              <MapPin className="w-3 h-3" />
+              {restaurant.address}
+            </p>
           )}
           
           {restaurant.phone && (
-            <p className="text-sm">{restaurant.phone}</p>
+            <p className="text-sm flex items-center justify-center gap-1">
+              <Phone className="w-3 h-3" />
+              {restaurant.phone}
+            </p>
           )}
         </div>
         

@@ -109,14 +109,9 @@ export class MenuShowcaseService {
       const categories = (categoriesData || [])
         .map(category => {
           console.log(`Processing category: ${category.name}`);
-          console.log('category_menu_items:', category.category_menu_items);
           
           const items = (category.category_menu_items || [])
             .filter(cmi => {
-              console.log('cmi:', cmi);
-              console.log('cmi.menu_items type:', typeof cmi.menu_items);
-              console.log('cmi.menu_items isArray:', Array.isArray(cmi.menu_items));
-              console.log('cmi.menu_items:', cmi.menu_items);
               return cmi.menu_items;
             })
             .map(cmi => {

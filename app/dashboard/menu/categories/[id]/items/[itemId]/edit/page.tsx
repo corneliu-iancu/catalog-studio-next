@@ -23,6 +23,8 @@ import { toast } from 'sonner';
 
 type MenuItem = Database['public']['Tables']['menu_items']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
+type Menu = Database['public']['Tables']['menus']['Row'];
+type Restaurant = Database['public']['Tables']['restaurants']['Row'];
 
 // Allergen options
 const ALLERGEN_OPTIONS = [ // todo: these are predefined. but still we need to make it translatable.
@@ -57,6 +59,8 @@ function EditItemPageContent() {
   const [saving, setSaving] = useState(false);
   const [item, setItem] = useState<MenuItem | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
+  const [menu, setMenu] = useState<Menu | null>(null);
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -118,10 +122,16 @@ function EditItemPageContent() {
           image_alt: itemData.image_alt || ''
         });
 
-        // Fetch the specific category from URL
+        // Fetch the specific category with menu and restaurant data
         const { data: categoryData, error: categoryError } = await supabase
           .from('categories')
-          .select('*')
+          .select(`
+            *,
+            menus:menu_id (
+              *,
+              restaurants:restaurant_id (*)
+            )
+          `)
           .eq('id', categoryId)
           .maybeSingle();
 
@@ -138,6 +148,14 @@ function EditItemPageContent() {
         }
 
         setCategory(categoryData);
+        
+        // Extract menu and restaurant data from the nested response
+        if (categoryData.menus) {
+          setMenu(categoryData.menus);
+          if (categoryData.menus.restaurants) {
+            setRestaurant(categoryData.menus.restaurants);
+          }
+        }
         
       } catch (error) {
         console.error('Error fetching item:', error);
@@ -198,6 +216,16 @@ function EditItemPageContent() {
     }));
   };
 
+  // Build dynamic folder path: restaurant-slug/menu-slug/category-slug/item-slug
+  const buildImageFolder = () => {
+    if (!restaurant || !menu || !category || !formData.slug) {
+      // Fallback to basic folder structure if data not available
+      return 'menu-items';
+    }
+    
+    return `${restaurant.slug}/${menu.slug}/${category.slug}/${formData.slug}`;
+  };
+
   const handleImageUploaded = (s3Key: string, publicUrl: string) => {
     setFormData(prev => ({
       ...prev,
@@ -217,7 +245,7 @@ function EditItemPageContent() {
     );
   }
 
-  if (!item || !category) {
+  if (!item || !category || !menu || !restaurant) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
@@ -434,13 +462,19 @@ function EditItemPageContent() {
             <CardTitle>Item Image</CardTitle>
             <CardDescription>
               Upload or change the image for this menu item
+              <br />
+              <span className="text-xs text-muted-foreground mt-1 block">
+                Images will be saved to: <code className="bg-muted px-1 rounded">{buildImageFolder()}</code>
+              </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ImageUploadField
               currentImageUrl={formData.image_url}
               onImageUploaded={handleImageUploaded}
-              folder="menu-items"
+              folder={buildImageFolder()}
+              label="Menu Item Image"
+              description={`Upload an image for ${formData.name || 'this menu item'}`}
             />
           </CardContent>
         </Card>
@@ -510,7 +544,7 @@ function EditItemPageContent() {
 
 export default function EditItemPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout user={null}>
       <EditItemPageContent />
     </DashboardLayout>
   );

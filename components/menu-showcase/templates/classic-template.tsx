@@ -155,7 +155,7 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
     <TemplateWrapper className="classic-template bg-gray-50">
       {/* Decorative Border Container */}
       <div className="max-w-5xl mx-auto p-2 md:p-8">
-        <div className="bg-white border-4 border-gray-800 relative">
+        <div>
           {/* Header */}
           <MenuHeader 
             restaurant={restaurant} 
@@ -174,16 +174,16 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
                 {/* Category Header */}
                 <div className="text-center mb-8">
                   <div className="flex items-center justify-center">
-                    <div className="w-12 h-8 bg-gray-800 rounded-full mr-4"></div>
-                    <div className="bg-gray-800 text-white px-6 py-2 rounded-full">
+                    <div className="w-12 h-8 bg-emerald-900 rounded-full mr-4"></div>
+                    <div className="bg-emerald-900 text-white px-6 py-2 rounded-full">
                       <span className="text-lg font-bold tracking-wider uppercase">{category.name}</span>
                     </div>
-                    <div className="w-12 h-8 bg-gray-800 rounded-full ml-4"></div>
+                    <div className="w-12 h-8 bg-emerald-900 rounded-full ml-4"></div>
                   </div>
                 </div>
 
                 {/* Traditional Menu List Layout */}
-                <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="max-w-2xl mx-auto">
                   <div className="divide-y divide-gray-100">
                     {category.items.map((item) => (
                       <MenuItemCard

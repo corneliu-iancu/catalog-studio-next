@@ -48,7 +48,7 @@ export function formatPrice(
 
   // Special formatting for Romanian Leu (symbol comes after the number)
   if (currency === 'RON') {
-    return `${Math.round(price)} ${currencyInfo.symbol}`;
+    return `${price.toFixed(2)} ${currencyInfo.symbol}`;
   }
 
   // For EUR and USD, symbol comes before the number

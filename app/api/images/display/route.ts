@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     });
 
     const presignedUrl = await getSignedUrl(s3Client, getObjectCommand, {
-      expiresIn: 3600, // 1 hour
+      expiresIn: 86400, // 24 hours to handle time sync issues
     });
 
     return NextResponse.json({ url: presignedUrl });

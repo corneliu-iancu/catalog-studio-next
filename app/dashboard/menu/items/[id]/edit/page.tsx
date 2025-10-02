@@ -21,7 +21,7 @@ function EditItemRedirectContent() {
       try {
         // Fetch the item's first category to redirect to new route
         const { data: categoryData, error: categoryError } = await supabase
-          .from('category_menu_items')
+          .from('category_products')
           .select(`
             category_id,
             categories!inner (
@@ -29,7 +29,7 @@ function EditItemRedirectContent() {
               name
             )
           `)
-          .eq('menu_item_id', itemId)
+          .eq('product_id', itemId)
           .limit(1);
 
         if (categoryError) throw categoryError;

@@ -154,7 +154,7 @@ function ImageUploadDemoContent() {
                           crop={crop}
                           onChange={(_, percentCrop) => setCrop(percentCrop)}
                           onComplete={(c) => setCompletedCrop(c)}
-                          aspect={undefined}
+                          aspect={1}
                           circularCrop={false}
                           className="max-w-full"
                         >

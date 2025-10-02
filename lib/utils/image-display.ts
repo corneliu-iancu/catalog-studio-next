@@ -21,10 +21,15 @@ export function getDisplayImageUrl(s3Url: string | null): Promise<string | null>
 }
 
 /**
- * Extract S3 key from full S3 URL
+ * Extract S3 key from full S3 URL or return the key if already provided
  */
 function extractS3KeyFromUrl(s3Url: string): string | null {
   try {
+    // If it doesn't look like a URL (no protocol), assume it's already an S3 key
+    if (!s3Url.startsWith('http://') && !s3Url.startsWith('https://')) {
+      return s3Url;
+    }
+    
     // Handle different S3 URL formats:
     // https://bucket.s3.region.amazonaws.com/key
     // https://s3.region.amazonaws.com/bucket/key

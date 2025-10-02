@@ -39,7 +39,7 @@ export function IngredientSelector({
     const fetchIngredients = async () => {
       try {
         const { data, error } = await supabase
-          .from('menu_items')
+          .from('products')
           .select('ingredients')
           .not('ingredients', 'is', null);
 

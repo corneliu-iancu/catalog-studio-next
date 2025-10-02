@@ -16,12 +16,12 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IngredientSelector } from '@/components/ui/ingredient-selector';
-import { ImageUploadField } from '@/components/ui/image-upload-field';
-import { ArrowLeft, Save, Loader2, X } from 'lucide-react';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { MultiImageUpload, UploadedImage } from '@/components/ui/multi-image-upload';
 
-type MenuItem = Database['public']['Tables']['menu_items']['Row'];
+type MenuItem = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 type Menu = Database['public']['Tables']['menus']['Row'];
 type Restaurant = Database['public']['Tables']['restaurants']['Row'];
@@ -61,6 +61,8 @@ function EditItemPageContent() {
   const [category, setCategory] = useState<Category | null>(null);
   const [menu, setMenu] = useState<Menu | null>(null);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [initialImageIds, setInitialImageIds] = useState<Set<string>>(new Set());
   
   const [formData, setFormData] = useState({
     name: '',
@@ -73,9 +75,7 @@ function EditItemPageContent() {
     allergens: [] as string[],
     spice_level: 'none',
     is_active: true,
-    is_featured: false,
-    image_url: '',
-    image_alt: ''
+    is_featured: false
   });
 
   const supabase = createClient();
@@ -90,8 +90,19 @@ function EditItemPageContent() {
         
         // Fetch item details
         const { data: itemData, error: itemError } = await supabase
-          .from('menu_items')
-          .select('*')
+          .from('products')
+          .select(`
+            *,
+            product_images (
+              id,
+              s3_key,
+              alt_text,
+              display_order,
+              is_primary,
+              width,
+              height
+            )
+          `)
           .eq('id', itemId)
           .maybeSingle();
 
@@ -117,10 +128,28 @@ function EditItemPageContent() {
           allergens: itemData.allergens || [],
           spice_level: itemData.spice_level || 'none',
           is_active: itemData.is_active ?? true,
-          is_featured: itemData.is_featured ?? false,
-          image_url: itemData.image_url || '',
-          image_alt: itemData.image_alt || ''
+          is_featured: itemData.is_featured ?? false
         });
+
+        // Load existing product images
+        if (itemData.product_images && Array.isArray(itemData.product_images)) {
+          const images: UploadedImage[] = itemData.product_images
+            .sort((a: any, b: any) => {
+              // Sort by is_primary first, then display_order
+              if (a.is_primary && !b.is_primary) return -1;
+              if (!a.is_primary && b.is_primary) return 1;
+              return (a.display_order || 0) - (b.display_order || 0);
+            })
+            .map((img: any) => ({
+              id: img.id,
+              s3_key: img.s3_key,
+              alt_text: img.alt_text || undefined,
+              width: img.width || undefined,
+              height: img.height || undefined
+            }));
+          setUploadedImages(images);
+          setInitialImageIds(new Set(images.map(img => img.id)));
+        }
 
         // Fetch the specific category with menu and restaurant data
         const { data: categoryData, error: categoryError } = await supabase
@@ -169,6 +198,13 @@ function EditItemPageContent() {
     fetchItemAndCategory();
   }, [itemId, categoryId, supabase, router]);
 
+  const buildUploadPath = () => {
+    if (!restaurant || !menu || !category || !item) {
+      return 'temp-uploads';
+    }
+    return `${restaurant.slug}/${menu.slug}/${category.slug}/${item.slug}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -177,27 +213,136 @@ function EditItemPageContent() {
     try {
       setSaving(true);
         const { error } = await supabase
-        .from('menu_items')
+        .from('products')
         .update({
           name: formData.name.trim(),
           slug: formData.slug.trim(),
-          description: formData.description.trim(),
-          long_description: formData.long_description.trim(),
+          description: formData.description.trim() || null,
+          long_description: formData.long_description.trim() || null,
           price: formData.price ? parseFloat(formData.price) : null,
           discount_price: formData.discount_price ? parseFloat(formData.discount_price) : null,
-          ingredients: formData.ingredients.trim(),
+          ingredients: formData.ingredients.trim() || null,
           allergens: formData.allergens.length > 0 ? formData.allergens : null,
           spice_level: formData.spice_level === 'none' ? null : formData.spice_level,
           is_active: formData.is_active,
-          is_featured: formData.is_featured,
-          image_url: formData.image_url || null,
-          image_alt: formData.image_alt || null
+          is_featured: formData.is_featured
         })
         .eq('id', itemId)
         .select()
         .single();
 
       if (error) throw error;
+
+      // Handle product images
+      try {
+        // 1. Find deleted images (in initialImageIds but not in current uploadedImages)
+        const currentImageIds = new Set(
+          uploadedImages.filter(img => initialImageIds.has(img.id)).map(img => img.id)
+        );
+        const deletedImageIds = Array.from(initialImageIds).filter(id => !currentImageIds.has(id));
+
+        // Delete removed images from S3 and database
+        if (deletedImageIds.length > 0) {
+          // First, get the s3_keys for the images being deleted
+          const { data: imagesToDelete, error: fetchError } = await supabase
+            .from('product_images')
+            .select('s3_key')
+            .in('id', deletedImageIds);
+
+          if (fetchError) {
+            console.error('Error fetching images to delete:', fetchError);
+          } else if (imagesToDelete) {
+            // Delete from S3
+            for (const img of imagesToDelete) {
+              try {
+                const response = await fetch(`/api/images/${encodeURIComponent(img.s3_key)}`, {
+                  method: 'DELETE',
+                });
+                if (!response.ok) {
+                  console.error(`Failed to delete image from S3: ${img.s3_key}`);
+                }
+              } catch (s3Error) {
+                console.error('Error deleting from S3:', s3Error);
+              }
+            }
+          }
+
+          // Delete from database
+          const { error: deleteError } = await supabase
+            .from('product_images')
+            .delete()
+            .in('id', deletedImageIds);
+          
+          if (deleteError) {
+            console.error('Error deleting images from database:', deleteError);
+          }
+        }
+
+        // 2. Add new images (not in initialImageIds)
+        const newImages = uploadedImages.filter(img => !initialImageIds.has(img.id));
+        if (newImages.length > 0) {
+          const imagesToInsert = newImages.map((img, index) => ({
+            product_id: itemId,
+            s3_key: img.s3_key,
+            alt_text: img.alt_text || null,
+            display_order: uploadedImages.indexOf(img),
+            is_primary: uploadedImages.indexOf(img) === 0,
+            width: img.width || null,
+            height: img.height || null
+          }));
+
+          const { error: insertError } = await supabase
+            .from('product_images')
+            .insert(imagesToInsert);
+
+          if (insertError) {
+            console.error('Error inserting images:', insertError);
+            throw insertError;
+          }
+        }
+
+        // 3. Update existing images (display_order and is_primary)
+        const existingImages = uploadedImages.filter(img => initialImageIds.has(img.id));
+        if (existingImages.length > 0) {
+          for (let i = 0; i < existingImages.length; i++) {
+            const img = existingImages[i];
+            const { error: updateError } = await supabase
+              .from('product_images')
+              .update({
+                display_order: uploadedImages.indexOf(img),
+                is_primary: uploadedImages.indexOf(img) === 0
+              })
+              .eq('id', img.id);
+
+            if (updateError) {
+              console.error('Error updating image:', updateError);
+            }
+          }
+        }
+
+        // Refresh images from database to get real IDs
+        const { data: refreshedImages, error: refreshError } = await supabase
+          .from('product_images')
+          .select('id, s3_key, alt_text, display_order, is_primary, width, height')
+          .eq('product_id', itemId)
+          .order('display_order', { ascending: true });
+
+        if (!refreshError && refreshedImages) {
+          const updatedImages: UploadedImage[] = refreshedImages.map((img: any) => ({
+            id: img.id,
+            s3_key: img.s3_key,
+            alt_text: img.alt_text || undefined,
+            width: img.width || undefined,
+            height: img.height || undefined
+          }));
+          setUploadedImages(updatedImages);
+          setInitialImageIds(new Set(updatedImages.map(img => img.id)));
+        }
+      } catch (imageError) {
+        console.error('Error managing images:', imageError);
+        toast.error('Product updated but some images may not have been saved');
+        return;
+      }
 
       toast.success('Item updated successfully');
       // Stay on edit page to allow further edits
@@ -213,24 +358,6 @@ function EditItemPageContent() {
     setFormData(prev => ({
       ...prev,
       [field]: value
-    }));
-  };
-
-  // Build dynamic folder path: restaurant-slug/menu-slug/category-slug/item-slug
-  const buildImageFolder = () => {
-    if (!restaurant || !menu || !category || !formData.slug) {
-      // Fallback to basic folder structure if data not available
-      return 'menu-items';
-    }
-    
-    return `${restaurant.slug}/${menu.slug}/${category.slug}/${formData.slug}`;
-  };
-
-  const handleImageUploaded = (s3Key: string, publicUrl: string) => {
-    setFormData(prev => ({
-      ...prev,
-      image_url: publicUrl,
-      image_alt: `Image for ${prev.name || 'menu item'}`
     }));
   };
 
@@ -285,15 +412,25 @@ function EditItemPageContent() {
             Update the details for this menu item in {category.name}
           </p>
         </div>
-        <Button asChild variant="outline">
-          <Link href={`/dashboard/menu/categories/${categoryId}/items`}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {category.name}
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/dashboard/menu/categories/${categoryId}/items`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {category.name}
+            </Link>
+          </Button>
+          <Button type="submit" form="edit-item-form" disabled={saving}>
+            {saving ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-none">
+      <form id="edit-item-form" onSubmit={handleSubmit} className="space-y-6 max-w-none">
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -456,25 +593,21 @@ function EditItemPageContent() {
           </CardContent>
         </Card>
 
-        {/* Image Upload */}
+        {/* Product Images */}
         <Card>
           <CardHeader>
-            <CardTitle>Item Image</CardTitle>
+            <CardTitle>Product Images</CardTitle>
             <CardDescription>
-              Upload or change the image for this menu item
-              <br />
-              <span className="text-xs text-muted-foreground mt-1 block">
-                Images will be saved to: <code className="bg-muted px-1 rounded">{buildImageFolder()}</code>
-              </span>
+              Upload multiple images for this product. The first image will be the primary image.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ImageUploadField
-              currentImageUrl={formData.image_url}
-              onImageUploaded={handleImageUploaded}
-              folder={buildImageFolder()}
-              label="Menu Item Image"
-              description={`Upload an image for ${formData.name || 'this menu item'}`}
+            <MultiImageUpload
+              images={uploadedImages}
+              onImagesChange={setUploadedImages}
+              uploadPath={buildUploadPath()}
+              maxImages={10}
+              disabled={saving}
             />
           </CardContent>
         </Card>
@@ -519,24 +652,6 @@ function EditItemPageContent() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Actions */}
-        <div className="flex items-center justify-between">
-          <Button asChild variant="outline">
-            <Link href={`/dashboard/menu/categories/${categoryId}/items`}>
-              <X className="h-4 w-4 mr-2" />
-              Cancel
-            </Link>
-          </Button>
-          <Button type="submit" disabled={saving}>
-            {saving ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
       </form>
     </div>
   );

@@ -77,9 +77,9 @@ export class MenuShowcaseService {
           description,
           image_url,
           sort_order,
-          category_menu_items (
+          category_products (
             sort_order,
-            menu_items (
+            products (
               id,
               name,
               slug,
@@ -87,11 +87,19 @@ export class MenuShowcaseService {
               long_description,
               price,
               discount_price,
-              image_url,
               ingredients,
               allergens,
               spice_level,
-              is_featured
+              is_featured,
+              product_images (
+                id,
+                s3_key,
+                alt_text,
+                display_order,
+                is_primary,
+                width,
+                height
+              )
             )
           )
         `)
@@ -110,27 +118,27 @@ export class MenuShowcaseService {
         .map(category => {
           console.log(`Processing category: ${category.name}`);
           
-          const items = (category.category_menu_items || [])
-            .filter(cmi => {
-              return cmi.menu_items;
+          const items = (category.category_products || [])
+            .filter(cp => {
+              return cp.products;
             })
-            .map(cmi => {
+            .map(cp => {
               // Handle both object and array cases
-              const menuItem = Array.isArray(cmi.menu_items) ? cmi.menu_items[0] : cmi.menu_items;
+              const product = Array.isArray(cp.products) ? cp.products[0] : cp.products;
               return {
-                id: menuItem.id,
-                name: menuItem.name,
-                slug: menuItem.slug,
-                description: menuItem.description,
-                long_description: menuItem.long_description,
-                price: menuItem.price,
-                discount_price: menuItem.discount_price,
-                image_url: menuItem.image_url,
-                ingredients: menuItem.ingredients,
-                allergens: menuItem.allergens,
-                spice_level: menuItem.spice_level,
-                is_featured: menuItem.is_featured,
-                sort_order: cmi.sort_order
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                description: product.description,
+                long_description: product.long_description,
+                price: product.price,
+                discount_price: product.discount_price,
+                product_images: product.product_images || [],
+                ingredients: product.ingredients,
+                allergens: product.allergens,
+                spice_level: product.spice_level,
+                is_featured: product.is_featured,
+                sort_order: cp.sort_order
               };
             })
             .sort((a, b) => a.sort_order - b.sort_order);

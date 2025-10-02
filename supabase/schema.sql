@@ -106,12 +106,12 @@ CREATE TABLE categories (
   UNIQUE(menu_id, slug)
 );
 
--- Menu items table (now independent of categories)
-CREATE TABLE menu_items (
+-- Products table (formerly menu_items - now independent of categories)
+CREATE TABLE products (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   slug VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
+  description TEXT,
   long_description TEXT,
 
   -- Pricing
@@ -130,10 +130,6 @@ CREATE TABLE menu_items (
   -- Nutritional info (stored as JSON for flexibility)
   nutritional_info JSONB DEFAULT '{}',
 
-  -- Image
-  image_url TEXT,
-  image_alt TEXT,
-
   -- Display settings
   is_active BOOLEAN DEFAULT true,
   is_featured BOOLEAN DEFAULT false,
@@ -146,42 +142,29 @@ CREATE TABLE menu_items (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Junction table for many-to-many relationship between categories and menu items
-CREATE TABLE category_menu_items (
+-- Junction table for many-to-many relationship between categories and products
+CREATE TABLE category_products (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-  menu_item_id UUID REFERENCES menu_items(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
   sort_order INTEGER DEFAULT 0,
 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
-  -- Ensure unique item per category
-  UNIQUE(category_id, menu_item_id)
+  -- Ensure unique product per category
+  UNIQUE(category_id, product_id)
 );
 
--- Media files table
-CREATE TABLE media_files (
+-- Product images table for gallery support (one-to-many with products)
+CREATE TABLE product_images (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  restaurant_id UUID REFERENCES restaurants(id) ON DELETE CASCADE,
-  filename VARCHAR(255) NOT NULL,
-  original_name VARCHAR(255) NOT NULL,
-  file_size BIGINT NOT NULL,
-  mime_type VARCHAR(100) NOT NULL,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+  s3_key TEXT NOT NULL,
+  alt_text TEXT,
+  display_order INTEGER DEFAULT 0,
+  is_primary BOOLEAN DEFAULT false,
   width INTEGER,
   height INTEGER,
-  
-  -- Storage paths
-  storage_path TEXT NOT NULL,
-  public_url TEXT NOT NULL,
-  thumbnail_url TEXT,
-  
-  -- Organization
-  folder VARCHAR(100) DEFAULT 'general',
-  
-  -- Usage tracking
-  used_in_type VARCHAR(50), -- 'restaurant', 'category', 'menu_item'
-  used_in_id UUID,
-  
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -194,10 +177,11 @@ CREATE INDEX idx_menus_slug ON menus(restaurant_id, slug);
 CREATE INDEX idx_menus_active ON menus(restaurant_id, is_active);
 CREATE INDEX idx_categories_menu_id ON categories(menu_id);
 CREATE INDEX idx_categories_slug ON categories(menu_id, slug);
-CREATE INDEX idx_menu_items_slug ON menu_items(slug);
-CREATE INDEX idx_category_menu_items_category_id ON category_menu_items(category_id);
-CREATE INDEX idx_category_menu_items_menu_item_id ON category_menu_items(menu_item_id);
-CREATE INDEX idx_media_files_restaurant_id ON media_files(restaurant_id);
+CREATE INDEX idx_products_slug ON products(slug);
+CREATE INDEX idx_category_products_category_id ON category_products(category_id);
+CREATE INDEX idx_category_products_product_id ON category_products(product_id);
+CREATE INDEX idx_product_images_product_id ON product_images(product_id);
+CREATE INDEX idx_product_images_primary ON product_images(product_id, is_primary) WHERE is_primary = true;
 
 -- Create updated_at triggers
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -217,19 +201,19 @@ CREATE TRIGGER update_menus_updated_at BEFORE UPDATE ON menus
 CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_menu_items_updated_at BEFORE UPDATE ON menu_items
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_media_files_updated_at BEFORE UPDATE ON media_files
+CREATE TRIGGER update_product_images_updated_at BEFORE UPDATE ON product_images
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Row Level Security (RLS) policies
 ALTER TABLE restaurants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE menus ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE category_menu_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE media_files ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE category_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
 
 -- Restaurants policies
 CREATE POLICY "Users can view all active restaurants" ON restaurants
@@ -262,26 +246,42 @@ CREATE POLICY "Restaurant owners can manage their categories" ON categories
     )
   );
 
--- Menu items policies
-CREATE POLICY "Anyone can view active menu items" ON menu_items
+-- Products policies
+CREATE POLICY "Anyone can view active products" ON products
   FOR SELECT USING (is_active = true);
 
-CREATE POLICY "Restaurant owners can manage their menu items" ON menu_items
-  FOR ALL USING (
+-- Allow authenticated users to insert products (ownership enforced via category_products)
+CREATE POLICY "Authenticated users can create products" ON products
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+-- Only allow updates/deletes to products owned through category_products chain
+CREATE POLICY "Restaurant owners can update their products" ON products
+  FOR UPDATE USING (
     id IN (
-      SELECT cmi.menu_item_id FROM category_menu_items cmi
-      JOIN categories c ON cmi.category_id = c.id
+      SELECT cp.product_id FROM category_products cp
+      JOIN categories c ON cp.category_id = c.id
       JOIN menus m ON c.menu_id = m.id
       JOIN restaurants r ON m.restaurant_id = r.id
       WHERE r.user_id = auth.uid()
     )
   );
 
--- Category menu items policies
-CREATE POLICY "Anyone can view category menu items" ON category_menu_items
+CREATE POLICY "Restaurant owners can delete their products" ON products
+  FOR DELETE USING (
+    id IN (
+      SELECT cp.product_id FROM category_products cp
+      JOIN categories c ON cp.category_id = c.id
+      JOIN menus m ON c.menu_id = m.id
+      JOIN restaurants r ON m.restaurant_id = r.id
+      WHERE r.user_id = auth.uid()
+    )
+  );
+
+-- Category products policies
+CREATE POLICY "Anyone can view category products" ON category_products
   FOR SELECT USING (true);
 
-CREATE POLICY "Restaurant owners can manage their category menu items" ON category_menu_items
+CREATE POLICY "Restaurant owners can manage their category products" ON category_products
   FOR ALL USING (
     category_id IN (
       SELECT c.id FROM categories c
@@ -291,13 +291,18 @@ CREATE POLICY "Restaurant owners can manage their category menu items" ON catego
     )
   );
 
--- Media files policies
-CREATE POLICY "Anyone can view media files" ON media_files
+-- Product images policies
+CREATE POLICY "Anyone can view product images" ON product_images
   FOR SELECT USING (true);
 
-CREATE POLICY "Restaurant owners can manage their media files" ON media_files
+CREATE POLICY "Restaurant owners can manage their product images" ON product_images
   FOR ALL USING (
-    restaurant_id IN (
-      SELECT id FROM restaurants WHERE user_id = auth.uid()
+    product_id IN (
+      SELECT p.id FROM products p
+      JOIN category_products cp ON p.id = cp.product_id
+      JOIN categories c ON cp.category_id = c.id
+      JOIN menus m ON c.menu_id = m.id
+      JOIN restaurants r ON m.restaurant_id = r.id
+      WHERE r.user_id = auth.uid()
     )
   );

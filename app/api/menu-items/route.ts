@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Create the menu item with all fields
+    // Create the product with all fields
     const { data: newItem, error: itemError } = await supabase
-      .from('menu_items')
+      .from('products')
       .insert({
         name: name.trim(),
         slug: slug,
@@ -107,24 +107,24 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (itemError) {
-      console.error('Error creating menu item:', itemError);
-      return NextResponse.json({ error: 'Failed to create menu item' }, { status: 500 });
+      console.error('Error creating product:', itemError);
+      return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
     }
 
-    // Link the item to the category
+    // Link the product to the category
     const { error: linkError } = await supabase
-      .from('category_menu_items')
+      .from('category_products')
       .insert({
         category_id: categoryId,
-        menu_item_id: newItem.id,
+        product_id: newItem.id,
         sort_order: sortOrder || 1
       });
 
     if (linkError) {
-      console.error('Error linking item to category:', linkError);
-      // Try to clean up the created item
-      await supabase.from('menu_items').delete().eq('id', newItem.id);
-      return NextResponse.json({ error: 'Failed to link item to category' }, { status: 500 });
+      console.error('Error linking product to category:', linkError);
+      // Try to clean up the created product
+      await supabase.from('products').delete().eq('id', newItem.id);
+      return NextResponse.json({ error: 'Failed to link product to category' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, item: newItem }, { status: 201 });
@@ -153,11 +153,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Missing item ID or category ID' }, { status: 400 });
     }
 
-    // Verify that the user owns the restaurant that contains this item
+    // Verify that the user owns the restaurant that contains this product
     const { data: itemDataArray, error: itemError } = await supabase
-      .from('category_menu_items')
+      .from('category_products')
       .select(`
-        menu_item_id,
+        product_id,
         categories!inner (
           id,
           menus!inner (
@@ -169,55 +169,82 @@ export async function DELETE(request: NextRequest) {
           )
         )
       `)
-      .eq('menu_item_id', itemId)
+      .eq('product_id', itemId)
       .eq('category_id', categoryId);
 
     // Handle potential duplicates by taking the first result
     const itemData = itemDataArray && itemDataArray.length > 0 ? itemDataArray[0] : null;
 
     if (itemError || !itemData) {
-      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Check if user owns the restaurant
-    const restaurant = (itemData as ItemWithCategories)?.categories?.menus?.[0]?.restaurants?.[0];
+    // Check if user owns the restaurant (singular objects, not arrays)
+    const restaurant = (itemData as any)?.categories?.menus?.restaurants;
+    
     if (!restaurant || restaurant.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Remove the link between category and item
-    const { error: unlinkError } = await supabase
-      .from('category_menu_items')
-      .delete()
-      .eq('menu_item_id', itemId)
-      .eq('category_id', categoryId);
-
-    if (unlinkError) {
-      console.error('Error unlinking item from category:', unlinkError);
-      return NextResponse.json({ error: 'Failed to remove item from category' }, { status: 500 });
-    }
-
-    // Check if this item is linked to any other categories
-    const { data: otherLinks, error: linkCheckError } = await supabase
-      .from('category_menu_items')
+    // FIRST: Check if this product is linked to any other categories
+    // (do this BEFORE unlinking to preserve RLS permissions)
+    const { data: allLinks, error: linkCheckError } = await supabase
+      .from('category_products')
       .select('id')
-      .eq('menu_item_id', itemId);
-
+      .eq('product_id', itemId);
+    
     if (linkCheckError) {
       console.error('Error checking other links:', linkCheckError);
-      return NextResponse.json({ error: 'Failed to check item links' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to check product links' }, { status: 500 });
     }
 
-    // If no other links exist, delete the menu item entirely
-    if (!otherLinks || otherLinks.length === 0) {
+    // If this is the only link, delete the product (CASCADE will remove the link)
+    if (allLinks && allLinks.length === 1) {
+      // First, get all images associated with this product
+      const { data: productImages, error: imagesError } = await supabase
+        .from('product_images')
+        .select('s3_key')
+        .eq('product_id', itemId);
+
+      // Delete images from S3
+      if (productImages && productImages.length > 0) {
+        for (const img of productImages) {
+          try {
+            const deleteResponse = await fetch(
+              `${request.url.split('/api')[0]}/api/images/${encodeURIComponent(img.s3_key)}`,
+              { method: 'DELETE' }
+            );
+            if (!deleteResponse.ok) {
+              console.error(`Failed to delete image from S3: ${img.s3_key}`);
+            }
+          } catch (s3Error) {
+            console.error('Error deleting image from S3:', s3Error);
+            // Continue even if S3 deletion fails
+          }
+        }
+      }
+
+      // Now delete the product (CASCADE will remove product_images and category_products)
       const { error: deleteError } = await supabase
-        .from('menu_items')
+        .from('products')
         .delete()
         .eq('id', itemId);
 
       if (deleteError) {
-        console.error('Error deleting menu item:', deleteError);
-        return NextResponse.json({ error: 'Failed to delete menu item' }, { status: 500 });
+        console.error('Error deleting product:', deleteError);
+        return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+      }
+    } else {
+      // If there are other links, just remove this specific link
+      const { error: unlinkError } = await supabase
+        .from('category_products')
+        .delete()
+        .eq('product_id', itemId)
+        .eq('category_id', categoryId);
+
+      if (unlinkError) {
+        console.error('Error unlinking product from category:', unlinkError);
+        return NextResponse.json({ error: 'Failed to remove product from category' }, { status: 500 });
       }
     }
 

@@ -15,11 +15,12 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IngredientSelector } from '@/components/ui/ingredient-selector';
-import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { MultiImageUpload, UploadedImage } from '@/components/ui/multi-image-upload';
 import { ArrowLeft, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useMenu } from '@/lib/contexts/menu-context';
+import { User } from '@supabase/supabase-js';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -53,6 +54,10 @@ function NewItemPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [slugLocked, setSlugLocked] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [restaurant, setRestaurant] = useState<{slug: string} | null>(null);
+  const [menu, setMenu] = useState<{slug: string} | null>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -66,21 +71,20 @@ function NewItemPageContent() {
     spice_level: 'none',
     is_active: true,
     is_featured: false,
-    categoryId: categoryId || '',
-    image_url: '',
-    image_alt: ''
+    categoryId: categoryId || ''
   });
 
   const supabase = createClient();
 
   // Fetch categories for the current menu
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       if (!selectedMenu) return;
       
       try {
         setLoading(true);
         
+        // Fetch categories
         const { data, error } = await supabase
           .from('categories')
           .select('*')
@@ -100,16 +104,33 @@ function NewItemPageContent() {
             setFormData(prev => ({ ...prev, categoryId }));
           }
         }
+
+        // Fetch menu with restaurant for upload path
+        const { data: menuData, error: menuError } = await supabase
+          .from('menus')
+          .select(`
+            slug,
+            restaurants!inner (
+              slug
+            )
+          `)
+          .eq('id', selectedMenu.id)
+          .single();
+
+        if (!menuError && menuData) {
+          setMenu({ slug: menuData.slug });
+          setRestaurant({ slug: (menuData.restaurants as any).slug });
+        }
         
       } catch (error) {
-        console.error('Error fetching categories:', error);
-        toast.error('Failed to load categories');
+        console.error('Error fetching data:', error);
+        toast.error('Failed to load data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, [selectedMenu, categoryId, supabase]);
 
   const handleInputChange = (field: string, value: any) => {
@@ -118,8 +139,8 @@ function NewItemPageContent() {
       [field]: value
     }));
 
-    // Auto-generate slug from name
-    if (field === 'name') {
+    // Auto-generate slug from name (only if not locked)
+    if (field === 'name' && !slugLocked) {
       const slug = value
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -130,20 +151,20 @@ function NewItemPageContent() {
     }
   };
 
+  // Build upload path
+  const buildUploadPath = () => {
+    if (!restaurant || !menu || !selectedCategory || !formData.slug) {
+      return 'temp-uploads';
+    }
+    return `${restaurant.slug}/${menu.slug}/${selectedCategory.slug}/${formData.slug}`;
+  };
+
   const handleAllergenToggle = (allergen: string) => {
     setFormData(prev => ({
       ...prev,
       allergens: prev.allergens.includes(allergen)
         ? prev.allergens.filter(a => a !== allergen)
         : [...prev.allergens, allergen]
-    }));
-  };
-
-  const handleImageUploaded = (s3Key: string, publicUrl: string) => {
-    setFormData(prev => ({
-      ...prev,
-      image_url: publicUrl,
-      image_alt: `Image for ${prev.name || 'menu item'}`
     }));
   };
 
@@ -160,13 +181,13 @@ function NewItemPageContent() {
 
     setSaving(true);
     try {
-      // Create the menu item
+      // Create the product
       const { data: newItem, error: itemError } = await supabase
-        .from('menu_items')
+        .from('products')
         .insert({
           name: formData.name.trim(),
           slug: formData.slug.trim(),
-          description: formData.description.trim(),
+          description: formData.description.trim() || null,
           long_description: formData.long_description.trim() || null,
           price: parseFloat(formData.price) || 0,
           discount_price: formData.discount_price ? parseFloat(formData.discount_price) : null,
@@ -174,28 +195,49 @@ function NewItemPageContent() {
           allergens: formData.allergens.length > 0 ? formData.allergens : null,
           spice_level: formData.spice_level && formData.spice_level !== 'none' ? formData.spice_level : null,
           is_active: formData.is_active,
-          is_featured: formData.is_featured,
-          image_url: formData.image_url || null,
-          image_alt: formData.image_alt || null
+          is_featured: formData.is_featured
         })
         .select()
         .single();
 
       if (itemError) throw itemError;
 
-      // Link the item to the category
+      // Link the product to the category
       const { error: linkError } = await supabase
-        .from('category_menu_items')
+        .from('category_products')
         .insert({
           category_id: formData.categoryId,
-          menu_item_id: newItem.id,
+          product_id: newItem.id,
           sort_order: 1
         });
 
       if (linkError) {
-        // Try to clean up the created item
-        await supabase.from('menu_items').delete().eq('id', newItem.id);
+        // Try to clean up the created product
+        await supabase.from('products').delete().eq('id', newItem.id);
         throw linkError;
+      }
+
+      // Save product images
+      if (uploadedImages.length > 0) {
+        const imageRecords = uploadedImages.map((img, index) => ({
+          product_id: newItem.id,
+          s3_key: img.s3_key,
+          alt_text: img.alt_text || null,
+          display_order: index,
+          is_primary: index === 0, // First image is primary
+          width: img.width || null,
+          height: img.height || null
+        }));
+
+        const { error: imagesError } = await supabase
+          .from('product_images')
+          .insert(imageRecords);
+
+        if (imagesError) {
+          console.error('Error saving images:', imagesError);
+          // Don't fail the whole operation if images fail
+          toast.warning('Product created but some images failed to save');
+        }
       }
 
       toast.success('Item created successfully');
@@ -275,6 +317,28 @@ function NewItemPageContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+
+            
+            <div>
+              <Label htmlFor="name">Item Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="e.g., Margherita Pizza"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="slug">URL Slug</Label>
+              <Input
+                id="slug"
+                value={formData.slug}
+                onChange={(e) => handleInputChange('slug', e.target.value)}
+                placeholder="e.g., margherita-pizza"
+              />
+            </div>
+
             <div>
               <Label htmlFor="categoryId">Category</Label>
               <Select
@@ -299,27 +363,7 @@ function NewItemPageContent() {
             </div>
             
             <div>
-              <Label htmlFor="name">Item Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="e.g., Margherita Pizza"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="slug">URL Slug</Label>
-              <Input
-                id="slug"
-                value={formData.slug}
-                onChange={(e) => handleInputChange('slug', e.target.value)}
-                placeholder="e.g., margherita-pizza"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="description">Short Description</Label>
+              <Label htmlFor="description">Short Description*</Label>
               <Textarea
                 id="description"
                 value={formData.description}
@@ -405,20 +449,33 @@ function NewItemPageContent() {
           </CardContent>
         </Card>
 
-        {/* Image Upload */}
-        <Card>
+        {/* Product Images - Full Width */}
+        <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Item Image</CardTitle>
+            <CardTitle>Product Images</CardTitle>
             <CardDescription>
-              Upload an image for this menu item
+              Upload multiple images for this product. The first image will be the primary image.
+              {slugLocked && (
+                <span className="block mt-1 text-xs text-orange-600">
+                  Product slug is locked after first upload
+                </span>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ImageUploadField
-              currentImageUrl={formData.image_url}
-              onImageUploaded={handleImageUploaded}
-              folder="menu-items"
+            <MultiImageUpload
+              images={uploadedImages}
+              onImagesChange={setUploadedImages}
+              uploadPath={buildUploadPath()}
+              maxImages={10}
+              disabled={saving || !formData.slug}
+              onSlugLock={() => setSlugLocked(true)}
             />
+            {!formData.slug && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Enter a product name to enable image uploads
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -455,6 +512,8 @@ function NewItemPageContent() {
             </div>
           </CardContent>
         </Card>
+
+        
 
         {/* Status Settings */}
         <Card>
@@ -501,9 +560,9 @@ function NewItemPageContent() {
   );
 }
 
-export default function NewMenuItemPage() {
+export default function NewMenuItemPage({ user }: { user: User | null }) {
   return (
-    <DashboardLayout>
+    <DashboardLayout user={user}>
       <NewItemPageContent />
     </DashboardLayout>
   );

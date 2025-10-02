@@ -126,7 +126,7 @@ export function useImageUpload() {
         } else {
           resolve(null);
         }
-      }, state.file?.type || 'image/jpeg', 0.9);
+      }, state.file?.type || 'image/jpeg', 0.99);
     });
   }, [state.file]);
 

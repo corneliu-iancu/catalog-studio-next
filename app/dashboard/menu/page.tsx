@@ -83,7 +83,7 @@ function MenuManagementContent() {
         .from('categories')
         .select(`
           *,
-          category_menu_items(count)
+          category_products(count)
         `)
         .eq('menu_id', selectedMenu.id)
         .order('sort_order', { ascending: true });
@@ -93,7 +93,7 @@ function MenuManagementContent() {
       // Transform data to include item counts
       const categoriesWithCounts = (data || []).map(category => ({
         ...category,
-        item_count: category.category_menu_items?.[0]?.count || 0
+        item_count: category.category_products?.[0]?.count || 0
       }));
 
       setCategories(categoriesWithCounts);

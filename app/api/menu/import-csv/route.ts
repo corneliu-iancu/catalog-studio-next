@@ -97,23 +97,23 @@ export async function POST(request: NextRequest) {
         // Process menu items for this category
         for (const itemData of categoryData.items) {
           try {
-            // Check if item already exists (by slug)
+            // Check if product already exists (by slug)
             const { data: existingItem } = await supabase
-              .from('menu_items')
+              .from('products')
               .select('id, name')
               .eq('slug', itemData.slug)
               .maybeSingle();
 
-            let menuItemId: string;
+            let productId: string;
 
             if (existingItem) {
-              // Use existing item
-              menuItemId = existingItem.id;
-              console.log(`Using existing menu item: ${existingItem.name}`);
+              // Use existing product
+              productId = existingItem.id;
+              console.log(`Using existing product: ${existingItem.name}`);
             } else {
-              // Create new menu item
+              // Create new product
               const { data: newItem, error: itemError } = await supabase
-                .from('menu_items')
+                .from('products')
                 .insert({
                   name: itemData.name,
                   slug: itemData.slug,
@@ -133,35 +133,35 @@ export async function POST(request: NextRequest) {
                 .single();
 
               if (itemError) {
-                console.error('Error creating menu item:', itemError);
+                console.error('Error creating product:', itemError);
                 errors.push(`Failed to create item "${itemData.name}": ${itemError.message}`);
                 continue;
               }
 
-              menuItemId = newItem.id;
+              productId = newItem.id;
               createdItems++;
             }
 
-            // Check if the item is already linked to this category
+            // Check if the product is already linked to this category
             const { data: existingLink } = await supabase
-              .from('category_menu_items')
+              .from('category_products')
               .select('id')
               .eq('category_id', categoryId)
-              .eq('menu_item_id', menuItemId)
+              .eq('product_id', productId)
               .maybeSingle();
 
             if (!existingLink) {
-              // Link the item to the category
+              // Link the product to the category
               const { error: linkError } = await supabase
-                .from('category_menu_items')
+                .from('category_products')
                 .insert({
                   category_id: categoryId,
-                  menu_item_id: menuItemId,
+                  product_id: productId,
                   sort_order: 1 // Could be enhanced to maintain order from CSV
                 });
 
               if (linkError) {
-                console.error('Error linking item to category:', linkError);
+                console.error('Error linking product to category:', linkError);
                 errors.push(`Failed to link item "${itemData.name}" to category "${categoryData.name}": ${linkError.message}`);
               }
             }

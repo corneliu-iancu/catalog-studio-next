@@ -213,12 +213,12 @@ export type Database = {
           }
         ]
       }
-      menu_items: {
+      products: {
         Row: {
           id: string
           name: string
           slug: string
-          description: string
+          description: string | null
           long_description: string | null
           price: number
           discount_price: number | null
@@ -228,8 +228,6 @@ export type Database = {
           spice_level: Database['public']['Enums']['spice_level'] | null
           serving_size: string | null
           nutritional_info: Json | null
-          image_url: string | null
-          image_alt: string | null
           is_active: boolean | null
           is_featured: boolean | null
           meta_title: string | null
@@ -241,7 +239,7 @@ export type Database = {
           id?: string
           name: string
           slug: string
-          description: string
+          description?: string | null
           long_description?: string | null
           price: number
           discount_price?: number | null
@@ -251,8 +249,6 @@ export type Database = {
           spice_level?: Database['public']['Enums']['spice_level'] | null
           serving_size?: string | null
           nutritional_info?: Json | null
-          image_url?: string | null
-          image_alt?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
           meta_title?: string | null
@@ -264,7 +260,7 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
-          description?: string
+          description?: string | null
           long_description?: string | null
           price?: number
           discount_price?: number | null
@@ -274,8 +270,6 @@ export type Database = {
           spice_level?: Database['public']['Enums']['spice_level'] | null
           serving_size?: string | null
           nutritional_info?: Json | null
-          image_url?: string | null
-          image_alt?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
           meta_title?: string | null
@@ -285,106 +279,88 @@ export type Database = {
         }
         Relationships: []
       }
-      category_menu_items: {
+      category_products: {
         Row: {
           id: string
           category_id: string | null
-          menu_item_id: string | null
+          product_id: string | null
           sort_order: number | null
           created_at: string | null
         }
         Insert: {
           id?: string
           category_id?: string | null
-          menu_item_id?: string | null
+          product_id?: string | null
           sort_order?: number | null
           created_at?: string | null
         }
         Update: {
           id?: string
           category_id?: string | null
-          menu_item_id?: string | null
+          product_id?: string | null
           sort_order?: number | null
           created_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "category_menu_items_category_id_fkey"
+            foreignKeyName: "category_products_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "category_menu_items_menu_item_id_fkey"
-            columns: ["menu_item_id"]
+            foreignKeyName: "category_products_product_id_fkey"
+            columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "menu_items"
+            referencedRelation: "products"
             referencedColumns: ["id"]
           }
         ]
       }
-      media_files: {
+      product_images: {
         Row: {
           id: string
-          restaurant_id: string | null
-          filename: string
-          original_name: string
-          file_size: number
-          mime_type: string
+          product_id: string | null
+          s3_key: string
+          alt_text: string | null
+          display_order: number | null
+          is_primary: boolean | null
           width: number | null
           height: number | null
-          storage_path: string
-          public_url: string
-          thumbnail_url: string | null
-          folder: string | null
-          used_in_type: string | null
-          used_in_id: string | null
           created_at: string | null
           updated_at: string | null
         }
         Insert: {
           id?: string
-          restaurant_id?: string | null
-          filename: string
-          original_name: string
-          file_size: number
-          mime_type: string
+          product_id?: string | null
+          s3_key: string
+          alt_text?: string | null
+          display_order?: number | null
+          is_primary?: boolean | null
           width?: number | null
           height?: number | null
-          storage_path: string
-          public_url: string
-          thumbnail_url?: string | null
-          folder?: string | null
-          used_in_type?: string | null
-          used_in_id?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
         Update: {
           id?: string
-          restaurant_id?: string | null
-          filename?: string
-          original_name?: string
-          file_size?: number
-          mime_type?: string
+          product_id?: string | null
+          s3_key?: string
+          alt_text?: string | null
+          display_order?: number | null
+          is_primary?: boolean | null
           width?: number | null
           height?: number | null
-          storage_path?: string
-          public_url?: string
-          thumbnail_url?: string | null
-          folder?: string | null
-          used_in_type?: string | null
-          used_in_id?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "media_files_restaurant_id_fkey"
-            columns: ["restaurant_id"]
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "restaurants"
+            referencedRelation: "products"
             referencedColumns: ["id"]
           }
         ]

@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/lib/types/database';
 import { useMenu } from './menu-context';
 
-type MenuItem = Database['public']['Tables']['menu_items']['Row'];
+type MenuItem = Database['public']['Tables']['products']['Row'];
 
 interface CreateItemData {
   name: string;
@@ -72,11 +72,11 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
       console.log(`Fetching items for category: ${categoryId}, forceRefresh: ${forceRefresh}`);
 
       const { data, error } = await supabase
-        .from('category_menu_items')
+        .from('category_products')
         .select(`
-          menu_item_id,
+          product_id,
           sort_order,
-          menu_items (
+          products (
             id,
             name,
             description,
@@ -85,11 +85,19 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
             ingredients,
             allergens,
             spice_level,
-            image_url,
             is_active,
             is_featured,
             created_at,
-            updated_at
+            updated_at,
+            product_images (
+              id,
+              s3_key,
+              alt_text,
+              display_order,
+              is_primary,
+              width,
+              height
+            )
           )
         `)
         .eq('category_id', categoryId)
@@ -101,7 +109,7 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const menuItems = data?.map((item: any) => item.menu_items).filter(Boolean) || [];
+      const menuItems = data?.map((item: any) => item.products).filter(Boolean) || [];
 
       console.log(`Fetched ${menuItems.length} items for category ${categoryId}`);
 
@@ -144,7 +152,7 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
 
       // Get next sort order for the category
       const { data: existingItems } = await supabase
-        .from('category_menu_items')
+        .from('category_products')
         .select('sort_order')
         .eq('category_id', categoryId)
         .order('sort_order', { ascending: false })

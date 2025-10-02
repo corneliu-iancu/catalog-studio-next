@@ -1,14 +1,14 @@
 // Reusable Image Upload Field for Forms
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileDropzone } from '@/components/ui/file-dropzone';
 import { useImageUpload } from '@/lib/hooks/useImageUpload';
 import { CompressionSettings } from '@/lib/types/image-upload';
 import { useDisplayImage } from '@/lib/utils/image-display';
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import { Upload, Image as ImageIcon, X, Check, Loader2 } from 'lucide-react';
 import 'react-image-crop/dist/ReactCrop.css';
 
@@ -24,6 +24,27 @@ interface ImageUploadFieldProps {
   className?: string;
 }
 
+// Helper function to create a centered aspect crop
+function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number,
+) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  );
+}
+
 export function ImageUploadField({
   currentImageUrl,
   onImageUploaded,
@@ -31,12 +52,12 @@ export function ImageUploadField({
   folder = 'menu-items',
   label = 'Item Image',
   description = 'Upload an image for this item',
-  maxFileSize = 5 * 1024 * 1024, // 5MB
+  maxFileSize = 10 * 1024 * 1024, // 10MB
   compressionSettings = {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1024,
+    maxSizeMB: 3,
+    maxWidthOrHeight: 2048,
     useWebWorker: true,
-    quality: 0.8
+    quality: 0.92
   },
   className = ''
 }: ImageUploadFieldProps) {
@@ -55,18 +76,77 @@ export function ImageUploadField({
   
   const { displayUrl, loading: imageLoading } = useDisplayImage(currentImageUrl || null);
 
-  const [crop, setCrop] = useState<Crop>({
-    unit: '%',
-    width: 90,
-    height: 90,
-    x: 5,
-    y: 5
-  });
+  const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [showUploader, setShowUploader] = useState(!currentImageUrl);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const aspect = 1; // 1:1 square aspect ratio - locked
+
+  // Update preview when crop changes
+  useEffect(() => {
+    if (!completedCrop || !imgRef.current || !canvasRef.current) {
+      return;
+    }
+
+    const image = imgRef.current;
+    const canvas = canvasRef.current;
+    const crop = completedCrop;
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    // Set canvas to desired preview size (square)
+    const previewSize = 200;
+    canvas.width = previewSize;
+    canvas.height = previewSize;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw the cropped image scaled to preview size
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      previewSize,
+      previewSize
+    );
+
+    // Convert canvas to blob URL for preview
+    canvas.toBlob((blob) => {
+      if (blob) {
+        // Cleanup previous preview URL
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+        }
+        const url = URL.createObjectURL(blob);
+        setPreviewUrl(url);
+      }
+    }, 'image/jpeg', 0.95);
+  }, [completedCrop, imgRef, canvasRef]);
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleFileSelected = (files: any[]) => {
     const selectedFile = files[0] || null;
+    setCrop(undefined); // Reset crop for new image
+    setCompletedCrop(undefined);
+    setImageLoaded(false);
+    setPreviewUrl('');
     setFile(selectedFile);
     if (selectedFile) {
       setShowUploader(true);
@@ -87,11 +167,19 @@ export function ImageUploadField({
       onImageRemoved();
     }
     reset();
+    setCrop(undefined);
+    setCompletedCrop(undefined);
+    setImageLoaded(false);
+    setPreviewUrl('');
     setShowUploader(true);
   };
 
   const handleChangeImage = () => {
     reset();
+    setCrop(undefined);
+    setCompletedCrop(undefined);
+    setImageLoaded(false);
+    setPreviewUrl('');
     setShowUploader(true);
   };
 
@@ -177,38 +265,50 @@ export function ImageUploadField({
               />
             ) : (
               <div className="space-y-4">
-                {/* Crop Interface */}
+                {/* Crop Interface with Preview */}
                 <div className="border rounded-lg p-4">
-                  <div className="w-full max-w-lg mx-auto">
-                    {file.preview && (
-                      <ReactCrop
-                        crop={crop}
-                        onChange={(_, percentCrop) => setCrop(percentCrop)}
-                        onComplete={(c) => setCompletedCrop(c)}
-                        aspect={undefined}
-                        circularCrop={false}
-                        className="max-w-full"
-                      >
-                        <img
-                          ref={imgRef}
-                          src={file.preview}
-                          alt={file.name}
-                          className="max-w-full h-auto max-h-64 block mx-auto"
-                          onLoad={() => {
-                            if (imgRef.current) {
-                              const { width, height } = imgRef.current.getBoundingClientRect();
-                              const size = Math.min(width, height) * 0.8;
-                              setCrop({
-                                unit: 'px',
-                                width: size,
-                                height: size,
-                                x: (width - size) / 2,
-                                y: (height - size) / 2,
-                              });
-                            }
-                          }}
-                        />
-                      </ReactCrop>
+                  <div className="flex flex-col md:flex-row gap-6">
+                    {/* Crop Area */}
+                    <div className="flex-1 min-w-0">
+                      {file.preview && (
+                        <ReactCrop
+                          crop={crop}
+                          onChange={(_, percentCrop) => setCrop(percentCrop)}
+                          onComplete={(c) => setCompletedCrop(c)}
+                          aspect={aspect}
+                          keepSelection={true}
+                          className="max-w-full"
+                        >
+                          <img
+                            ref={imgRef}
+                            src={file.preview}
+                            alt={file.name}
+                            className="max-w-full h-auto max-h-64 block mx-auto"
+                            onLoad={(e) => {
+                              const { width, height } = e.currentTarget;
+                              const initialCrop = centerAspectCrop(width, height, aspect);
+                              setCrop(initialCrop);
+                              setImageLoaded(true);
+                            }}
+                          />
+                        </ReactCrop>
+                      )}
+                    </div>
+
+                    {/* Preview */}
+                    {previewUrl && (
+                      <div className="flex flex-col items-center gap-2 md:w-1/2 w-full">
+                        <div className="w-full aspect-square border-2 border-dashed border-muted-foreground/25 rounded-lg overflow-hidden bg-muted/30">
+                          <img
+                            src={previewUrl}
+                            alt="Crop preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center">
+                          This is what will be uploaded
+                        </p>
+                      </div>
                     )}
                   </div>
 
@@ -222,40 +322,12 @@ export function ImageUploadField({
                         e.preventDefault();
                         e.stopPropagation();
                         if (imgRef.current) {
-                          const { width, height } = imgRef.current.getBoundingClientRect();
-                          const size = Math.min(width, height) * 0.9;
-                          setCrop({
-                            unit: 'px',
-                            width: size,
-                            height: size,
-                            x: (width - size) / 2,
-                            y: (height - size) / 2,
-                          });
+                          const { width, height } = imgRef.current;
+                          setCrop(centerAspectCrop(width, height, aspect));
                         }
                       }}
                     >
-                      Square Crop
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (imgRef.current) {
-                          const { width, height } = imgRef.current.getBoundingClientRect();
-                          setCrop({
-                            unit: 'px',
-                            width: width * 0.95,
-                            height: height * 0.95,
-                            x: width * 0.025,
-                            y: height * 0.025,
-                          });
-                        }
-                      }}
-                    >
-                      Full Size
+                      Reset Crop
                     </Button>
                   </div>
                 </div>
@@ -270,6 +342,10 @@ export function ImageUploadField({
                       e.preventDefault();
                       e.stopPropagation();
                       reset();
+                      setCrop(undefined);
+                      setCompletedCrop(undefined);
+                      setImageLoaded(false);
+                      setPreviewUrl('');
                       if (!currentImageUrl) {
                         setShowUploader(true);
                       } else {

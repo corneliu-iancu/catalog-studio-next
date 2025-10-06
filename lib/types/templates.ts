@@ -59,6 +59,7 @@ export interface PublicMenuData {
   menu: {
     id: string;
     name: string;
+    slug: string;
     description?: string;
     currency?: string;
     categories: MenuCategory[];

@@ -22,6 +22,7 @@ interface ImageUploadFieldProps {
   maxFileSize?: number;
   compressionSettings?: CompressionSettings;
   className?: string;
+  aspect?: number; // Optional aspect ratio (e.g., 1 for square, 16/9 for landscape, undefined for free crop)
 }
 
 // Helper function to create a centered aspect crop
@@ -59,7 +60,8 @@ export function ImageUploadField({
     useWebWorker: true,
     quality: 0.92
   },
-  className = ''
+  className = '',
+  aspect // undefined = free crop, number = locked aspect ratio
 }: ImageUploadFieldProps) {
   const { 
     file, 
@@ -81,7 +83,6 @@ export function ImageUploadField({
   const [showUploader, setShowUploader] = useState(!currentImageUrl);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const aspect = 1; // 1:1 square aspect ratio - locked
 
   // Update preview when crop changes
   useEffect(() => {
@@ -96,10 +97,23 @@ export function ImageUploadField({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    // Set canvas to desired preview size (square)
-    const previewSize = 200;
-    canvas.width = previewSize;
-    canvas.height = previewSize;
+    // Set canvas to desired preview size
+    const previewMaxSize = 300;
+    const cropAspect = crop.width / crop.height;
+    let canvasWidth, canvasHeight;
+    
+    if (cropAspect > 1) {
+      // Landscape
+      canvasWidth = previewMaxSize;
+      canvasHeight = previewMaxSize / cropAspect;
+    } else {
+      // Portrait or square
+      canvasHeight = previewMaxSize;
+      canvasWidth = previewMaxSize * cropAspect;
+    }
+    
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -115,8 +129,8 @@ export function ImageUploadField({
       crop.height * scaleY,
       0,
       0,
-      previewSize,
-      previewSize
+      canvasWidth,
+      canvasHeight
     );
 
     // Convert canvas to blob URL for preview
@@ -195,7 +209,7 @@ export function ImageUploadField({
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+              <div className="w-32 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                 {imageLoading ? (
                   <div className="w-full h-full flex items-center justify-center">
                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -298,7 +312,7 @@ export function ImageUploadField({
                     {/* Preview */}
                     {previewUrl && (
                       <div className="flex flex-col items-center gap-2 md:w-1/2 w-full">
-                        <div className="w-full aspect-square border-2 border-dashed border-muted-foreground/25 rounded-lg overflow-hidden bg-muted/30">
+                        <div className="w-full max-w-xs border-2 border-dashed border-muted-foreground/25 rounded-lg overflow-hidden bg-muted/30">
                           <img
                             src={previewUrl}
                             alt="Crop preview"

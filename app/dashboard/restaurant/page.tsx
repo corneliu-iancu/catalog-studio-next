@@ -9,6 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { useDisplayImage } from '@/lib/utils/image-display';
 import { 
   Store, 
   Globe, 
@@ -18,18 +20,21 @@ import {
   Calendar,
   Edit,
   ExternalLink,
-  User,
+  User as UserIcon,
   UtensilsCrossed,
   Save,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { getCurrentDomain } from '@/lib/config';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 function RestaurantProfileContent() {
+  const t = useTranslations();
   const { selectedRestaurant, isLoading, refreshRestaurants } = useRestaurant();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,8 +47,14 @@ function RestaurantProfileContent() {
     email: '',
     phone: '',
     website: '',
-    address: ''
+    address: '',
+    logo_url: ''
   });
+
+  // Use the display image hook for the logo
+  const { displayUrl: logoDisplayUrl, loading: logoLoading } = useDisplayImage(
+    selectedRestaurant?.logo_url || null
+  );
 
   useEffect(() => {
     if (selectedRestaurant) {
@@ -56,7 +67,8 @@ function RestaurantProfileContent() {
         email: selectedRestaurant.email || '',
         phone: selectedRestaurant.phone || '',
         website: selectedRestaurant.website || '',
-        address: selectedRestaurant.address || ''
+        address: selectedRestaurant.address || '',
+        logo_url: selectedRestaurant.logo_url || ''
       });
     }
   }, [selectedRestaurant]);
@@ -83,7 +95,7 @@ function RestaurantProfileContent() {
 
       if (error) throw error;
 
-      toast.success('Restaurant profile updated successfully');
+      toast.success(t('restaurant.profile.updateSuccess'));
       setIsEditing(false);
       
       // Update the restaurant context with the new data
@@ -92,7 +104,7 @@ function RestaurantProfileContent() {
       }
     } catch (error) {
       console.error('Error updating restaurant:', error);
-      toast.error('Failed to update restaurant profile');
+      toast.error(t('restaurant.profile.updateError'));
     } finally {
       setIsSaving(false);
     }
@@ -109,10 +121,25 @@ function RestaurantProfileContent() {
         email: selectedRestaurant.email || '',
         phone: selectedRestaurant.phone || '',
         website: selectedRestaurant.website || '',
-        address: selectedRestaurant.address || ''
+        address: selectedRestaurant.address || '',
+        logo_url: selectedRestaurant.logo_url || ''
       });
     }
     setIsEditing(false);
+  };
+
+  const handleLogoUploaded = (s3Key: string, publicUrl: string) => {
+    setFormData(prev => ({
+      ...prev,
+      logo_url: s3Key
+    }));
+  };
+
+  const handleLogoRemoved = () => {
+    setFormData(prev => ({
+      ...prev,
+      logo_url: ''
+    }));
   };
 
   if (isLoading) {
@@ -120,7 +147,7 @@ function RestaurantProfileContent() {
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading restaurant profile...</p>
+          <p className="text-muted-foreground">{t('restaurant.profile.loadingProfile')}</p>
         </div>
       </div>
     );
@@ -132,8 +159,8 @@ function RestaurantProfileContent() {
         <div className="text-center space-y-4">
           <Store className="h-12 w-12 text-muted-foreground mx-auto" />
           <div>
-            <h2 className="text-lg font-semibold">No Restaurant Selected</h2>
-            <p className="text-muted-foreground">Please select a restaurant to view its profile.</p>
+            <h2 className="text-lg font-semibold">{t('restaurant.profile.noRestaurantSelected')}</h2>
+            <p className="text-muted-foreground">{t('restaurant.profile.selectRestaurant')}</p>
           </div>
         </div>
       </div>
@@ -141,7 +168,7 @@ function RestaurantProfileContent() {
   }
 
   const formatCuisineType = (cuisine: string | null) => {
-    if (!cuisine) return 'Not specified';
+    if (!cuisine) return t('restaurant.basicInfo.notSpecified');
     return cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
   };
 
@@ -150,9 +177,9 @@ function RestaurantProfileContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Restaurant Profile</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('restaurant.profile.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your restaurant information and settings
+            {t('restaurant.profile.subtitle')}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -160,18 +187,24 @@ function RestaurantProfileContent() {
             <>
               <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
                 <X className="mr-2 h-4 w-4" />
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button onClick={handleSave} disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
-                {isSaving ? 'Saving...' : 'Save Changes'}
+                {isSaving ? t('restaurant.profile.saving') : t('restaurant.profile.saveChanges')}
               </Button>
             </>
           ) : (
-            <Button onClick={() => setIsEditing(true)}>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Profile
-            </Button>
+            <>
+              <Button variant="outline" size="default" onClick={() => window.open(`/${selectedRestaurant.slug}`, '_blank')}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                {t('restaurant.quickActions.viewPublicMenu')}
+              </Button>
+              <Button onClick={() => setIsEditing(true)}>
+                <Edit className="mr-2 h-4 w-4" />
+                {t('restaurant.profile.editProfile')}
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -182,20 +215,68 @@ function RestaurantProfileContent() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Store className="mr-2 h-5 w-5" />
-              Basic Information
+              {t('restaurant.basicInfo.title')}
             </CardTitle>
             <CardDescription>
-              Core details about your restaurant
+              {t('restaurant.basicInfo.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Logo Upload */}
+            {isEditing ? (
+              <>
+                <ImageUploadField
+                  currentImageUrl={formData.logo_url}
+                  onImageUploaded={handleLogoUploaded}
+                  onImageRemoved={handleLogoRemoved}
+                  folder="restaurants"
+                  label={t('restaurant.basicInfo.logo')}
+                  description={t('restaurant.basicInfo.logoDescription')}
+                  aspect={undefined}
+                  compressionSettings={{
+                    maxSizeMB: 2,
+                    maxWidthOrHeight: 1024,
+                    useWebWorker: true,
+                    quality: 0.95
+                  }}
+                />
+                <Separator />
+              </>
+            ) : selectedRestaurant.logo_url ? (
+              <>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.basicInfo.logo')}</Label>
+                  <div className="mt-2">
+                    <div className="w-32 h-20 rounded-lg overflow-hidden border-2 border-muted bg-muted/10">
+                      {logoLoading ? (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/50">
+                          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                        </div>
+                      ) : logoDisplayUrl ? (
+                        <img 
+                          src={logoDisplayUrl}
+                          alt={`${selectedRestaurant.name} logo`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/50">
+                          <Store className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <Separator />
+              </>
+            ) : null}
+
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Restaurant Name</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.basicInfo.restaurantName')}</Label>
               {isEditing ? (
                 <Input
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Enter restaurant name"
+                  placeholder={t('restaurant.basicInfo.restaurantNamePlaceholder')}
                 />
               ) : (
                 <p className="text-lg font-semibold">{selectedRestaurant.name}</p>
@@ -205,12 +286,12 @@ function RestaurantProfileContent() {
             <Separator />
             
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">URL Slug</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.basicInfo.urlSlug')}</Label>
               {isEditing ? (
                 <Input
                   value={formData.slug}
                   onChange={(e) => handleInputChange('slug', e.target.value)}
-                  placeholder="Enter URL slug"
+                  placeholder={t('restaurant.basicInfo.urlSlugPlaceholder')}
                 />
               ) : (
                 <div className="flex items-center space-x-2">
@@ -219,7 +300,7 @@ function RestaurantProfileContent() {
                     variant="ghost"
                     size="sm"
                     onClick={() => window.open(`/${selectedRestaurant.slug}`, '_blank')}
-                    title="Open restaurant page in new tab"
+                    title={t('restaurant.basicInfo.openInNewTab')}
                   >
                     <ExternalLink className="h-3 w-3" />
                   </Button>
@@ -230,17 +311,17 @@ function RestaurantProfileContent() {
             <Separator />
             
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.basicInfo.descriptionLabel')}</Label>
               {isEditing ? (
                 <Textarea
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Enter restaurant description"
+                  placeholder={t('restaurant.basicInfo.descriptionPlaceholder')}
                   rows={3}
                 />
               ) : (
                 <p className="text-sm">
-                  {selectedRestaurant.description || 'No description provided'}
+                  {selectedRestaurant.description || t('restaurant.basicInfo.noDescription')}
                 </p>
               )}
             </div>
@@ -248,12 +329,12 @@ function RestaurantProfileContent() {
             <Separator />
             
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Cuisine Type</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.basicInfo.cuisineType')}</Label>
               {isEditing ? (
                 <Input
                   value={formData.cuisine}
                   onChange={(e) => handleInputChange('cuisine', e.target.value)}
-                  placeholder="Enter cuisine type"
+                  placeholder={t('restaurant.basicInfo.cuisineTypePlaceholder')}
                 />
               ) : (
                 <div className="mt-1">
@@ -271,21 +352,21 @@ function RestaurantProfileContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <User className="mr-2 h-5 w-5" />
-              Contact Information
+              <UserIcon className="mr-2 h-5 w-5" />
+              {t('restaurant.contactInfo.title')}
             </CardTitle>
             <CardDescription>
-              How customers can reach you
+              {t('restaurant.contactInfo.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Owner Name</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.contactInfo.ownerName')}</Label>
               {isEditing ? (
                 <Input
                   value={formData.owner_name}
                   onChange={(e) => handleInputChange('owner_name', e.target.value)}
-                  placeholder="Enter owner name"
+                  placeholder={t('restaurant.contactInfo.ownerNamePlaceholder')}
                 />
               ) : (
                 <p className="font-medium">{selectedRestaurant.owner_name}</p>
@@ -295,13 +376,13 @@ function RestaurantProfileContent() {
             <Separator />
             
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Email</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.contactInfo.email')}</Label>
               {isEditing ? (
                 <Input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter email address"
+                  placeholder={t('restaurant.contactInfo.emailPlaceholder')}
                 />
               ) : (
                 <div className="flex items-center space-x-2">
@@ -314,18 +395,18 @@ function RestaurantProfileContent() {
             <Separator />
             
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Phone</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.contactInfo.phone')}</Label>
               {isEditing ? (
                 <Input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="Enter phone number"
+                  placeholder={t('restaurant.contactInfo.phonePlaceholder')}
                 />
               ) : (
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <p className="text-sm">{selectedRestaurant.phone || 'Not provided'}</p>
+                  <p className="text-sm">{selectedRestaurant.phone || t('restaurant.contactInfo.notProvided')}</p>
                 </div>
               )}
             </div>
@@ -333,13 +414,13 @@ function RestaurantProfileContent() {
             <Separator />
             
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Website</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.contactInfo.website')}</Label>
               {isEditing ? (
                 <Input
                   type="url"
                   value={formData.website}
                   onChange={(e) => handleInputChange('website', e.target.value)}
-                  placeholder="Enter website URL"
+                  placeholder={t('restaurant.contactInfo.websitePlaceholder')}
                 />
               ) : (
                 <div className="flex items-center space-x-2">
@@ -354,7 +435,7 @@ function RestaurantProfileContent() {
                       {selectedRestaurant.website}
                     </a>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Not provided</p>
+                    <p className="text-sm text-muted-foreground">{t('restaurant.contactInfo.notProvided')}</p>
                   )}
                 </div>
               )}
@@ -367,25 +448,25 @@ function RestaurantProfileContent() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <MapPin className="mr-2 h-5 w-5" />
-              Location
+              {t('restaurant.location.title')}
             </CardTitle>
             <CardDescription>
-              Where customers can find you
+              {t('restaurant.location.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Address</Label>
+              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.location.address')}</Label>
               {isEditing ? (
                 <Textarea
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter full address"
+                  placeholder={t('restaurant.location.addressPlaceholder')}
                   rows={3}
                 />
               ) : (
                 <p className="text-sm mt-1">
-                  {selectedRestaurant.address || 'No address provided'}
+                  {selectedRestaurant.address || t('restaurant.location.noAddress')}
                 </p>
               )}
             </div>
@@ -397,85 +478,56 @@ function RestaurantProfileContent() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Calendar className="mr-2 h-5 w-5" />
-              Account Information
+              {t('restaurant.accountInfo.title')}
             </CardTitle>
             <CardDescription>
-              Restaurant account details
+              {t('restaurant.accountInfo.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Created</label>
+              <label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.created')}</label>
               <p className="text-sm">
-                {new Date(selectedRestaurant.created_at).toLocaleDateString('en-US', {
+                {selectedRestaurant.created_at ? new Date(selectedRestaurant.created_at).toLocaleDateString('ro-RO', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
-                })}
+                }) : '-'}
               </p>
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+              <label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.lastUpdated')}</label>
               <p className="text-sm">
-                {new Date(selectedRestaurant.updated_at).toLocaleDateString('en-US', {
+                {selectedRestaurant.updated_at ? new Date(selectedRestaurant.updated_at).toLocaleDateString('ro-RO', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
-                })}
+                }) : '-'}
               </p>
             </div>
             
             <Separator />
             
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Status</label>
+              <label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.status')}</label>
               <div className="mt-1">
                 <Badge variant={selectedRestaurant.is_active ? "default" : "secondary"}>
-                  {selectedRestaurant.is_active ? "Active" : "Inactive"}
+                  {selectedRestaurant.is_active ? t('common.active') : t('common.inactive')}
                 </Badge>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>
-            Common tasks for managing your restaurant
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Basic Info
-            </Button>
-            <Button variant="outline" size="sm">
-              <MapPin className="mr-2 h-4 w-4" />
-              Update Location
-            </Button>
-            <Button variant="outline" size="sm">
-              <Globe className="mr-2 h-4 w-4" />
-              Customize Theme
-            </Button>
-            <Button variant="outline" size="sm">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              View Public Menu
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
 
 export default function RestaurantPage() {
+  const t = useTranslations();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -495,7 +547,7 @@ export default function RestaurantPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );

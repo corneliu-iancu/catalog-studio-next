@@ -96,5 +96,154 @@
       "restaurantCreated": "Restaurant creat",
       "startAdding": "Începe să adaugi elemente de meniu pentru a vedea mai multă activitate aici."
     }
+  },
+    "menuManagement": {
+    "title": "Gestionarea Meniului",
+    "subtitle": "Gestionează",
+    "menu": "meniu",
+    "newMenu": "Meniu Nou",
+    "menuInformation": {
+      "title": "Informații Meniu",
+      "cardDescription": "Detalii de bază despre acest meniu",
+      "menuName": "Numele Meniului",
+      "menuNamePlaceholder": "Introdu numele meniului",
+      "urlSlug": "URL Slug",
+      "urlSlugPlaceholder": "Introdu slug-ul URL",
+      "description": "Descriere",
+      "descriptionPlaceholder": "Introdu descrierea meniului",
+      "currency": "Monedă",
+      "status": "Status",
+      "makeDefault": "Setează ca Meniu Principal",
+      "defaultMenuHint": "Meniul principal va fi afișat automat vizitatorilor"
+    },
+    "actions": {
+      "editMenu": "Editează Meniul",
+      "deleteMenu": "Șterge Meniul",
+      "importCSV": "Importă CSV",
+      "generateQR": "Cod QR Meniu",
+      "shareQR": "Distribuie cu clienții",
+      "viewPublic": "Vezi Meniul Public",
+      "createMenu": "Creează Meniu",
+      "createCategory": "Creează Categorie"
+    },
+    "stats": {
+      "totalCategories": "Total Categorii",
+      "totalItems": "Total Produse",
+      "activeCategories": "Categorii Active",
+      "categories": "categorii",
+      "items": "produse"
+    },
+    "categories": {
+      "title": "Categorii de Meniu",
+      "description": "Organizează produsele în categorii",
+      "newCategory": "Categorie Nouă",
+      "noCategories": "Nicio Categorie",
+      "noCategoriesDesc": "Creează prima ta categorie pentru a organiza produsele",
+      "items": "produse",
+      "viewItems": "Vezi Produsele",
+      "editCategory": "Editează Categoria",
+      "deleteCategory": "Șterge Categoria"
+    },
+    "emptyStates": {
+      "noRestaurant": "Niciun Restaurant selectat",
+      "selectRestaurant": "Selectează un restaurant pentru a gestiona meniurile.",
+      "loadingMenus": "Se încarcă meniurile...",
+      "createMenusDescription": "Creează și organizează meniurile restaurantului tău",
+      "createFirstMenu": "Creează Primul Meniu",
+      "startBuilding": "Începe să construiești meniul digital al restaurantului tău. Poți crea diferite meniuri pentru diferite ore ale zilei, sezoane sau evenimente speciale.",
+      "firstMenuDefault": "Primul meniu va fi setat ca meniu principal",
+      "organizeCategories": "Organizează categoriile și produsele meniului",
+      "menuCreatedSuccess": "Bine! Meniul \"{menuName}\" a fost creat",
+      "addCategories": "Acum să adăugăm câteva categorii pentru a organiza produsele meniului",
+      "addFirstCategory": "Adaugă Prima Categorie",
+      "organizeIntoCategories": "Organizează produsele meniului în categorii ca \"Antipasturi\", \"Mâncăruri principale\", \"Deseuri\", etc. Acest lucru ajută clienții să navigheze mai ușor prin meniu.",
+      "categoriesHelp": "Categorii ajută la organizarea produselor meniului"
+    },
+    "deleteConfirm": {
+      "menuTitle": "Șterge Meniul?",
+      "menuDescription": "Această acțiune nu poate fi anulată. Acest lucru va șterge permanent meniul și va elimina toate datele sale din serverele noastre.",
+      "categoryTitle": "Șterge Categoria?",
+      "categoryDescription": "Această acțiune nu poate fi anulată. Categoria va fi ștearsă, dar produsele vor fi păstrate."
+    },
+    "toast": {
+      "menuUpdated": "Meniul a fost actualizat cu succes",
+      "menuUpdateError": "Eroare la actualizarea meniului",
+      "menuDeleted": "Meniul a fost șters cu succes",
+      "menuDeleteError": "Eroare la ștergerea meniului",
+      "categoryDeleted": "Categoria a fost ștearsă cu succes",
+      "categoryDeleteError": "Eroare la ștergerea categoriei"
+    },
+    "loading": "Se încarcă...",
+    "noMenuSelected": "Niciun Meniu Selectat",
+    "noMenuSelectedDesc": "Selectează un meniu pentru a începe gestionarea categoriilor și produselor.",
+    "noMenusAvailable": "Niciun Meniu Disponibil",
+    "noMenusDesc": "Creează primul tău meniu pentru a începe să adaugi produse.",
+    "createFirstMenu": "Creează Primul Meniu"
+  },
+  "restaurant": {
+    "profile": {
+      "title": "Profilul restaurantului",
+      "subtitle": "Gestionează informațiile și setările restaurantului",
+      "editProfile": "Editează",
+      "saveChanges": "Salvează",
+      "saving": "Se salvează...",
+      "loadingProfile": "Se încarcă profilul restaurantului...",
+      "noRestaurantSelected": "Niciun Restaurant Selectat",
+      "selectRestaurant": "Selectează un restaurant pentru a vizualiza profilul său.",
+      "updateSuccess": "Profilul restaurantului a fost actualizat cu succes",
+      "updateError": "Eroare la actualizarea profilului restaurantului"
+    },
+    "basicInfo": {
+      "title": "Informații de Bază",
+      "description": "Detalii principale despre restaurantul tău",
+      "logo": "Logo",
+      "logoDescription": "Încarcă un logo pentru restaurantul tău (cropiază la dimensiunea dorită)",
+      "restaurantName": "Numele Restaurantului",
+      "restaurantNamePlaceholder": "Introdu numele restaurantului",
+      "urlSlug": "URL Slug",
+      "urlSlugPlaceholder": "Introdu slug-ul URL",
+      "openInNewTab": "Deschide pagina restaurantului într-o filă nouă",
+      "descriptionLabel": "Descriere",
+      "descriptionPlaceholder": "Introdu descrierea restaurantului",
+      "noDescription": "Nicio descriere furnizată",
+      "cuisineType": "Tipul de bucătărie",
+      "cuisineTypePlaceholder": "Introdu tipul de bucătărie",
+      "notSpecified": "Nespecificat"
+    },
+    "contactInfo": {
+      "title": "Informații de Contact",
+      "description": "Cum te pot contacta clienții",
+      "ownerName": "Numele Proprietarului",
+      "ownerNamePlaceholder": "Introdu numele proprietarului",
+      "email": "Email",
+      "emailPlaceholder": "Introdu adresa de email",
+      "phone": "Telefon",
+      "phonePlaceholder": "Introdu numărul de telefon",
+      "notProvided": "Nefurnizat",
+      "website": "Website",
+      "websitePlaceholder": "Introdu URL-ul website-ului"
+    },
+    "location": {
+      "title": "Locație",
+      "description": "Unde te pot găsi clienții",
+      "address": "Adresă",
+      "addressPlaceholder": "Introdu adresa completă",
+      "noAddress": "Nicio adresă furnizată"
+    },
+    "accountInfo": {
+      "title": "Informații Cont",
+      "description": "Detaliile contului de restaurant",
+      "created": "Creat",
+      "lastUpdated": "Ultima Actualizare",
+      "status": "Status"
+    },
+    "quickActions": {
+      "title": "Acțiuni Rapide",
+      "description": "Sarcini comune pentru gestionarea restaurantului",
+      "editBasicInfo": "Editează Informații de Bază",
+      "updateLocation": "Actualizează Locația",
+      "customizeTheme": "Personalizează Tema",
+      "viewPublicMenu": "Vezi Meniul Public"
+    }
   }
 }

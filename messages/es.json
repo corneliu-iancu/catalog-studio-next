@@ -96,5 +96,144 @@
       "restaurantCreated": "Restaurante creado",
       "startAdding": "Comienza agregando elementos del menú para ver más actividad aquí."
     }
+  },
+  "restaurant": {
+    "profile": {
+      "title": "Perfil del Restaurante",
+      "subtitle": "Gestionar información y configuración del restaurante",
+      "editProfile": "Editar Perfil",
+      "saveChanges": "Guardar Cambios",
+      "saving": "Guardando...",
+      "loadingProfile": "Cargando perfil del restaurante...",
+      "noRestaurantSelected": "Ningún Restaurante Seleccionado",
+      "selectRestaurant": "Seleccione un restaurante para ver su perfil.",
+      "updateSuccess": "Perfil del restaurante actualizado con éxito",
+      "updateError": "Error al actualizar el perfil del restaurante"
+    },
+    "basicInfo": {
+      "title": "Información Básica",
+      "description": "Detalles principales sobre tu restaurante",
+      "logo": "Logo",
+      "logoDescription": "Sube un logo para tu restaurante (recorta al tamaño deseado)",
+      "restaurantName": "Nombre del Restaurante",
+      "restaurantNamePlaceholder": "Ingrese el nombre del restaurante",
+      "urlSlug": "URL Slug",
+      "urlSlugPlaceholder": "Ingrese el slug de URL",
+      "openInNewTab": "Abrir página del restaurante en una nueva pestaña",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Ingrese la descripción del restaurante",
+      "noDescription": "No se proporcionó descripción",
+      "cuisineType": "Tipo de Cocina",
+      "cuisineTypePlaceholder": "Ingrese el tipo de cocina",
+      "notSpecified": "No especificado"
+    },
+    "contactInfo": {
+      "title": "Información de Contacto",
+      "description": "Cómo los clientes pueden contactarte",
+      "ownerName": "Nombre del Propietario",
+      "ownerNamePlaceholder": "Ingrese el nombre del propietario",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "Ingrese la dirección de correo electrónico",
+      "phone": "Teléfono",
+      "phonePlaceholder": "Ingrese el número de teléfono",
+      "notProvided": "No proporcionado",
+      "website": "Sitio Web",
+      "websitePlaceholder": "Ingrese la URL del sitio web"
+    },
+    "location": {
+      "title": "Ubicación",
+      "description": "Dónde los clientes pueden encontrarte",
+      "address": "Dirección",
+      "addressPlaceholder": "Ingrese la dirección completa",
+      "noAddress": "No se proporcionó dirección"
+    },
+    "accountInfo": {
+      "title": "Información de la Cuenta",
+      "description": "Detalles de la cuenta del restaurante",
+      "created": "Creado",
+      "lastUpdated": "Última Actualización",
+      "status": "Estado"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "description": "Tareas comunes para gestionar tu restaurante",
+      "editBasicInfo": "Editar Información Básica",
+      "updateLocation": "Actualizar Ubicación",
+      "customizeTheme": "Personalizar Tema",
+      "viewPublicMenu": "Ver Menú Público"
+    }
+  },
+  "menuManagement": {
+    "title": "Gestión de Menú",
+    "subtitle": "Gestionando",
+    "menu": "menú",
+    "newMenu": "Nuevo Menú",
+    "menuInformation": {
+      "title": "Información del Menú",
+      "cardDescription": "Detalles básicos sobre este menú",
+      "menuName": "Nombre del Menú",
+      "menuNamePlaceholder": "Ingrese el nombre del menú",
+      "urlSlug": "Slug de URL",
+      "urlSlugPlaceholder": "Ingrese el slug de URL",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Ingrese la descripción del menú",
+      "currency": "Moneda",
+      "status": "Configuración de Estado",
+      "makeDefault": "Menú Predeterminado"
+    },
+    "actions": {
+      "editMenu": "Editar Menú",
+      "deleteMenu": "Eliminar Menú",
+      "importCSV": "Importar CSV",
+      "generateQR": "Código QR del Menú",
+      "shareQR": "Compartir con clientes",
+      "viewPublic": "Ver Menú Público",
+      "createMenu": "Crear Menú",
+      "createCategory": "Crear Categoría"
+    },
+    "stats": {
+      "totalCategories": "Total de Categorías",
+      "totalItems": "Total de Artículos",
+      "activeCategories": "A través de todas las categorías"
+    },
+    "categories": {
+      "title": "Categorías",
+      "description": "Organice los elementos de su menú en categorías. Arrastre para reordenar.",
+      "newCategory": "Agregar Categoría",
+      "editCategory": "Editar Categoría",
+      "deleteCategory": "Eliminar Categoría",
+      "viewItems": "Ver Artículos",
+      "items": "artículos"
+    },
+    "emptyStates": {
+      "noRestaurant": "Ningún Restaurante Seleccionado",
+      "selectRestaurant": "Por favor, seleccione un restaurante para gestionar menús.",
+      "loadingMenus": "Cargando menús...",
+      "createMenusDescription": "Cree y organice los menús de su restaurante",
+      "createFirstMenu": "Cree Su Primer Menú",
+      "startBuilding": "Comience a construir el menú digital de su restaurante. Puede crear diferentes menús para diferentes momentos del día, temporadas u ocasiones especiales.",
+      "firstMenuDefault": "Su primer menú se establecerá como menú predeterminado",
+      "organizeCategories": "Organice las categorías y artículos de su menú",
+      "menuCreatedSuccess": "¡Genial! Su menú \"{menuName}\" ha sido creado",
+      "addCategories": "Ahora agreguemos algunas categorías para organizar los artículos de su menú",
+      "addFirstCategory": "Agregue Su Primera Categoría",
+      "organizeIntoCategories": "Organice los elementos de su menú en categorías como \"Entrantes\", \"Platos Principales\", \"Postres\", etc. Esto ayuda a los clientes a navegar por su menú fácilmente.",
+      "categoriesHelp": "Las categorías ayudan a organizar los elementos de su menú"
+    },
+    "deleteConfirm": {
+      "menuTitle": "Eliminar Menú",
+      "menuDescription": "¿Está seguro de que desea eliminar este menú? Esta acción no se puede deshacer. Todas las categorías y elementos del menú en este menú también se eliminarán.",
+      "categoryTitle": "Eliminar Categoría",
+      "categoryDescription": "¿Está seguro de que desea eliminar esta categoría? Esta acción no se puede deshacer. Todos los elementos del menú en esta categoría también se eliminarán."
+    },
+    "toast": {
+      "menuUpdated": "Menú actualizado exitosamente",
+      "menuUpdateError": "No se pudo actualizar el menú",
+      "menuDeleted": "Menú eliminado exitosamente",
+      "menuDeleteError": "No se pudo eliminar el menú",
+      "categoryDeleted": "Categoría eliminada exitosamente",
+      "categoryDeleteError": "No se pudo eliminar la categoría",
+      "csvImported": "¡Importación de CSV completada exitosamente!"
+    }
   }
 }

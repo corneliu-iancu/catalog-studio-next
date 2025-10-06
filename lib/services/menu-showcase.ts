@@ -6,8 +6,10 @@ export class MenuShowcaseService {
 
   /**
    * Fetch public menu data for a restaurant by slug
+   * @param restaurantSlug - The restaurant slug
+   * @param menuSlug - Optional menu slug. If not provided, fetches default menu
    */
-  async getPublicMenuData(restaurantSlug: string): Promise<PublicMenuData | null> {
+  async getPublicMenuData(restaurantSlug: string, menuSlug?: string): Promise<PublicMenuData | null> {
     try {
       // Fetch restaurant data
       const { data: restaurant, error: restaurantError } = await this.supabase
@@ -38,14 +40,22 @@ export class MenuShowcaseService {
         return null;
       }
 
-      // First, fetch the default menu
-      const { data: menuData, error: menuError } = await this.supabase
+      // Fetch menu - either by slug or default
+      let menuQuery = this.supabase
         .from('menus')
-        .select('id, name, description, currency')
+        .select('id, name, slug, description, currency')
         .eq('restaurant_id', restaurant.id)
-        .eq('is_active', true)
-        .eq('is_default', true)
-        .maybeSingle();
+        .eq('is_active', true);
+
+      if (menuSlug) {
+        // Fetch specific menu by slug
+        menuQuery = menuQuery.eq('slug', menuSlug);
+      } else {
+        // Fetch default menu
+        menuQuery = menuQuery.eq('is_default', true);
+      }
+
+      const { data: menuData, error: menuError } = await menuQuery.maybeSingle();
 
       if (menuError) {
         console.error('Database error fetching menu:', menuError);
@@ -53,19 +63,23 @@ export class MenuShowcaseService {
       }
 
       if (!menuData) {
-        console.log(`No default menu found for restaurant "${restaurant.name}" (${restaurant.id})`);
+        if (menuSlug) {
+          console.log(`Menu with slug "${menuSlug}" not found for restaurant "${restaurant.name}"`);
+        } else {
+          console.log(`No default menu found for restaurant "${restaurant.name}" (${restaurant.id})`);
+        }
 
         // Debug: Check what menus exist for this restaurant
         const { data: allMenus } = await this.supabase
           .from('menus')
-          .select('id, name, is_default, is_active')
+          .select('id, name, slug, is_default, is_active')
           .eq('restaurant_id', restaurant.id);
 
         console.log('Available menus for this restaurant:', allMenus);
         return null;
       }
 
-      console.log(`Found default menu: "${menuData.name}" (${menuData.id}) for restaurant "${restaurant.name}"`);
+      console.log(`Found menu: "${menuData.name}" (${menuData.id}) for restaurant "${restaurant.name}"`);
 
       // Now fetch categories and items for this menu
       const { data: categoriesData, error: categoriesError } = await this.supabase
@@ -165,6 +179,7 @@ export class MenuShowcaseService {
         menu: {
           id: menuData.id,
           name: menuData.name,
+          slug: menuData.slug,
           description: menuData.description,
           currency: menuData.currency,
           categories
@@ -269,6 +284,7 @@ export class MenuShowcaseService {
       menu: {
         id: 'mock-menu-id',
         name: 'Main Menu',
+        slug: 'main-menu',
         description: 'Our carefully crafted selection of dishes made with the finest ingredients.',
         currency: 'USD',
         categories: [

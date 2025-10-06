@@ -48,7 +48,7 @@ const getNavigation = (t: any) => [
   },
   {
     nameKey: 'sharingQr',
-    href: '/dashboard/sharing',
+    href: '/dashboard/qr-codes',
     icon: QrCode,
     descriptionKey: 'descriptions.sharingQr',
   },

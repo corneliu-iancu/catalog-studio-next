@@ -23,6 +23,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import CreateMenuDialog from '@/components/dashboard/create-menu-dialog';
 import { CsvImportDialog } from '@/components/dashboard/csv-import-dialog';
 import { MenuPicker } from '@/components/dashboard/menu-picker';
+import { MenuQRCode } from '@/components/dashboard/menu-qr-code';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -623,8 +624,9 @@ function MenuManagementContent() {
         </Card>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* Stats and QR Code Row */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Stats Cards */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
@@ -649,6 +651,15 @@ function MenuManagementContent() {
             </p>
           </CardContent>
         </Card>
+
+        {/* QR Code Card */}
+        {selectedRestaurant && selectedMenu && (
+          <MenuQRCode 
+            restaurantSlug={selectedRestaurant.slug}
+            menuSlug={selectedMenu.slug}
+            menuName={selectedMenu.name}
+          />
+        )}
       </div>
 
       {/* Quick Actions */}

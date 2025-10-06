@@ -96,5 +96,71 @@
       "restaurantCreated": "Restaurant created",
       "startAdding": "Start adding menu items to see more activity here."
     }
+  },
+  "restaurant": {
+    "profile": {
+      "title": "Restaurant Profile",
+      "subtitle": "Manage your restaurant information and settings",
+      "editProfile": "Edit Profile",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "loadingProfile": "Loading restaurant profile...",
+      "noRestaurantSelected": "No Restaurant Selected",
+      "selectRestaurant": "Please select a restaurant to view its profile.",
+      "updateSuccess": "Restaurant profile updated successfully",
+      "updateError": "Failed to update restaurant profile"
+    },
+    "basicInfo": {
+      "title": "Basic Information",
+      "description": "Core details about your restaurant",
+      "logo": "Logo",
+      "logoDescription": "Upload a logo for your restaurant (crop to desired size)",
+      "restaurantName": "Restaurant Name",
+      "restaurantNamePlaceholder": "Enter restaurant name",
+      "urlSlug": "URL Slug",
+      "urlSlugPlaceholder": "Enter URL slug",
+      "openInNewTab": "Open restaurant page in new tab",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter restaurant description",
+      "noDescription": "No description provided",
+      "cuisineType": "Cuisine Type",
+      "cuisineTypePlaceholder": "Enter cuisine type",
+      "notSpecified": "Not specified"
+    },
+    "contactInfo": {
+      "title": "Contact Information",
+      "description": "How customers can reach you",
+      "ownerName": "Owner Name",
+      "ownerNamePlaceholder": "Enter owner name",
+      "email": "Email",
+      "emailPlaceholder": "Enter email address",
+      "phone": "Phone",
+      "phonePlaceholder": "Enter phone number",
+      "notProvided": "Not provided",
+      "website": "Website",
+      "websitePlaceholder": "Enter website URL"
+    },
+    "location": {
+      "title": "Location",
+      "description": "Where customers can find you",
+      "address": "Address",
+      "addressPlaceholder": "Enter full address",
+      "noAddress": "No address provided"
+    },
+    "accountInfo": {
+      "title": "Account Information",
+      "description": "Restaurant account details",
+      "created": "Created",
+      "lastUpdated": "Last Updated",
+      "status": "Status"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Common tasks for managing your restaurant",
+      "editBasicInfo": "Edit Basic Info",
+      "updateLocation": "Update Location",
+      "customizeTheme": "Customize Theme",
+      "viewPublicMenu": "View Public Menu"
+    }
   }
 }

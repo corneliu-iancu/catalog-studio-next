@@ -96,5 +96,71 @@
       "restaurantCreated": "Restaurant creat",
       "startAdding": "Începe să adaugi elemente de meniu pentru a vedea mai multă activitate aici."
     }
+  },
+  "restaurant": {
+    "profile": {
+      "title": "Profilul restaurantului",
+      "subtitle": "Gestionează informațiile și setările restaurantului",
+      "editProfile": "Editează",
+      "saveChanges": "Salvează",
+      "saving": "Se salvează...",
+      "loadingProfile": "Se încarcă profilul restaurantului...",
+      "noRestaurantSelected": "Niciun Restaurant Selectat",
+      "selectRestaurant": "Selectează un restaurant pentru a vizualiza profilul său.",
+      "updateSuccess": "Profilul restaurantului a fost actualizat cu succes",
+      "updateError": "Eroare la actualizarea profilului restaurantului"
+    },
+    "basicInfo": {
+      "title": "Informații de Bază",
+      "description": "Detalii principale despre restaurantul tău",
+      "logo": "Logo",
+      "logoDescription": "Încarcă un logo pentru restaurantul tău (cropiază la dimensiunea dorită)",
+      "restaurantName": "Numele Restaurantului",
+      "restaurantNamePlaceholder": "Introdu numele restaurantului",
+      "urlSlug": "URL Slug",
+      "urlSlugPlaceholder": "Introdu slug-ul URL",
+      "openInNewTab": "Deschide pagina restaurantului într-o filă nouă",
+      "descriptionLabel": "Descriere",
+      "descriptionPlaceholder": "Introdu descrierea restaurantului",
+      "noDescription": "Nicio descriere furnizată",
+      "cuisineType": "Tipul de bucătărie",
+      "cuisineTypePlaceholder": "Introdu tipul de bucătărie",
+      "notSpecified": "Nespecificat"
+    },
+    "contactInfo": {
+      "title": "Informații de Contact",
+      "description": "Cum te pot contacta clienții",
+      "ownerName": "Numele Proprietarului",
+      "ownerNamePlaceholder": "Introdu numele proprietarului",
+      "email": "Email",
+      "emailPlaceholder": "Introdu adresa de email",
+      "phone": "Telefon",
+      "phonePlaceholder": "Introdu numărul de telefon",
+      "notProvided": "Nefurnizat",
+      "website": "Website",
+      "websitePlaceholder": "Introdu URL-ul website-ului"
+    },
+    "location": {
+      "title": "Locație",
+      "description": "Unde te pot găsi clienții",
+      "address": "Adresă",
+      "addressPlaceholder": "Introdu adresa completă",
+      "noAddress": "Nicio adresă furnizată"
+    },
+    "accountInfo": {
+      "title": "Informații Cont",
+      "description": "Detaliile contului de restaurant",
+      "created": "Creat",
+      "lastUpdated": "Ultima Actualizare",
+      "status": "Status"
+    },
+    "quickActions": {
+      "title": "Acțiuni Rapide",
+      "description": "Sarcini comune pentru gestionarea restaurantului",
+      "editBasicInfo": "Editează Informații de Bază",
+      "updateLocation": "Actualizează Locația",
+      "customizeTheme": "Personalizează Tema",
+      "viewPublicMenu": "Vezi Meniul Public"
+    }
   }
 }

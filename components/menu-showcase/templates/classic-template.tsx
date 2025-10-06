@@ -160,7 +160,7 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
           <MenuHeader 
             restaurant={restaurant} 
             menu={menu}
-            showLogo={false}
+            showLogo={true}
             showDescription={true}
           />
 

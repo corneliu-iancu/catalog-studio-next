@@ -3,7 +3,8 @@
 import { PublicMenuData } from '@/lib/types/templates';
 import { ClassicTemplate } from './templates/classic-template';
 import { Badge } from '../ui/badge';
-import { UtensilsCrossed, MapPin, Phone } from 'lucide-react';
+import { UtensilsCrossed, MapPin, Phone, Loader2, Store } from 'lucide-react';
+import { useDisplayImage } from '@/lib/utils/image-display';
 
 interface TemplateEngineProps {
   menuData: PublicMenuData;
@@ -58,6 +59,8 @@ export function MenuHeader({
   showLogo?: boolean;
   showDescription?: boolean;
 }) {
+  const { displayUrl: logoUrl, loading: logoLoading } = useDisplayImage(restaurant.logo_url || null);
+  
   return (
     <header className="py-8">
       <div className="max-w-4xl mx-auto px-6">
@@ -70,9 +73,27 @@ export function MenuHeader({
               <div className="w-12 h-8 bg-gray-800 rounded-full"></div>
             </div>
             
-            {/* Restaurant Banner */}
-            <div className="bg-gray-800 text-white px-8 py-3 rounded-full">
-              <span className="text-xl font-bold tracking-wider uppercase">RESTAURANT</span>
+            {/* Restaurant Banner with Logo or Text */}
+            <div className="bg-gray-800 text-white px-6 py-4 pb-5 rounded-full min-w-[200px] flex items-center justify-center">
+              <div className="relative flex items-center justify-center">  
+                {showLogo && restaurant.logo_url ? (
+                  <div className="h-12 flex items-center justify-center">
+                    {logoLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-white" />
+                    ) : logoUrl ? (
+                      <img 
+                        src={logoUrl} 
+                        alt={`${restaurant.name} logo`}
+                        className="max-h-10 max-w-full object-contain rounded-lg"
+                      />
+                    ) : (
+                      <span className="text-xl font-bold tracking-wider uppercase">RESTAURANT</span>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-xl font-bold tracking-wider uppercase">RESTAURANT</span>
+                )}
+              </div>
             </div>
             
             {/* Right decorative element */}

@@ -96,5 +96,71 @@
       "restaurantCreated": "Restaurant créé",
       "startAdding": "Commencez à ajouter des éléments de menu pour voir plus d'activité ici."
     }
+  },
+  "restaurant": {
+    "profile": {
+      "title": "Profil du Restaurant",
+      "subtitle": "Gérer les informations et paramètres du restaurant",
+      "editProfile": "Modifier le Profil",
+      "saveChanges": "Enregistrer les Modifications",
+      "saving": "Enregistrement...",
+      "loadingProfile": "Chargement du profil du restaurant...",
+      "noRestaurantSelected": "Aucun Restaurant Sélectionné",
+      "selectRestaurant": "Veuillez sélectionner un restaurant pour voir son profil.",
+      "updateSuccess": "Profil du restaurant mis à jour avec succès",
+      "updateError": "Échec de la mise à jour du profil du restaurant"
+    },
+    "basicInfo": {
+      "title": "Informations de Base",
+      "description": "Détails principaux sur votre restaurant",
+      "logo": "Logo",
+      "logoDescription": "Téléchargez un logo pour votre restaurant (recadrez à la taille souhaitée)",
+      "restaurantName": "Nom du Restaurant",
+      "restaurantNamePlaceholder": "Entrez le nom du restaurant",
+      "urlSlug": "Slug URL",
+      "urlSlugPlaceholder": "Entrez le slug URL",
+      "openInNewTab": "Ouvrir la page du restaurant dans un nouvel onglet",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Entrez la description du restaurant",
+      "noDescription": "Aucune description fournie",
+      "cuisineType": "Type de Cuisine",
+      "cuisineTypePlaceholder": "Entrez le type de cuisine",
+      "notSpecified": "Non spécifié"
+    },
+    "contactInfo": {
+      "title": "Informations de Contact",
+      "description": "Comment les clients peuvent vous contacter",
+      "ownerName": "Nom du Propriétaire",
+      "ownerNamePlaceholder": "Entrez le nom du propriétaire",
+      "email": "Email",
+      "emailPlaceholder": "Entrez l'adresse email",
+      "phone": "Téléphone",
+      "phonePlaceholder": "Entrez le numéro de téléphone",
+      "notProvided": "Non fourni",
+      "website": "Site Web",
+      "websitePlaceholder": "Entrez l'URL du site web"
+    },
+    "location": {
+      "title": "Localisation",
+      "description": "Où les clients peuvent vous trouver",
+      "address": "Adresse",
+      "addressPlaceholder": "Entrez l'adresse complète",
+      "noAddress": "Aucune adresse fournie"
+    },
+    "accountInfo": {
+      "title": "Informations du Compte",
+      "description": "Détails du compte du restaurant",
+      "created": "Créé",
+      "lastUpdated": "Dernière Mise à Jour",
+      "status": "Statut"
+    },
+    "quickActions": {
+      "title": "Actions Rapides",
+      "description": "Tâches courantes pour gérer votre restaurant",
+      "editBasicInfo": "Modifier les Informations de Base",
+      "updateLocation": "Mettre à Jour la Localisation",
+      "customizeTheme": "Personnaliser le Thème",
+      "viewPublicMenu": "Voir le Menu Public"
+    }
   }
 }

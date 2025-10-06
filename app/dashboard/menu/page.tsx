@@ -17,7 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getSupportedCurrencies, type SupportedCurrency } from '@/lib/utils/currency';
-import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X, Upload } from 'lucide-react';
+import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X, Upload, QrCode as QrCodeIcon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import CreateMenuDialog from '@/components/dashboard/create-menu-dialog';
@@ -625,7 +625,7 @@ function MenuManagementContent() {
       )}
 
       {/* Stats and QR Code Row */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-4">
         {/* Stats Cards */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -652,13 +652,28 @@ function MenuManagementContent() {
           </CardContent>
         </Card>
 
-        {/* QR Code Card */}
+        {/* Compact QR Code Card */}
         {selectedRestaurant && selectedMenu && (
-          <MenuQRCode 
-            restaurantSlug={selectedRestaurant.slug}
-            menuSlug={selectedMenu.slug}
-            menuName={selectedMenu.name}
-          />
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-sm font-medium flex items-center">
+                    <QrCodeIcon className="mr-2 h-4 w-4" />
+                    Menu QR Code
+                  </CardTitle>
+                  <CardDescription className="text-xs mt-1">
+                    Share with customers
+                  </CardDescription>
+                </div>
+                <MenuQRCode 
+                  restaurantSlug={selectedRestaurant.slug}
+                  menuSlug={selectedMenu.slug}
+                  menuName={selectedMenu.name}
+                />
+              </div>
+            </CardHeader>
+          </Card>
         )}
       </div>
 

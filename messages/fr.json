@@ -162,5 +162,78 @@
       "customizeTheme": "Personnaliser le Thème",
       "viewPublicMenu": "Voir le Menu Public"
     }
+  },
+  "menuManagement": {
+    "title": "Gestion du Menu",
+    "subtitle": "Gestion de",
+    "menu": "menu",
+    "newMenu": "Nouveau Menu",
+    "menuInformation": {
+      "title": "Informations sur le Menu",
+      "cardDescription": "Détails de base sur ce menu",
+      "menuName": "Nom du Menu",
+      "menuNamePlaceholder": "Entrez le nom du menu",
+      "urlSlug": "Slug URL",
+      "urlSlugPlaceholder": "Entrez le slug URL",
+      "description": "Description",
+      "descriptionPlaceholder": "Entrez la description du menu",
+      "currency": "Devise",
+      "status": "Paramètres de Statut",
+      "makeDefault": "Menu par Défaut"
+    },
+    "actions": {
+      "editMenu": "Modifier le Menu",
+      "deleteMenu": "Supprimer le Menu",
+      "importCSV": "Importer CSV",
+      "generateQR": "Code QR du Menu",
+      "shareQR": "Partager avec les clients",
+      "viewPublic": "Voir le Menu Public",
+      "createMenu": "Créer un Menu",
+      "createCategory": "Créer une Catégorie"
+    },
+    "stats": {
+      "totalCategories": "Total des Catégories",
+      "totalItems": "Total des Articles",
+      "activeCategories": "À travers toutes les catégories"
+    },
+    "categories": {
+      "title": "Catégories",
+      "description": "Organisez les éléments de votre menu en catégories. Faites glisser pour réorganiser.",
+      "newCategory": "Ajouter une Catégorie",
+      "editCategory": "Modifier la Catégorie",
+      "deleteCategory": "Supprimer la Catégorie",
+      "viewItems": "Voir les Articles",
+      "items": "articles"
+    },
+    "emptyStates": {
+      "noRestaurant": "Aucun Restaurant Sélectionné",
+      "selectRestaurant": "Veuillez sélectionner un restaurant pour gérer les menus.",
+      "loadingMenus": "Chargement des menus...",
+      "createMenusDescription": "Créez et organisez les menus de votre restaurant",
+      "createFirstMenu": "Créez Votre Premier Menu",
+      "startBuilding": "Commencez à construire le menu numérique de votre restaurant. Vous pouvez créer différents menus pour différents moments de la journée, saisons ou occasions spéciales.",
+      "firstMenuDefault": "Votre premier menu sera défini comme menu par défaut",
+      "organizeCategories": "Organisez vos catégories et articles de menu",
+      "menuCreatedSuccess": "Super! Votre menu \"{menuName}\" a été créé",
+      "addCategories": "Ajoutons maintenant quelques catégories pour organiser vos articles de menu",
+      "addFirstCategory": "Ajoutez Votre Première Catégorie",
+      "organizeIntoCategories": "Organisez les éléments de votre menu en catégories comme \"Entrées\", \"Plats Principaux\", \"Desserts\", etc. Cela aide les clients à naviguer facilement dans votre menu.",
+      "categoriesHelp": "Les catégories aident à organiser les éléments de votre menu"
+    },
+    "deleteConfirm": {
+      "menuTitle": "Supprimer le Menu",
+      "menuDescription": "Êtes-vous sûr de vouloir supprimer ce menu? Cette action ne peut pas être annulée. Toutes les catégories et les articles de menu dans ce menu seront également supprimés.",
+      "categoryTitle": "Supprimer la Catégorie",
+      "categoryDescription": "Êtes-vous sûr de vouloir supprimer cette catégorie? Cette action ne peut pas être annulée. Tous les articles de menu dans cette catégorie seront également supprimés."
+    },
+    "toast": {
+      "menuUpdated": "Menu mis à jour avec succès",
+      "menuUpdateError": "Échec de la mise à jour du menu",
+      "menuDeleted": "Menu supprimé avec succès",
+      "menuDeleteError": "Échec de la suppression du menu",
+      "categoryDeleted": "Catégorie supprimée avec succès",
+      "categoryDeleteError": "Échec de la suppression de la catégorie",
+      "csvImported": "Importation CSV terminée avec succès!"
+    }
   }
 }

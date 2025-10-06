@@ -26,6 +26,7 @@ import { MenuPicker } from '@/components/dashboard/menu-picker';
 import { MenuQRCode } from '@/components/dashboard/menu-qr-code';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 type Menu = Database['public']['Tables']['menus']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'] & {
@@ -33,6 +34,7 @@ type Category = Database['public']['Tables']['categories']['Row'] & {
 };
 
 function MenuManagementContent() {
+  const t = useTranslations();
   const { selectedRestaurant } = useRestaurant();
   const { selectedMenu, selectMenu, refreshMenus, hasMenus, isLoading: menusLoading } = useMenu();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -165,7 +167,7 @@ function MenuManagementContent() {
 
       if (error) throw error;
 
-      toast.success('Menu updated successfully');
+      toast.success(t('menuManagement.toast.menuUpdated'));
       setIsEditing(false);
       
       // Update the menu context with the new data
@@ -174,7 +176,7 @@ function MenuManagementContent() {
       }
     } catch (error) {
       console.error('Error updating menu:', error);
-      toast.error('Failed to update menu');
+      toast.error(t('menuManagement.toast.menuUpdateError'));
     } finally {
       setIsSaving(false);
     }
@@ -206,7 +208,7 @@ function MenuManagementContent() {
 
       if (error) throw error;
 
-      toast.success('Menu deleted successfully');
+      toast.success(t('menuManagement.toast.menuDeleted'));
       setShowDeleteConfirm(false);
       
       // Refresh menus and let context select a new one
@@ -215,7 +217,7 @@ function MenuManagementContent() {
       }
     } catch (error) {
       console.error('Error deleting menu:', error);
-      toast.error('Failed to delete menu');
+      toast.error(t('menuManagement.toast.menuDeleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -233,7 +235,7 @@ function MenuManagementContent() {
 
       if (error) throw error;
 
-      toast.success('Category successfully removed');
+      toast.success(t('menuManagement.toast.categoryDeleted'));
       setShowDeleteCategoryConfirm(false);
       setCategoryToDelete(null);
       
@@ -241,7 +243,7 @@ function MenuManagementContent() {
       await fetchCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
-      toast.error('Failed to delete category');
+      toast.error(t('menuManagement.toast.categoryDeleteError'));
     } finally {
       setDeletingCategoryId(null);
     }
@@ -270,8 +272,8 @@ function MenuManagementContent() {
         <div className="text-center space-y-4">
           <ChefHat className="h-12 w-12 text-muted-foreground mx-auto" />
           <div>
-            <h3 className="text-lg font-semibold">No Restaurant Selected</h3>
-            <p className="text-muted-foreground">Please select a restaurant to manage menus.</p>
+            <h3 className="text-lg font-semibold">{t('menuManagement.emptyStates.noRestaurant')}</h3>
+            <p className="text-muted-foreground">{t('menuManagement.emptyStates.selectRestaurant')}</p>
           </div>
         </div>
       </div>
@@ -283,7 +285,7 @@ function MenuManagementContent() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading menus...</p>
+          <p className="text-muted-foreground">{t('menuManagement.emptyStates.loadingMenus')}</p>
         </div>
       </div>
     );
@@ -295,8 +297,8 @@ function MenuManagementContent() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Menu Management</h1>
-            <p className="text-muted-foreground">Create and organize your restaurant menus</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('menuManagement.title')}</h1>
+            <p className="text-muted-foreground">{t('menuManagement.emptyStates.createMenusDescription')}</p>
           </div>
         </div>
 
@@ -306,19 +308,18 @@ function MenuManagementContent() {
               <ChefHat className="h-12 w-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Create Your First Menu</h3>
+              <h3 className="text-xl font-semibold">{t('menuManagement.emptyStates.createFirstMenu')}</h3>
               <p className="text-muted-foreground max-w-md">
-                Start building your restaurant&apos;s digital menu. You can create different menus for different times of day,
-                seasons, or special occasions.
+                {t('menuManagement.emptyStates.startBuilding')}
               </p>
             </div>
             <div className="space-y-2">
               <Button onClick={() => setShowCreateMenu(true)} size="lg">
                 <Plus className="h-4 w-4 mr-2" />
-                Create Menu
+                {t('menuManagement.actions.createMenu')}
               </Button>
               <p className="text-sm text-muted-foreground">
-                Your first menu will be set as the default menu
+                {t('menuManagement.emptyStates.firstMenuDefault')}
               </p>
             </div>
           </CardContent>
@@ -341,14 +342,14 @@ function MenuManagementContent() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Menu Management</h1>
-            <p className="text-muted-foreground">Organize your menu categories and items</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('menuManagement.title')}</h1>
+            <p className="text-muted-foreground">{t('menuManagement.emptyStates.organizeCategories')}</p>
           </div>
           <div className="flex items-center gap-2">
             <MenuPicker />
             <Button onClick={() => setShowCreateMenu(true)} variant="outline">
               <Plus className="h-4 w-4 mr-2" />
-              New Menu
+              {t('menuManagement.newMenu')}
             </Button>
           </div>
         </div>
@@ -363,10 +364,10 @@ function MenuManagementContent() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-green-900 dark:text-green-100">
-                    Great! Your &ldquo;{selectedMenu?.name}&rdquo; menu has been created
+                    {t('menuManagement.emptyStates.menuCreatedSuccess', { menuName: selectedMenu?.name })}
                   </h3>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    Now let&apos;s add some categories to organize your menu items
+                    {t('menuManagement.emptyStates.addCategories')}
                   </p>
                 </div>
                 <Button
@@ -388,21 +389,20 @@ function MenuManagementContent() {
               <Utensils className="h-12 w-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-semibold">Add Your First Category</h3>
+              <h3 className="text-xl font-semibold">{t('menuManagement.emptyStates.addFirstCategory')}</h3>
               <p className="text-muted-foreground max-w-md">
-                Organize your menu items into categories like &ldquo;Appetizers&rdquo;, &ldquo;Main Courses&rdquo;, &ldquo;Desserts&rdquo;, etc.
-                This helps customers navigate your menu easily.
+                {t('menuManagement.emptyStates.organizeIntoCategories')}
               </p>
             </div>
             <div className="space-y-2">
               <Button asChild size="lg">
                 <Link href="/dashboard/menu/categories/new">
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Category
+                  {t('menuManagement.actions.createCategory')}
                 </Link>
               </Button>
               <p className="text-sm text-muted-foreground">
-                Categories help organize your menu items
+                {t('menuManagement.emptyStates.categoriesHelp')}
               </p>
             </div>
           </CardContent>
@@ -425,16 +425,26 @@ function MenuManagementContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Menu Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('menuManagement.title')}</h1>
           <p className="text-muted-foreground">
-            Managing <span className="font-medium">{selectedMenu?.name}</span> menu
+            {t('menuManagement.subtitle')} <span className="font-medium">{selectedMenu?.name}</span> {t('menuManagement.menu')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <MenuPicker />
+          {selectedMenu && (
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCsvImport(true)}
+              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {t('menuManagement.actions.importCSV')}
+            </Button>
+          )}
           <Button onClick={() => setShowCreateMenu(true)} variant="outline">
             <Plus className="h-4 w-4 mr-2" />
-            New Menu
+            {t('menuManagement.newMenu')}
           </Button>
         </div>
       </div>
@@ -447,10 +457,10 @@ function MenuManagementContent() {
               <div>
                 <CardTitle className="flex items-center">
                   <ChefHat className="mr-2 h-5 w-5" />
-                  Menu Information
+                  {t('menuManagement.menuInformation.title')}
                 </CardTitle>
                 <CardDescription>
-                  Basic details about this menu
+                  {t('menuManagement.menuInformation.cardDescription')}
                 </CardDescription>
               </div>
               <div className="flex space-x-2">
@@ -458,18 +468,18 @@ function MenuManagementContent() {
                   <>
                     <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
                       <X className="mr-2 h-4 w-4" />
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                     <Button onClick={handleSave} disabled={isSaving}>
                       <Save className="mr-2 h-4 w-4" />
-                      {isSaving ? 'Saving...' : 'Save Changes'}
+                      {isSaving ? t('restaurant.profile.saving') : t('restaurant.profile.saveChanges')}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setIsEditing(true)}>
                       <Edit className="mr-2 h-4 w-4" />
-                      Edit Menu
+                      {t('menuManagement.actions.editMenu')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -477,7 +487,7 @@ function MenuManagementContent() {
                       className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
+                      {t('common.delete')}
                     </Button>
                   </>
                 )}
@@ -487,12 +497,12 @@ function MenuManagementContent() {
           <CardContent className="grid gap-6 md:grid-cols-2">
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">Menu Name</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('menuManagement.menuInformation.menuName')}</Label>
                 {isEditing ? (
                   <Input
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Enter menu name"
+                    placeholder={t('menuManagement.menuInformation.menuNamePlaceholder')}
                   />
                 ) : (
                   <p className="text-lg font-semibold">{selectedMenu.name}</p>
@@ -502,12 +512,12 @@ function MenuManagementContent() {
               <Separator />
               
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">URL Slug</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('menuManagement.menuInformation.urlSlug')}</Label>
                 {isEditing ? (
                   <Input
                     value={formData.slug}
                     onChange={(e) => handleInputChange('slug', e.target.value)}
-                    placeholder="Enter URL slug"
+                    placeholder={t('menuManagement.menuInformation.urlSlugPlaceholder')}
                   />
                 ) : (
                   <p className="font-mono text-sm">{selectedMenu.slug}</p>
@@ -517,17 +527,17 @@ function MenuManagementContent() {
               <Separator />
               
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('menuManagement.menuInformation.description')}</Label>
                 {isEditing ? (
                   <Textarea
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Enter menu description"
+                    placeholder={t('menuManagement.menuInformation.descriptionPlaceholder')}
                     rows={3}
                   />
                 ) : (
                   <p className="text-sm">
-                    {selectedMenu.description || 'No description provided'}
+                    {selectedMenu.description || t('restaurant.basicInfo.noDescription')}
                   </p>
                 )}
               </div>
@@ -535,7 +545,7 @@ function MenuManagementContent() {
               <Separator />
 
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">Currency</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('menuManagement.menuInformation.currency')}</Label>
                 {isEditing ? (
                   <Select 
                     value={formData.currency} 
@@ -562,7 +572,7 @@ function MenuManagementContent() {
 
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">Status Settings</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('menuManagement.menuInformation.status')}</Label>
                 {isEditing ? (
                   <div className="space-y-3 mt-2">
                     <div className="flex items-center space-x-2">
@@ -571,7 +581,7 @@ function MenuManagementContent() {
                         checked={formData.is_active}
                         onCheckedChange={(checked) => handleInputChange('is_active', checked)}
                       />
-                      <Label htmlFor="is_active">Active Menu</Label>
+                      <Label htmlFor="is_active">{t('common.active')} {t('menuManagement.menu')}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
@@ -579,16 +589,16 @@ function MenuManagementContent() {
                         checked={formData.is_default}
                         onCheckedChange={(checked) => handleInputChange('is_default', checked)}
                       />
-                      <Label htmlFor="is_default">Default Menu</Label>
+                      <Label htmlFor="is_default">{t('menuManagement.menuInformation.makeDefault')}</Label>
                     </div>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 mt-2">
                     {selectedMenu.is_default && (
-                      <Badge variant="default">Default</Badge>
+                      <Badge variant="default">{t('menuManagement.menuInformation.makeDefault')}</Badge>
                     )}
                     <Badge variant={selectedMenu.is_active ? "default" : "secondary"}>
-                      {selectedMenu.is_active ? "Active" : "Inactive"}
+                      {selectedMenu.is_active ? t('common.active') : t('common.inactive')}
                     </Badge>
                   </div>
                 )}
@@ -597,7 +607,7 @@ function MenuManagementContent() {
               <Separator />
               
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">Created</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.created')}</Label>
                 <p className="text-sm">
                   {selectedMenu.created_at ? new Date(selectedMenu.created_at).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -610,7 +620,7 @@ function MenuManagementContent() {
               <Separator />
               
               <div>
-                <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+                <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.lastUpdated')}</Label>
                 <p className="text-sm">
                   {selectedMenu.updated_at ? new Date(selectedMenu.updated_at).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -624,105 +634,23 @@ function MenuManagementContent() {
         </Card>
       )}
 
-      {/* Stats and QR Code Row */}
-      <div className="grid gap-4 lg:grid-cols-4">
-        {/* Stats Cards */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
-            <Utensils className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCategories}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.activeCategories} active
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Items</CardTitle>
-            <ChefHat className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalItems}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all categories
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Compact QR Code Card */}
-        {selectedRestaurant && selectedMenu && (
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <QrCodeIcon className="mr-2 h-4 w-4" />
-                    Menu QR Code
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-1">
-                    Share with customers
-                  </CardDescription>
-                </div>
-                <MenuQRCode 
-                  restaurantSlug={selectedRestaurant.slug}
-                  menuSlug={selectedMenu.slug}
-                  menuName={selectedMenu.name}
-                />
-              </div>
-            </CardHeader>
-          </Card>
-        )}
-      </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common menu management tasks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline">
-              <Link href="/dashboard/menu/categories/new">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Category
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/menu/items/new">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Item
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/menu/items">
-                View All Items
-              </Link>
-            </Button>
-            {selectedMenu && (
-              <Button 
-                variant="outline" 
-                onClick={() => setShowCsvImport(true)}
-                className="text-blue-600 border-blue-200 hover:bg-blue-50"
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Import CSV
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Categories */}
       <Card>
         <CardHeader>
-          <CardTitle>Categories</CardTitle>
-          <CardDescription>
-            Organize your menu items into categories. Drag to reorder.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{t('menuManagement.categories.title')}</CardTitle>
+              <CardDescription>
+                {t('menuManagement.categories.description')}
+              </CardDescription>
+            </div>
+            <Button asChild>
+              <Link href="/dashboard/menu/categories/new">
+                <Plus className="h-4 w-4 mr-2" />
+                {t('menuManagement.categories.newCategory')}
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -740,7 +668,7 @@ function MenuManagementContent() {
                       <h3 className="font-medium">{category.name}</h3>
                       <div className="flex items-center gap-1">
                         {!category.is_active && (
-                          <Badge variant="secondary">Inactive</Badge>
+                          <Badge variant="secondary">{t('common.inactive')}</Badge>
                         )}
                         {category.is_featured && (
                           <Badge variant="outline">Featured</Badge>
@@ -748,10 +676,10 @@ function MenuManagementContent() {
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {category.description || 'No description'}
+                      {category.description || t('restaurant.basicInfo.noDescription')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {category.item_count || 0} items
+                      {category.item_count || 0} {t('menuManagement.categories.items')}
                     </p>
                   </div>
                 </div>
@@ -759,7 +687,7 @@ function MenuManagementContent() {
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/dashboard/menu/categories/${category.id}/items`}>
                       <Eye className="h-4 w-4 mr-2" />
-                      View Items ({category.item_count || 0})
+                      {t('menuManagement.categories.viewItems')} ({category.item_count || 0})
                     </Link>
                   </Button>
                   <Button asChild variant="ghost" size="sm">
@@ -777,13 +705,13 @@ function MenuManagementContent() {
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/menu/categories/${category.id}/items`}>
                           <Eye className="h-4 w-4 mr-2" />
-                          View Items
+                          {t('menuManagement.categories.viewItems')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/menu/categories/${category.id}/edit`}>
                           <Edit className="h-4 w-4 mr-2" />
-                          Edit Category
+                          {t('menuManagement.categories.editCategory')}
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem 
@@ -792,13 +720,84 @@ function MenuManagementContent() {
                         disabled={deletingCategoryId === category.id}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Category
+                        {t('menuManagement.categories.deleteCategory')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats and QR Code Row */}
+      <div className="grid gap-4 lg:grid-cols-4">
+        {/* Stats Cards */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('menuManagement.stats.totalCategories')}</CardTitle>
+            <Utensils className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalCategories}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.activeCategories} {t('common.active')}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('menuManagement.stats.totalItems')}</CardTitle>
+            <ChefHat className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalItems}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('menuManagement.stats.activeCategories')}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Compact QR Code Card */}
+        {selectedRestaurant && selectedMenu && (
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-sm font-medium flex items-center">
+                    <QrCodeIcon className="mr-2 h-4 w-4" />
+                    {t('menuManagement.actions.generateQR')}
+                  </CardTitle>
+                  <CardDescription className="text-xs mt-1">
+                    {t('menuManagement.actions.shareQR')}
+                  </CardDescription>
+                </div>
+                <MenuQRCode 
+                  restaurantSlug={selectedRestaurant.slug}
+                  menuSlug={selectedMenu.slug}
+                  menuName={selectedMenu.name}
+                />
+              </div>
+            </CardHeader>
+          </Card>
+        )}
+      </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('restaurant.quickActions.title')}</CardTitle>
+          <CardDescription>{t('restaurant.quickActions.description')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline">
+              <Link href="/dashboard/menu/items/new">
+                <Plus className="h-4 w-4 mr-2" />
+                {t('dashboard.quickActions.addMenuItem')}
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -819,7 +818,7 @@ function MenuManagementContent() {
           menuName={selectedMenu.name}
           onImportComplete={() => {
             fetchCategories();
-            toast.success('CSV import completed successfully!');
+            toast.success(t('menuManagement.toast.csvImported'));
           }}
         />
       )}
@@ -828,20 +827,19 @@ function MenuManagementContent() {
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Menu</AlertDialogTitle>
+            <AlertDialogTitle>{t('menuManagement.deleteConfirm.menuTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &ldquo;{selectedMenu?.name}&rdquo;? This action cannot be undone.
-              All categories and menu items in this menu will also be deleted.
+              {t('menuManagement.deleteConfirm.menuDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? 'Deleting...' : 'Delete Menu'}
+              {isDeleting ? t('restaurant.profile.saving') : t('menuManagement.actions.deleteMenu')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -851,20 +849,19 @@ function MenuManagementContent() {
       <AlertDialog open={showDeleteCategoryConfirm} onOpenChange={setShowDeleteCategoryConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+            <AlertDialogTitle>{t('menuManagement.deleteConfirm.categoryTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &ldquo;{categoryToDelete?.name}&rdquo;? This action cannot be undone.
-              All menu items in this category will also be deleted.
+              {t('menuManagement.deleteConfirm.categoryDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteCategory}
               disabled={deletingCategoryId !== null}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deletingCategoryId === categoryToDelete?.id ? 'Deleting...' : 'Delete Category'}
+              {deletingCategoryId === categoryToDelete?.id ? t('restaurant.profile.saving') : t('menuManagement.categories.deleteCategory')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -874,6 +871,7 @@ function MenuManagementContent() {
 }
 
 export default function MenuManagementPage() {
+  const t = useTranslations();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -893,7 +891,7 @@ export default function MenuManagementPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );

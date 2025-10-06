@@ -162,5 +162,78 @@
       "customizeTheme": "Customize Theme",
       "viewPublicMenu": "View Public Menu"
     }
+  },
+  "menuManagement": {
+    "title": "Menu Management",
+    "subtitle": "Managing",
+    "menu": "menu",
+    "newMenu": "New Menu",
+    "menuInformation": {
+      "title": "Menu Information",
+      "cardDescription": "Basic details about this menu",
+      "menuName": "Menu Name",
+      "menuNamePlaceholder": "Enter menu name",
+      "urlSlug": "URL Slug",
+      "urlSlugPlaceholder": "Enter URL slug",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter menu description",
+      "currency": "Currency",
+      "status": "Status Settings",
+      "makeDefault": "Default Menu"
+    },
+    "actions": {
+      "editMenu": "Edit Menu",
+      "deleteMenu": "Delete Menu",
+      "importCSV": "Import CSV",
+      "generateQR": "Menu QR Code",
+      "shareQR": "Share with customers",
+      "viewPublic": "View Public Menu",
+      "createMenu": "Create Menu",
+      "createCategory": "Create Category"
+    },
+    "stats": {
+      "totalCategories": "Total Categories",
+      "totalItems": "Total Items",
+      "activeCategories": "Across all categories"
+    },
+    "categories": {
+      "title": "Categories",
+      "description": "Organize your menu items into categories. Drag to reorder.",
+      "newCategory": "Add Category",
+      "editCategory": "Edit Category",
+      "deleteCategory": "Delete Category",
+      "viewItems": "View Items",
+      "items": "items"
+    },
+    "emptyStates": {
+      "noRestaurant": "No Restaurant Selected",
+      "selectRestaurant": "Please select a restaurant to manage menus.",
+      "loadingMenus": "Loading menus...",
+      "createMenusDescription": "Create and organize your restaurant menus",
+      "createFirstMenu": "Create Your First Menu",
+      "startBuilding": "Start building your restaurant's digital menu. You can create different menus for different times of day, seasons, or special occasions.",
+      "firstMenuDefault": "Your first menu will be set as the default menu",
+      "organizeCategories": "Organize your menu categories and items",
+      "menuCreatedSuccess": "Great! Your \"{menuName}\" menu has been created",
+      "addCategories": "Now let's add some categories to organize your menu items",
+      "addFirstCategory": "Add Your First Category",
+      "organizeIntoCategories": "Organize your menu items into categories like \"Appetizers\", \"Main Courses\", \"Desserts\", etc. This helps customers navigate your menu easily.",
+      "categoriesHelp": "Categories help organize your menu items"
+    },
+    "deleteConfirm": {
+      "menuTitle": "Delete Menu",
+      "menuDescription": "Are you sure you want to delete this menu? This action cannot be undone. All categories and menu items in this menu will also be deleted.",
+      "categoryTitle": "Delete Category",
+      "categoryDescription": "Are you sure you want to delete this category? This action cannot be undone. All menu items in this category will also be deleted."
+    },
+    "toast": {
+      "menuUpdated": "Menu updated successfully",
+      "menuUpdateError": "Failed to update menu",
+      "menuDeleted": "Menu deleted successfully",
+      "menuDeleteError": "Failed to delete menu",
+      "categoryDeleted": "Category successfully removed",
+      "categoryDeleteError": "Failed to delete category",
+      "csvImported": "CSV import completed successfully!"
+    }
   }
 }

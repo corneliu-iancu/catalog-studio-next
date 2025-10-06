@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user owns the restaurant
-    const restaurant = menuData.restaurants;
-    if (restaurant.user_id !== user.id) {
+    const restaurant = menuData.restaurants?.[0];
+    if (!restaurant || restaurant.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 

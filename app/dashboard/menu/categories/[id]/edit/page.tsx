@@ -340,7 +340,7 @@ function EditCategoryPageContent() {
 
 export default function EditCategoryPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout user={null}> { /* todo: fix this with proper user info. double check. */ }
       <EditCategoryPageContent />
     </DashboardLayout>
   );

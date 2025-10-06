@@ -67,7 +67,7 @@ function EditItemRedirectContent() {
 
 export default function EditItemRedirectPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout user={null}> { /* todo: fix this with proper user info. double check. */ }
       <EditItemRedirectContent />
     </DashboardLayout>
   );

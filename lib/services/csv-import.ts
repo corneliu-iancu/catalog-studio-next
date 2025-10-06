@@ -56,7 +56,7 @@ export class CsvImportService {
         const validation = csvMenuItemSchema.safeParse(rowData);
         
         if (!validation.success) {
-          validation.error.errors.forEach(error => {
+          validation.error.issues.forEach(error => {
             errors.push({
               row: i + 1,
               field: error.path.join('.'),
@@ -269,7 +269,7 @@ export class CsvImportService {
         discount_price: row.discount_price && row.discount_price !== '' ? parseFloat(row.discount_price) : undefined,
         ingredients: row.ingredients?.trim() || undefined,
         allergens,
-        spice_level: row.spice_level && row.spice_level !== '' ? row.spice_level as any : undefined,
+        spice_level: row.spice_level || undefined,
         preparation_time: row.preparation_time?.trim() || undefined,
         serving_size: row.serving_size?.trim() || undefined,
         is_active: true,

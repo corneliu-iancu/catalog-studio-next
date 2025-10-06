@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { 
-  User, 
+  User as UserIcon, 
   Mail, 
   Calendar,
   Clock,
@@ -181,7 +181,7 @@ function UserProfileContent() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
-          <User className="h-12 w-12 text-muted-foreground mx-auto" />
+          <UserIcon className="h-12 w-12 text-muted-foreground mx-auto" />
           <div>
             <h2 className="text-lg font-semibold">Profile Not Found</h2>
             <p className="text-muted-foreground">Unable to load your profile information.</p>
@@ -214,7 +214,7 @@ function UserProfileContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <User className="mr-2 h-5 w-5" />
+              <UserIcon className="mr-2 h-5 w-5" />
               Personal Information
             </CardTitle>
             <CardDescription>

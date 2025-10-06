@@ -61,7 +61,7 @@ export function ImageUploadField({
     quality: 0.92
   },
   className = '',
-  aspect // undefined = free crop, number = locked aspect ratio
+  aspect = 1 // undefined = free crop, number = locked aspect ratio
 }: ImageUploadFieldProps) {
   const { 
     file, 

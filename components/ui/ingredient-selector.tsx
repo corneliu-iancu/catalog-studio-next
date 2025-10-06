@@ -53,10 +53,10 @@ export function IngredientSelector({
             // Split by comma and clean up each ingredient
             const ingredients = item.ingredients
               .split(',')
-              .map(ingredient => ingredient.trim())
-              .filter(ingredient => ingredient.length > 0);
+              .map((ingredient: string) => ingredient.trim())
+              .filter((ingredient: string) => ingredient.length > 0);
             
-            ingredients.forEach(ingredient => allIngredientsSet.add(ingredient));
+            ingredients.forEach((ingredient: string) => allIngredientsSet.add(ingredient));
           }
         });
 
@@ -74,8 +74,8 @@ export function IngredientSelector({
     if (value) {
       const ingredients = value
         .split(',')
-        .map(ingredient => ingredient.trim())
-        .filter(ingredient => ingredient.length > 0);
+        .map((ingredient: string) => ingredient.trim())
+        .filter((ingredient: string) => ingredient.length > 0);
       setSelectedIngredients(ingredients);
     } else {
       setSelectedIngredients([]);
@@ -85,7 +85,7 @@ export function IngredientSelector({
   // Filter suggestions based on input
   useEffect(() => {
     if (inputValue.trim()) {
-      const filtered = allIngredients.filter(ingredient =>
+      const filtered = allIngredients.filter((ingredient: string) =>
         ingredient.toLowerCase().includes(inputValue.toLowerCase()) &&
         !selectedIngredients.includes(ingredient)
       );
@@ -127,7 +127,7 @@ export function IngredientSelector({
 
   const removeIngredient = (ingredientToRemove: string) => {
     const newIngredients = selectedIngredients.filter(
-      ingredient => ingredient !== ingredientToRemove
+      (ingredient: string) => ingredient !== ingredientToRemove
     );
     setSelectedIngredients(newIngredients);
     onChange(newIngredients.join(', '));

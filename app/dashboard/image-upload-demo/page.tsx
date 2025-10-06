@@ -392,7 +392,7 @@ export default function ImageUploadDemoPage() {
 
   return (
     <DashboardLayout
-      user={user ? user : undefined}
+      user={user ? user : null}
       showCreateRestaurant={showCreateRestaurant}
       onCreateRestaurant={() => setShowCreateRestaurant(true)}
       onCloseCreateRestaurant={() => setShowCreateRestaurant(false)}

@@ -54,6 +54,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { toast } from 'sonner';
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -207,7 +208,7 @@ function SettingsContent() {
 
       // First, verify the current password by attempting to sign in
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email,
+        email: user?.email || '',
         password: data.currentPassword,
       });
 
@@ -242,7 +243,7 @@ function SettingsContent() {
 
       const { error } = await supabase.auth.updateUser({
         data: {
-          ...user.user_metadata,
+          ...user?.user_metadata,
           defaultCurrency: data.defaultCurrency,
           theme: data.theme,
           language: data.language,
@@ -277,16 +278,16 @@ function SettingsContent() {
           categories (*),
           menu_items (*)
         `)
-        .eq('user_id', user.id);
+        .eq('user_id', user?.id || '');
 
       if (error) throw error;
 
       const exportData = {
         user: {
-          id: user.id,
-          email: user.email,
-          created_at: user.created_at,
-          user_metadata: user.user_metadata,
+          id: user?.id || '',
+          email: user?.email || '',
+          created_at: user?.created_at || '',
+          user_metadata: user?.user_metadata || {},
         },
         restaurants,
         exported_at: new Date().toISOString(),
@@ -306,7 +307,7 @@ function SettingsContent() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Failed to export data. Please try again.');
+      toast.error('Failed to export data. Please try again.');
     } finally {
       setIsExporting(false);
     }
@@ -316,7 +317,7 @@ function SettingsContent() {
     try {
       // This would typically involve calling a server function
       // For now, we'll just show an alert
-      alert('Account deletion is not yet implemented. Please contact support.');
+      toast.error('Account deletion is not yet implemented. Please contact support.');
     } catch (error) {
       console.error('Error deleting account:', error);
     }

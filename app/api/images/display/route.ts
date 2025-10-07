@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // Generate presigned URL for viewing (expires in 1 hour)
     const getObjectCommand = new GetObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET,
+      Bucket: process.env.CUSTOM_AWS_S3_BUCKET,
       Key: s3Key,
     });
 

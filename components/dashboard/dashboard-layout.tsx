@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { DashboardHeader } from './dashboard-header';
 import { DashboardSidebar } from './dashboard-sidebar';
-import { CreateRestaurantDialog } from './create-restaurant-dialog';
 import { RestaurantProvider } from '@/lib/contexts/restaurant-context';
 import { MenuProvider } from '@/lib/contexts/menu-context';
 import { ItemsProvider } from '@/lib/contexts/items-context';
@@ -12,17 +11,11 @@ import type { User } from '@supabase/supabase-js';
 interface DashboardLayoutProps {
   children: React.ReactNode;
   user: User | null;
-  showCreateRestaurant?: boolean;
-  onCreateRestaurant?: () => void;
-  onCloseCreateRestaurant?: () => void;
 }
 
 export function DashboardLayout({
   children,
-  user,
-  showCreateRestaurant = false,
-  onCreateRestaurant,
-  onCloseCreateRestaurant
+  user
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -44,17 +37,15 @@ export function DashboardLayout({
           {/* Header */}
           <DashboardHeader
             user={user}
-            onCreateRestaurant={onCreateRestaurant}
             onToggleSidebar={handleToggleSidebar}
           />
 
           {/* Main Content Area */}
           <div className="flex-1 flex overflow-hidden">
             {/* Sidebar */}
-            <DashboardSidebar 
+            <DashboardSidebar
               isOpen={sidebarOpen}
               onClose={handleCloseSidebar}
-              onCreateRestaurant={onCreateRestaurant}
             />
 
             {/* Main Content */}
@@ -63,12 +54,6 @@ export function DashboardLayout({
             </main>
           </div>
           </div>
-
-          {/* Create Restaurant Dialog */}
-          <CreateRestaurantDialog
-            open={showCreateRestaurant}
-            onOpenChange={onCloseCreateRestaurant || (() => {})}
-          />
         </ItemsProvider>
       </MenuProvider>
     </RestaurantProvider>

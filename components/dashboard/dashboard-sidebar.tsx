@@ -79,10 +79,9 @@ interface DashboardSidebarProps {
   className?: string;
   isOpen?: boolean;
   onClose?: () => void;
-  onCreateRestaurant?: () => void;
 }
 
-export function DashboardSidebar({ className, isOpen = true, onClose, onCreateRestaurant }: DashboardSidebarProps) {
+export function DashboardSidebar({ className, isOpen = true, onClose }: DashboardSidebarProps) {
   const pathname = usePathname();
   const { hasRestaurants, selectedRestaurant } = useRestaurant();
   const t = useTranslations('navigation');
@@ -130,7 +129,7 @@ export function DashboardSidebar({ className, isOpen = true, onClose, onCreateRe
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
                 Restaurant
               </label>
-              <RestaurantSelector onCreateRestaurant={onCreateRestaurant} />
+              <RestaurantSelector />
             </div>
             
             <div>

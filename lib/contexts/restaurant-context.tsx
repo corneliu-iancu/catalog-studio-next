@@ -25,6 +25,19 @@ export function RestaurantProvider({ children }: { children: React.ReactNode }) 
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
+  // Initialize selected restaurant from localStorage on mount
+  const initializeSelectedRestaurant = () => {
+    if (typeof window !== 'undefined') {
+      const storedRestaurantId = localStorage.getItem('selectedRestaurantId');
+      if (storedRestaurantId) {
+        // We'll set this properly when restaurants are fetched
+        // This is just to indicate we have a stored preference
+        return storedRestaurantId;
+      }
+    }
+    return null;
+  };
+
   const fetchRestaurants = async () => {
     try {
       setIsLoading(true);
@@ -51,20 +64,27 @@ export function RestaurantProvider({ children }: { children: React.ReactNode }) 
 
       setRestaurants(data || []);
 
-      // Auto-select first restaurant if none selected and restaurants exist
-      if (data && data.length > 0 && !selectedRestaurant) {
-        setSelectedRestaurant(data[0]);
-        // Store in localStorage for persistence
-        localStorage.setItem('selectedRestaurantId', data[0].id);
-      }
-
-      // If we have a stored restaurant ID, try to select it
+      // First, try to restore from localStorage
       const storedRestaurantId = localStorage.getItem('selectedRestaurantId');
+      let restaurantToSelect: Restaurant | null = null;
+
       if (storedRestaurantId && data) {
         const storedRestaurant = data.find(r => r.id === storedRestaurantId);
         if (storedRestaurant) {
-          setSelectedRestaurant(storedRestaurant);
+          restaurantToSelect = storedRestaurant;
         }
+      }
+
+      // If no stored restaurant found or stored restaurant doesn't exist, auto-select first restaurant
+      if (!restaurantToSelect && data && data.length > 0) {
+        restaurantToSelect = data[0];
+        // Store the auto-selected restaurant in localStorage
+        localStorage.setItem('selectedRestaurantId', data[0].id);
+      }
+
+      // Set the selected restaurant (either restored or auto-selected)
+      if (restaurantToSelect) {
+        setSelectedRestaurant(restaurantToSelect);
       }
 
     } catch (err) {
@@ -84,9 +104,26 @@ export function RestaurantProvider({ children }: { children: React.ReactNode }) 
     await fetchRestaurants();
   };
 
+  // Initialize on mount
   useEffect(() => {
     fetchRestaurants();
   }, []);
+
+  // Additional effect to handle browser navigation/refresh
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'selectedRestaurantId' && e.newValue) {
+        // Find the restaurant with the new ID and select it
+        const restaurant = restaurants.find(r => r.id === e.newValue);
+        if (restaurant) {
+          setSelectedRestaurant(restaurant);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [restaurants]);
 
   // Listen for auth changes
   useEffect(() => {

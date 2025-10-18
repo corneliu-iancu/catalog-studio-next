@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
@@ -93,11 +93,7 @@ function UserProfileContent() {
     },
   });
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
@@ -116,7 +112,11 @@ function UserProfileContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [form, supabase.auth]);
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
@@ -459,15 +459,15 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
     setLoading(false);
-  };
+  }, [supabase.auth]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   if (loading) {
     return (

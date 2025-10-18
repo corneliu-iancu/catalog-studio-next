@@ -17,9 +17,8 @@ import { useRouter } from 'next/navigation';
 
 type Restaurant = Database['public']['Tables']['restaurants']['Row'];
 
-interface RestaurantSelectorProps {
-  // No props needed - using router navigation
-}
+// No props needed - using router navigation
+type RestaurantSelectorProps = Record<string, never>;
 
 export function RestaurantSelector({}: RestaurantSelectorProps) {
   const { restaurants, selectedRestaurant, selectRestaurant, isLoading } = useRestaurant();

@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 
-interface EmptyStateProps {
-  // No longer needed - we'll use router navigation
-}
+// No props needed - using router navigation
+type EmptyStateProps = Record<string, never>;
 
 const features = [
   {

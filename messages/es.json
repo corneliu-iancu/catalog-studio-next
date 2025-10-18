@@ -71,30 +71,67 @@
       "activeSince": "Activo Desde",
       "fromLastMonth": "+{count} desde el mes pasado",
       "restaurantCreated": "Restaurante creado",
-      "active": "activas"
+      "active": "activas",
+      "compact": {
+        "menuItems": "Elementos del Menú",
+        "categories": "Categorías",
+        "menuViews": "Visualizaciones del Menú",
+        "activeSince": "Activo Desde",
+        "activeCount": "{count} activas",
+        "thisMonth": "este mes",
+        "restaurantCreated": "restaurante creado"
+      }
     },
     "quickActions": {
       "addMenuItem": "Agregar Elemento del Menú",
-      "addMenuItemDesc": "Crear un nuevo plato para tu menú",
+      "addMenuItemDesc": "Crear un nuevo elemento del menú con fotos y detalles",
       "addCategory": "Agregar Categoría", 
-      "addCategoryDesc": "Organiza tu menú con categorías",
+      "addCategoryDesc": "Organizar elementos en categorías del menú",
       "manageMenu": "Gestionar Menú",
       "manageMenuDesc": "Editar elementos y categorías existentes",
       "viewPublicMenu": "Ver Menú Público",
       "viewPublicMenuDesc": "Ve cómo los clientes ven tu menú"
+    },
+    "overview": {
+      "restaurantOverview": "Resumen del Restaurante",
+      "quickActions": "Acciones Rápidas"
     },
     "restaurantOverview": {
       "title": "Resumen del Restaurante",
       "description": "Información básica sobre tu restaurante",
       "url": "URL:",
       "lastUpdated": "Última actualización:",
-      "editProfile": "Editar Perfil del Restaurante"
+      "editProfile": "Editar Perfil del Restaurante",
+      "noUrl": "URL no disponible"
     },
     "recentActivity": {
       "title": "Actividad Reciente",
       "description": "Últimos cambios en tu restaurante", 
       "restaurantCreated": "Restaurante creado",
       "startAdding": "Comienza agregando elementos del menú para ver más actividad aquí."
+    },
+    "traffic": {
+      "title": "Análisis de Tráfico",
+      "description": "Visitas diarias y métricas de participación de los últimos 30 días",
+      "refresh": "Actualizar",
+      "refreshing": "Actualizando...",
+      "loadingChart": "Cargando gráfico...",
+      "errorMessage": "No se pueden cargar los datos de tráfico",
+      "tryAgain": "Intentar de Nuevo",
+      "chartTitle": "Tendencia de Visitas Diarias",
+      "metrics": {
+        "todayVisits": "Visitas de Hoy",
+        "weeklyAverage": "Promedio Semanal",
+        "uniqueVisitors": "Visitantes Únicos",
+        "visitsPerDay": "visitas por día",
+        "thisMonth": "este mes"
+      },
+      "tooltip": {
+        "visits": "Visitas:",
+        "uniqueVisitors": "Visitantes únicos:",
+        "pageViews": "Vistas de página:",
+        "bounceRate": "Tasa de rebote:"
+      }
     }
   },
   "restaurant": {

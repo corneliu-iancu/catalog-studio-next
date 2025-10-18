@@ -71,30 +71,67 @@
       "activeSince": "Activ Din",
       "fromLastMonth": "+{count} din luna trecută",
       "restaurantCreated": "Restaurant creat",
-      "active": "active"
+      "active": "active",
+      "compact": {
+        "menuItems": "Articole Meniu",
+        "categories": "Categorii",
+        "menuViews": "Vizualizări Meniu",
+        "activeSince": "Activ Din",
+        "activeCount": "{count} active",
+        "thisMonth": "luna aceasta",
+        "restaurantCreated": "restaurant creat"
+      }
     },
     "quickActions": {
       "addMenuItem": "Adaugă Element Meniu",
-      "addMenuItemDesc": "Creează un nou fel de mâncare pentru meniul tău",
+      "addMenuItemDesc": "Creează un nou articol de meniu cu fotografii și detalii",
       "addCategory": "Adaugă Categorie", 
-      "addCategoryDesc": "Organizează-ți meniul cu categorii",
+      "addCategoryDesc": "Organizează articolele în categorii de meniu",
       "manageMenu": "Gestionează Meniul",
       "manageMenuDesc": "Editează elemente și categorii existente",
       "viewPublicMenu": "Vezi Meniul Public",
       "viewPublicMenuDesc": "Vezi cum văd clienții meniul tău"
+    },
+    "overview": {
+      "restaurantOverview": "Prezentarea Restaurantului",
+      "quickActions": "Acțiuni Rapide"
     },
     "restaurantOverview": {
       "title": "Prezentare Generală Restaurant",
       "description": "Informații de bază despre restaurantul tău",
       "url": "URL:",
       "lastUpdated": "Ultima actualizare:",
-      "editProfile": "Editează Profilul Restaurantului"
+      "editProfile": "Editează Profilul Restaurantului",
+      "noUrl": "URL indisponibil"
     },
     "recentActivity": {
       "title": "Activitate Recentă",
       "description": "Ultimele modificări ale restaurantului tău", 
       "restaurantCreated": "Restaurant creat",
       "startAdding": "Începe să adaugi elemente de meniu pentru a vedea mai multă activitate aici."
+    },
+    "traffic": {
+      "title": "Analiza Traficului",
+      "description": "Vizite zilnice și metricile de angajare din ultimele 30 de zile",
+      "refresh": "Actualizează",
+      "refreshing": "Se actualizează...",
+      "loadingChart": "Se încarcă graficul...",
+      "errorMessage": "Nu se pot încărca datele de trafic",
+      "tryAgain": "Încarcă Din Nou",
+      "chartTitle": "Tendința Vizitelor Zilnice",
+      "metrics": {
+        "todayVisits": "Vizitele de Astăzi",
+        "weeklyAverage": "Media Săptămânală",
+        "uniqueVisitors": "Vizitatori Unici",
+        "visitsPerDay": "vizite pe zi",
+        "thisMonth": "luna aceasta"
+      },
+      "tooltip": {
+        "visits": "Vizite:",
+        "uniqueVisitors": "Vizitatori unici:",
+        "pageViews": "Vizualizări pagină:",
+        "bounceRate": "Rata de respingere:"
+      }
     }
   },
     "menuManagement": {

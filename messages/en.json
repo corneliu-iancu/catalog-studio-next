@@ -71,30 +71,67 @@
       "activeSince": "Active Since",
       "fromLastMonth": "+{count} from last month",
       "restaurantCreated": "Restaurant created",
-      "active": "active"
+      "active": "active",
+      "compact": {
+        "menuItems": "Menu Items",
+        "categories": "Categories",
+        "menuViews": "Menu Views",
+        "activeSince": "Active Since",
+        "activeCount": "{count} active",
+        "thisMonth": "this month",
+        "restaurantCreated": "restaurant created"
+      }
     },
     "quickActions": {
       "addMenuItem": "Add Menu Item",
-      "addMenuItemDesc": "Create a new dish for your menu",
+      "addMenuItemDesc": "Create a new menu item with photos and details",
       "addCategory": "Add Category", 
-      "addCategoryDesc": "Organize your menu with categories",
+      "addCategoryDesc": "Organize items into menu categories",
       "manageMenu": "Manage Menu",
       "manageMenuDesc": "Edit existing items and categories",
       "viewPublicMenu": "View Public Menu",
       "viewPublicMenuDesc": "See how customers view your menu"
+    },
+    "overview": {
+      "restaurantOverview": "Restaurant Overview",
+      "quickActions": "Quick Actions"
     },
     "restaurantOverview": {
       "title": "Restaurant Overview",
       "description": "Basic information about your restaurant",
       "url": "URL:",
       "lastUpdated": "Last updated:",
-      "editProfile": "Edit Restaurant Profile"
+      "editProfile": "Edit Restaurant Profile",
+      "noUrl": "No URL available"
     },
     "recentActivity": {
       "title": "Recent Activity",
       "description": "Latest changes to your restaurant", 
       "restaurantCreated": "Restaurant created",
       "startAdding": "Start adding menu items to see more activity here."
+    },
+    "traffic": {
+      "title": "Traffic Analytics",
+      "description": "Daily visits and engagement metrics for the last 30 days",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "loadingChart": "Loading chart...",
+      "errorMessage": "Unable to load traffic data",
+      "tryAgain": "Try Again",
+      "chartTitle": "Daily Visits Trend",
+      "metrics": {
+        "todayVisits": "Today's Visits",
+        "weeklyAverage": "Weekly Average",
+        "uniqueVisitors": "Unique Visitors",
+        "visitsPerDay": "visits per day",
+        "thisMonth": "this month"
+      },
+      "tooltip": {
+        "visits": "Visits:",
+        "uniqueVisitors": "Unique visitors:",
+        "pageViews": "Page views:",
+        "bounceRate": "Bounce rate:"
+      }
     }
   },
   "restaurant": {

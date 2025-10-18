@@ -9,15 +9,11 @@ import { EmptyState } from '@/components/dashboard/empty-state';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 import { useMenu } from '@/lib/contexts/menu-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Eye,
-  Plus,
-  Store,
-  UtensilsCrossed,
-  Calendar,
-  ExternalLink
-} from 'lucide-react';
+import { Store, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TrafficWidget } from '@/components/dashboard/traffic/traffic-widget';
+import { CompactStatsGrid } from '@/components/dashboard/stats/compact-stats-grid';
+import { QuickActionsGrid } from '@/components/dashboard/actions/quick-actions-grid';
 
 function DashboardContent() {
   const { selectedRestaurant, hasRestaurants, isLoading } = useRestaurant();
@@ -121,190 +117,81 @@ function DashboardContent() {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('stats.totalMenuItems')}</CardTitle>
-            <UtensilsCrossed className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {statsLoading ? '-' : stats.totalItems}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t('stats.fromLastMonth', { count: 0 })}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('stats.categories')}</CardTitle>
-            <Store className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {statsLoading ? '-' : stats.totalCategories}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {statsLoading ? '-' : `${stats.activeCategories} ${t('stats.active')}`}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('stats.menuViews')}</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {statsLoading ? '-' : stats.menuViews}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t('stats.fromLastMonth', { count: 0 })}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('stats.activeSince')}</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {selectedRestaurant?.created_at
-                ? new Date(selectedRestaurant.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-                : 'N/A'
-              }
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t('stats.restaurantCreated')}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('quickActions.addMenuItem')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              {t('quickActions.addMenuItemDesc')}
-            </CardDescription>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center">
+      {/* Restaurant Details */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>{t('restaurantOverview.title')}</span>
+            <Button variant="outline" size="sm">
               <Store className="mr-2 h-4 w-4" />
-              {t('quickActions.addCategory')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              {t('quickActions.addCategoryDesc')}
-            </CardDescription>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center">
-              <UtensilsCrossed className="mr-2 h-4 w-4" />
-              {t('quickActions.manageMenu')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              {t('quickActions.manageMenuDesc')}
-            </CardDescription>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              {t('quickActions.viewPublicMenu')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              {t('quickActions.viewPublicMenuDesc')}
-            </CardDescription>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Restaurant Overview */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('restaurantOverview.title')}</CardTitle>
-            <CardDescription>
-              {t('restaurantOverview.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+              {t('restaurantOverview.editProfile')}
+            </Button>
+          </CardTitle>
+          <CardDescription>
+            {t('restaurantOverview.description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <h3 className="font-semibold">{selectedRestaurant?.name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t('restaurantOverview.url')} /{selectedRestaurant?.slug}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {t('restaurantOverview.lastUpdated')} {selectedRestaurant?.updated_at
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Restaurant</h3>
+              <p className="font-medium mt-1">{selectedRestaurant?.name}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Public URL</h3>
+              {selectedRestaurant?.slug ? (
+                <button
+                  onClick={() => window.open(`/${selectedRestaurant.slug}`, '_blank')}
+                  className="flex items-center gap-2 font-medium mt-1 text-primary hover:text-primary/80 transition-colors cursor-pointer group"
+                >
+                  <span>/{selectedRestaurant.slug}</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              ) : (
+                <p className="font-medium mt-1 text-muted-foreground">{t('restaurantOverview.noUrl')}</p>
+              )}
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Last Updated</h3>
+              <p className="font-medium mt-1">
+                {selectedRestaurant?.updated_at
                   ? new Date(selectedRestaurant.updated_at).toLocaleDateString()
                   : 'N/A'
                 }
               </p>
             </div>
-            <div className="pt-2">
-              <Button variant="outline" size="sm">
-                <Store className="mr-2 h-4 w-4" />
-                {t('restaurantOverview.editProfile')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('recentActivity.title')}</CardTitle>
-            <CardDescription>
-              {t('recentActivity.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="h-2 w-2 bg-blue-500 rounded-full mt-2"></div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{t('recentActivity.restaurantCreated')}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedRestaurant?.created_at
-                      ? new Date(selectedRestaurant.created_at).toLocaleDateString()
-                      : 'N/A'
-                    }
-                  </p>
-                </div>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {t('recentActivity.startAdding')}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Hero Widget - Traffic Analytics */}
+      <TrafficWidget className="w-full" />
+
+      {/* Secondary Widgets - Stats and Quick Actions */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Compact Stats */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">{t('overview.restaurantOverview')}</h2>
+          <CompactStatsGrid 
+            stats={{
+              totalItems: stats.totalItems,
+              totalCategories: stats.totalCategories,
+              activeCategories: stats.activeCategories,
+              menuViews: stats.menuViews,
+              restaurantCreatedAt: selectedRestaurant?.created_at || '',
+            }}
+            isLoading={statsLoading}
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">{t('overview.quickActions')}</h2>
+          <QuickActionsGrid />
+        </div>
       </div>
+
+      
     </div>
   );
 }

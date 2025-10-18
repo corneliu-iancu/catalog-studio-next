@@ -71,30 +71,67 @@
       "activeSince": "Actif Depuis",
       "fromLastMonth": "+{count} depuis le mois dernier",
       "restaurantCreated": "Restaurant créé",
-      "active": "actives"
+      "active": "actives",
+      "compact": {
+        "menuItems": "Articles du Menu",
+        "categories": "Catégories",
+        "menuViews": "Vues du Menu",
+        "activeSince": "Actif Depuis",
+        "activeCount": "{count} actives",
+        "thisMonth": "ce mois",
+        "restaurantCreated": "restaurant créé"
+      }
     },
     "quickActions": {
       "addMenuItem": "Ajouter un Élément de Menu",
-      "addMenuItemDesc": "Créer un nouveau plat pour votre menu",
+      "addMenuItemDesc": "Créer un nouvel article du menu avec photos et détails",
       "addCategory": "Ajouter une Catégorie", 
-      "addCategoryDesc": "Organisez votre menu avec des catégories",
+      "addCategoryDesc": "Organiser les articles en catégories de menu",
       "manageMenu": "Gérer le Menu",
       "manageMenuDesc": "Modifier les éléments et catégories existants",
       "viewPublicMenu": "Voir le Menu Public",
       "viewPublicMenuDesc": "Voir comment les clients voient votre menu"
+    },
+    "overview": {
+      "restaurantOverview": "Aperçu du Restaurant",
+      "quickActions": "Actions Rapides"
     },
     "restaurantOverview": {
       "title": "Aperçu du Restaurant",
       "description": "Informations de base sur votre restaurant",
       "url": "URL :",
       "lastUpdated": "Dernière mise à jour :",
-      "editProfile": "Modifier le Profil du Restaurant"
+      "editProfile": "Modifier le Profil du Restaurant",
+      "noUrl": "URL non disponible"
     },
     "recentActivity": {
       "title": "Activité Récente",
       "description": "Derniers changements de votre restaurant", 
       "restaurantCreated": "Restaurant créé",
       "startAdding": "Commencez à ajouter des éléments de menu pour voir plus d'activité ici."
+    },
+    "traffic": {
+      "title": "Analyse du Trafic",
+      "description": "Visites quotidiennes et métriques d'engagement des 30 derniers jours",
+      "refresh": "Actualiser",
+      "refreshing": "Actualisation...",
+      "loadingChart": "Chargement du graphique...",
+      "errorMessage": "Impossible de charger les données de trafic",
+      "tryAgain": "Réessayer",
+      "chartTitle": "Tendance des Visites Quotidiennes",
+      "metrics": {
+        "todayVisits": "Visites d'Aujourd'hui",
+        "weeklyAverage": "Moyenne Hebdomadaire",
+        "uniqueVisitors": "Visiteurs Uniques",
+        "visitsPerDay": "visites par jour",
+        "thisMonth": "ce mois"
+      },
+      "tooltip": {
+        "visits": "Visites:",
+        "uniqueVisitors": "Visiteurs uniques:",
+        "pageViews": "Vues de page:",
+        "bounceRate": "Taux de rebond:"
+      }
     }
   },
   "restaurant": {

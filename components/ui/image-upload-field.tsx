@@ -168,6 +168,7 @@ export function ImageUploadField({
   };
 
   const handleUpload = async () => {
+    // Always use the crop area that's visible - what you see is what you get!
     const result = await processAndUpload(completedCrop, compressionSettings, folder);
     
     if (result?.s3Result) {
@@ -303,6 +304,18 @@ export function ImageUploadField({
                               const initialCrop = centerAspectCrop(width, height, aspect);
                               setCrop(initialCrop);
                               setImageLoaded(true);
+                              
+                              // Set the visible crop area as the active crop - what you see is what you get!
+                              if (initialCrop) {
+                                const pixelCrop: PixelCrop = {
+                                  x: (initialCrop.x / 100) * width,
+                                  y: (initialCrop.y / 100) * height,
+                                  width: (initialCrop.width / 100) * width,
+                                  height: (initialCrop.height / 100) * height,
+                                  unit: 'px'
+                                };
+                                setCompletedCrop(pixelCrop);
+                              }
                             }}
                           />
                         </ReactCrop>

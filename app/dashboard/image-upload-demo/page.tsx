@@ -176,13 +176,26 @@ function ImageUploadDemoContent() {
                                 // Calculate crop area
                                 const size = Math.min(width, height) * 0.8;
                                 
-                                setCrop({
-                                  unit: 'px',
+                                const initialCrop = {
+                                  unit: 'px' as const,
                                   width: size,
                                   height: size,
                                   x: (width - size) / 2,
                                   y: (height - size) / 2,
-                                });
+                                };
+                                
+                                setCrop(initialCrop);
+                                
+                                // Set initial completedCrop so visible crop area is what gets uploaded
+                                // What you see is what you get!
+                                const initialCompletedCrop: PixelCrop = {
+                                  x: initialCrop.x,
+                                  y: initialCrop.y,
+                                  width: initialCrop.width,
+                                  height: initialCrop.height,
+                                  unit: 'px'
+                                };
+                                setCompletedCrop(initialCompletedCrop);
                               }
                             }}
                           />

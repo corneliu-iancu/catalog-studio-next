@@ -89,6 +89,12 @@ export function useImageUpload() {
         return;
       }
 
+      // Validate crop dimensions
+      if (completedCrop.width <= 0 || completedCrop.height <= 0) {
+        resolve(null);
+        return;
+      }
+
       const canvas = canvasRef.current;
       const image = imgRef.current;
       const ctx = canvas.getContext('2d');
@@ -98,22 +104,47 @@ export function useImageUpload() {
         return;
       }
 
+      // Calculate scale factors to convert from displayed image coordinates to natural image coordinates
       const scaleX = image.naturalWidth / image.width;
       const scaleY = image.naturalHeight / image.height;
 
-      canvas.width = completedCrop.width;
-      canvas.height = completedCrop.height;
+      // Convert crop coordinates from displayed image space to natural image space
+      const sourceX = completedCrop.x * scaleX;
+      const sourceY = completedCrop.y * scaleY;
+      const sourceWidth = completedCrop.width * scaleX;
+      const sourceHeight = completedCrop.height * scaleY;
 
+      // Create a reasonably-sized output canvas maintaining aspect ratio
+      const maxOutputSize = 2048; // Maximum dimension for output
+      const cropAspectRatio = sourceWidth / sourceHeight;
+      
+      let outputWidth, outputHeight;
+      if (cropAspectRatio > 1) {
+        // Landscape: limit width
+        outputWidth = Math.min(sourceWidth, maxOutputSize);
+        outputHeight = outputWidth / cropAspectRatio;
+      } else {
+        // Portrait/Square: limit height
+        outputHeight = Math.min(sourceHeight, maxOutputSize);
+        outputWidth = outputHeight * cropAspectRatio;
+      }
+
+
+      // Set canvas to reasonable output size
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
+
+      // Draw the cropped portion from the natural image, scaled to fit canvas
       ctx.drawImage(
         image,
-        completedCrop.x * scaleX,
-        completedCrop.y * scaleY,
-        completedCrop.width * scaleX,
-        completedCrop.height * scaleY,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
         0,
         0,
-        completedCrop.width,
-        completedCrop.height
+        outputWidth,
+        outputHeight
       );
 
       canvas.toBlob((blob) => {

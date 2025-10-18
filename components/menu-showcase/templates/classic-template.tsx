@@ -7,6 +7,7 @@ import { ImageIcon, Loader2, Star, ChefHat } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 
 import { TemplateWrapper, MenuHeader } from '../template-engine';
+import { TrackableMenuItem, TrackableCategory } from '../analytics-provider';
 
 interface ClassicTemplateProps {
   menuData: PublicMenuData;
@@ -169,7 +170,7 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
             
             {/* Categories - Each with Two Column Layout */}
             {menu.categories.map((category) => (
-              <div key={category.id} className="mb-16">
+              <TrackableCategory key={category.id} categoryId={category.id} className="mb-16">
                 
                 {/* Category Header */}
                 <div className="text-center mb-8">
@@ -186,17 +187,18 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
                 <div className="max-w-2xl mx-auto">
                   <div className="divide-y divide-gray-100">
                     {category.items.map((item) => (
-                      <MenuItemCard
-                        key={item.id}
-                        item={item}
-                        menuCurrency={menuCurrency}
-                        showDescriptions={display_settings.show_descriptions}
-                        onItemClick={handleItemClick}
-                      />
+                      <TrackableMenuItem key={item.id} itemId={item.id}>
+                        <MenuItemCard
+                          item={item}
+                          menuCurrency={menuCurrency}
+                          showDescriptions={display_settings.show_descriptions}
+                          onItemClick={handleItemClick}
+                        />
+                      </TrackableMenuItem>
                     ))}
                   </div>
                 </div>
-              </div>
+              </TrackableCategory>
             ))}
 
           </main>

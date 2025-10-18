@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { ProductPage } from '@/components/menu-showcase/product-page';
+import { AnalyticsProvider } from '@/components/menu-showcase/analytics-provider';
 import { menuShowcaseService } from '@/lib/services/menu-showcase';
 import type { SupportedCurrency } from '@/lib/utils/currency';
 
@@ -39,12 +40,14 @@ export default async function ItemPage({ params }: ProductPageProps) {
   const menuCurrency = (menuData.menu.currency as SupportedCurrency) || 'USD';
 
   return (
-    <ProductPage
-      item={foundItem}
-      restaurant={menuData.restaurant}
-      currency={menuCurrency}
-      // No onBack prop - we'll use browser navigation
-    />
+    <AnalyticsProvider restaurantId={menuData.restaurant.id} menuId={menuData.menu.id}>
+      <ProductPage
+        item={foundItem}
+        restaurant={menuData.restaurant}
+        currency={menuCurrency}
+        // No onBack prop - we'll use browser navigation
+      />
+    </AnalyticsProvider>
   );
 }
 

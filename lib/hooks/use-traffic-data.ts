@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { TrafficAnalytics } from '@/lib/types/traffic';
-import { generateMockTrafficData, calculateTrafficMetrics } from '@/lib/utils/mock-traffic-data';
 
 /**
- * Hook for managing traffic analytics data
- * Currently uses mock data, but can be extended to fetch real data from API
+ * Hook for managing traffic analytics data from the analytics API
  */
-export function useTrafficData() {
+export function useTrafficData(restaurantId?: string) {
   const [analytics, setAnalytics] = useState<TrafficAnalytics>({
     data: [],
     metrics: {
@@ -25,16 +23,22 @@ export function useTrafficData() {
     try {
       setAnalytics(prev => ({ ...prev, isLoading: true, error: undefined }));
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Fetch real data from API
+      if (!restaurantId) {
+        throw new Error('Restaurant ID required');
+      }
+
+      const response = await fetch(`/api/analytics/dashboard?restaurantId=${restaurantId}&days=30`);
       
-      // Generate mock data (replace with real API call later)
-      const mockData = generateMockTrafficData(30);
-      const metrics = calculateTrafficMetrics(mockData);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const analyticsData = await response.json();
       
       setAnalytics({
-        data: mockData,
-        metrics,
+        data: analyticsData.data,
+        metrics: analyticsData.metrics,
         isLoading: false,
       });
     } catch (error) {
@@ -45,7 +49,7 @@ export function useTrafficData() {
         error: 'Failed to load traffic data',
       }));
     }
-  }, []);
+  }, [restaurantId]);
 
   useEffect(() => {
     fetchTrafficData();

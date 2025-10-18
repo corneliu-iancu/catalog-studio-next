@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { TemplateEngine } from '@/components/menu-showcase/template-engine';
+import { AnalyticsProvider } from '@/components/menu-showcase/analytics-provider';
 import { menuShowcaseService } from '@/lib/services/menu-showcase';
 
 interface MenuPageProps {
@@ -21,7 +22,9 @@ export default async function MenuPage({ params }: MenuPageProps) {
   }
 
   return (
-    <TemplateEngine menuData={menuData} />
+    <AnalyticsProvider restaurantId={menuData.restaurant.id} menuId={menuData.menu.id}>
+      <TemplateEngine menuData={menuData} />
+    </AnalyticsProvider>
   );
 }
 

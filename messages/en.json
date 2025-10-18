@@ -131,7 +131,23 @@
         "uniqueVisitors": "Unique visitors:",
         "pageViews": "Page views:",
         "bounceRate": "Bounce rate:"
+      },
+      "insufficientData": {
+        "title": "Building Analytics Profile",
+        "description": "We've collected {daysCollected} day(s) of data. We need at least {daysNeeded} days to show meaningful trends.",
+        "checkBack": "Check back in a few days for detailed insights"
       }
+    }
+  },
+  "analytics": {
+    "consent": {
+      "title": "Privacy Notice",
+      "description": "We use privacy-first analytics to improve your menu browsing experience. We collect anonymous usage data like page views and time spent, but never personal information. You can opt out anytime.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "processing": "Processing...",
+      "privacyPolicy": "Privacy Policy",
+      "close": "Close"
     }
   },
   "restaurant": {

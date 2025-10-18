@@ -131,7 +131,23 @@
         "uniqueVisitors": "Vizitatori unici:",
         "pageViews": "Vizualizări pagină:",
         "bounceRate": "Rata de respingere:"
+      },
+      "insufficientData": {
+        "title": "Construim Profilul de Analiză",
+        "description": "Am colectat {daysCollected} zi(le) de date. Avem nevoie de cel puțin {daysNeeded} zile pentru a arăta tendințe semnificative.",
+        "checkBack": "Revino în câteva zile pentru informații detaliate"
       }
+    }
+  },
+  "analytics": {
+    "consent": {
+      "title": "Notificare de Confidențialitate",
+      "description": "Utilizăm analize anonime pentru a îmbunătăți experiența ta de navigare prin meniu. Colectăm date de utilizare anonime precum vizualizările paginilor și timpul petrecut, dar niciodată informații personale. Poți renunța oricând.",
+      "accept": "Accept",
+      "decline": "Refuz",
+      "processing": "Se procesează...",
+      "privacyPolicy": "Politica de Confidențialitate",
+      "close": "Închide"
     }
   },
     "menuManagement": {

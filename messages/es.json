@@ -131,7 +131,23 @@
         "uniqueVisitors": "Visitantes únicos:",
         "pageViews": "Vistas de página:",
         "bounceRate": "Tasa de rebote:"
+      },
+      "insufficientData": {
+        "title": "Construyendo Perfil de Analytics",
+        "description": "Hemos recopilado {daysCollected} día(s) de datos. Necesitamos al menos {daysNeeded} días para mostrar tendencias significativas.",
+        "checkBack": "Vuelve en unos días para obtener información detallada"
       }
+    }
+  },
+  "analytics": {
+    "consent": {
+      "title": "Aviso de Privacidad",
+      "description": "Utilizamos análisis que respetan la privacidad para mejorar tu experiencia navegando el menú. Recopilamos datos de uso anónimos como vistas de páginas y tiempo transcurrido, pero nunca información personal. Puedes optar por no participar en cualquier momento.",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "processing": "Procesando...",
+      "privacyPolicy": "Política de Privacidad",
+      "close": "Cerrar"
     }
   },
   "restaurant": {

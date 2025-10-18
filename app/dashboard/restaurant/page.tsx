@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { LocationPicker } from '@/components/ui/location-picker';
+import { LocationPreviewMap } from '@/components/ui/location-preview-map';
 import { useDisplayImage } from '@/lib/utils/image-display';
 import { 
   Store, 
@@ -24,7 +26,12 @@ import {
   UtensilsCrossed,
   Save,
   X,
-  Loader2
+  Loader2,
+  Clock,
+  RefreshCw,
+  Shield,
+  CheckCircle,
+  Sparkles
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -48,6 +55,8 @@ function RestaurantProfileContent() {
     phone: '',
     website: '',
     address: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
     logo_url: ''
   });
 
@@ -68,6 +77,8 @@ function RestaurantProfileContent() {
         phone: selectedRestaurant.phone || '',
         website: selectedRestaurant.website || '',
         address: selectedRestaurant.address || '',
+        latitude: selectedRestaurant.latitude || null,
+        longitude: selectedRestaurant.longitude || null,
         logo_url: selectedRestaurant.logo_url || ''
       });
     }
@@ -122,6 +133,8 @@ function RestaurantProfileContent() {
         phone: selectedRestaurant.phone || '',
         website: selectedRestaurant.website || '',
         address: selectedRestaurant.address || '',
+        latitude: selectedRestaurant.latitude || null,
+        longitude: selectedRestaurant.longitude || null,
         logo_url: selectedRestaurant.logo_url || ''
       });
     }
@@ -139,6 +152,15 @@ function RestaurantProfileContent() {
     setFormData(prev => ({
       ...prev,
       logo_url: ''
+    }));
+  };
+
+  const handleLocationChange = (location: { address: string; latitude: number | null; longitude: number | null }) => {
+    setFormData(prev => ({
+      ...prev,
+      address: location.address,
+      latitude: location.latitude,
+      longitude: location.longitude,
     }));
   };
 
@@ -209,6 +231,117 @@ function RestaurantProfileContent() {
         </div>
       </div>
 
+      {/* Account Information - Full Width */}
+      <Card className="relative overflow-hidden">
+        {/* Soft gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30 dark:from-blue-950/20 dark:via-indigo-950/10 dark:to-purple-950/20" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-100/40 to-transparent dark:from-blue-900/30 rounded-full -translate-y-16 translate-x-16" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-100/40 to-transparent dark:from-purple-900/30 rounded-full translate-y-12 -translate-x-12" />
+        
+        <div className="relative">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 mr-3">
+                <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              {t('restaurant.accountInfo.title')}
+            </CardTitle>
+            <CardDescription>
+              {t('restaurant.accountInfo.description')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* Created Date */}
+              <div className="flex items-start space-x-4 p-4 rounded-lg bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/60 dark:border-white/10">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex-shrink-0">
+                  <Calendar className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-sm font-semibold text-green-700 dark:text-green-300 flex items-center">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    {t('restaurant.accountInfo.created')}
+                  </label>
+                  <p className="text-sm text-foreground font-medium mt-1">
+                    {selectedRestaurant.created_at ? new Date(selectedRestaurant.created_at).toLocaleDateString('ro-RO', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }) : '-'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Account established
+                  </p>
+                </div>
+              </div>
+              
+              {/* Last Updated */}
+              <div className="flex items-start space-x-4 p-4 rounded-lg bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/60 dark:border-white/10">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex-shrink-0">
+                  <RefreshCw className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {t('restaurant.accountInfo.lastUpdated')}
+                  </label>
+                  <p className="text-sm text-foreground font-medium mt-1">
+                    {selectedRestaurant.updated_at ? new Date(selectedRestaurant.updated_at).toLocaleDateString('ro-RO', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }) : '-'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Last profile modification
+                  </p>
+                </div>
+              </div>
+              
+              {/* Status */}
+              <div className="flex items-start space-x-4 p-4 rounded-lg bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-white/60 dark:border-white/10">
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0 ${
+                  selectedRestaurant.is_active 
+                    ? 'bg-emerald-100 dark:bg-emerald-900/30' 
+                    : 'bg-gray-100 dark:bg-gray-900/30'
+                }`}>
+                  {selectedRestaurant.is_active ? (
+                    <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Clock className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className={`text-sm font-semibold flex items-center ${
+                    selectedRestaurant.is_active 
+                      ? 'text-emerald-700 dark:text-emerald-300' 
+                      : 'text-gray-700 dark:text-gray-300'
+                  }`}>
+                    <Shield className="h-3 w-3 mr-1" />
+                    {t('restaurant.accountInfo.status')}
+                  </label>
+                  <div className="mt-2">
+                    <Badge 
+                      variant={selectedRestaurant.is_active ? "default" : "secondary"}
+                      className={`${
+                        selectedRestaurant.is_active 
+                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm' 
+                          : 'bg-gray-500 hover:bg-gray-600 text-white'
+                      }`}
+                    >
+                      {selectedRestaurant.is_active ? t('common.active') : t('common.inactive')}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedRestaurant.is_active ? 'Your restaurant is live and accessible' : 'Restaurant is currently inactive'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </div>
+      </Card>
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Basic Information */}
         <Card>
@@ -237,7 +370,7 @@ function RestaurantProfileContent() {
                     maxSizeMB: 2,
                     maxWidthOrHeight: 1024,
                     useWebWorker: true,
-                    quality: 0.95
+                    quality: 1
                   }}
                 />
                 <Separator />
@@ -443,7 +576,11 @@ function RestaurantProfileContent() {
           </CardContent>
         </Card>
 
-        {/* Location Information */}
+
+      </div>
+
+      {/* Location Information - Full Width */}
+      {isEditing ? (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -455,73 +592,65 @@ function RestaurantProfileContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div>
-              <Label className="text-sm font-medium text-muted-foreground">{t('restaurant.location.address')}</Label>
-              {isEditing ? (
-                <Textarea
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder={t('restaurant.location.addressPlaceholder')}
-                  rows={3}
-                />
-              ) : (
-                <p className="text-sm mt-1">
-                  {selectedRestaurant.address || t('restaurant.location.noAddress')}
-                </p>
-              )}
-            </div>
+            <LocationPicker
+              value={{
+                address: formData.address,
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+              }}
+              onChange={handleLocationChange}
+              label={t('restaurant.location.address')}
+              placeholder={t('restaurant.location.addressPlaceholder')}
+              disabled={isSaving}
+            />
           </CardContent>
         </Card>
-
-        {/* Account Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Calendar className="mr-2 h-5 w-5" />
-              {t('restaurant.accountInfo.title')}
-            </CardTitle>
-            <CardDescription>
-              {t('restaurant.accountInfo.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.created')}</label>
-              <p className="text-sm">
-                {selectedRestaurant.created_at ? new Date(selectedRestaurant.created_at).toLocaleDateString('ro-RO', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                }) : '-'}
-              </p>
+      ) : selectedRestaurant.address ? (
+        selectedRestaurant.latitude && selectedRestaurant.longitude ? (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <MapPin className="h-5 w-5 text-muted-foreground" />
+              <h2 className="text-xl font-semibold">{t('restaurant.location.title')}</h2>
             </div>
-            
-            <Separator />
-            
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.lastUpdated')}</label>
-              <p className="text-sm">
-                {selectedRestaurant.updated_at ? new Date(selectedRestaurant.updated_at).toLocaleDateString('ro-RO', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                }) : '-'}
-              </p>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">{t('restaurant.accountInfo.status')}</label>
-              <div className="mt-1">
-                <Badge variant={selectedRestaurant.is_active ? "default" : "secondary"}>
-                  {selectedRestaurant.is_active ? t('common.active') : t('common.inactive')}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <LocationPreviewMap
+              address={selectedRestaurant.address}
+              latitude={selectedRestaurant.latitude}
+              longitude={selectedRestaurant.longitude}
+              restaurantName={selectedRestaurant.name}
+            />
+          </div>
+        ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <MapPin className="mr-2 h-5 w-5" />
+                  {t('restaurant.location.title')}
+                </CardTitle>
+                <CardDescription>
+                  {t('restaurant.location.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-start space-x-4 p-4 rounded-lg bg-muted/30">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex-shrink-0">
+                    <MapPin className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-semibold text-orange-700 dark:text-orange-300">
+                      {t('restaurant.location.address')}
+                    </Label>
+                    <p className="text-sm text-foreground font-medium mt-1">
+                      {selectedRestaurant?.address}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Enable location services in edit mode to show map (coordinates missing)
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+        )
+      ) : null}
     </div>
   );
 }

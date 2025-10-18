@@ -21,6 +21,8 @@ export type Database = {
           email: string | null
           phone: string | null
           address: string | null
+          latitude: number | null
+          longitude: number | null
           website: string | null
           logo_url: string | null
           hours: Json | null
@@ -40,6 +42,8 @@ export type Database = {
           email?: string | null
           phone?: string | null
           address?: string | null
+          latitude?: number | null
+          longitude?: number | null
           website?: string | null
           logo_url?: string | null
           hours?: Json | null
@@ -59,6 +63,8 @@ export type Database = {
           email?: string | null
           phone?: string | null
           address?: string | null
+          latitude?: number | null
+          longitude?: number | null
           website?: string | null
           logo_url?: string | null
           hours?: Json | null

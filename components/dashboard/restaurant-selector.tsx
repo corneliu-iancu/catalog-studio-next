@@ -13,16 +13,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useRestaurant } from '@/lib/contexts/restaurant-context';
 import { Database } from '@/lib/types/database';
+import { useRouter } from 'next/navigation';
 
 type Restaurant = Database['public']['Tables']['restaurants']['Row'];
 
-interface RestaurantSelectorProps {
-  onCreateRestaurant?: () => void;
-}
+// No props needed - using router navigation
+type RestaurantSelectorProps = Record<string, never>;
 
-export function RestaurantSelector({ onCreateRestaurant }: RestaurantSelectorProps) {
+export function RestaurantSelector({}: RestaurantSelectorProps) {
   const { restaurants, selectedRestaurant, selectRestaurant, isLoading } = useRestaurant();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const handleSelectRestaurant = (restaurant: Restaurant) => {
     selectRestaurant(restaurant);
@@ -31,7 +32,7 @@ export function RestaurantSelector({ onCreateRestaurant }: RestaurantSelectorPro
 
   const handleCreateRestaurant = () => {
     setOpen(false);
-    onCreateRestaurant?.();
+    router.push('/dashboard/restaurant/new');
   };
 
   if (isLoading) {

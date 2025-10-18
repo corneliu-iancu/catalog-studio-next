@@ -378,7 +378,6 @@ function ImageUploadDemoContent() {
 }
 
 export default function ImageUploadDemoPage() {
-  const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
 
@@ -391,12 +390,7 @@ export default function ImageUploadDemoPage() {
   }, [supabase.auth]);
 
   return (
-    <DashboardLayout
-      user={user ? user : null}
-      showCreateRestaurant={showCreateRestaurant}
-      onCreateRestaurant={() => setShowCreateRestaurant(true)}
-      onCloseCreateRestaurant={() => setShowCreateRestaurant(false)}
-    >
+    <DashboardLayout user={user}>
       <div className="p-6">
         <ImageUploadDemoContent />
       </div>

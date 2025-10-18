@@ -21,11 +21,10 @@ import type { User } from '@supabase/supabase-js';
 
 interface DashboardHeaderProps {
   user: User | null;
-  onCreateRestaurant?: () => void;
   onToggleSidebar?: () => void;
 }
 
-export function DashboardHeader({ user, onCreateRestaurant, onToggleSidebar }: DashboardHeaderProps) {
+export function DashboardHeader({ user, onToggleSidebar }: DashboardHeaderProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const supabase = createClient();
   const router = useRouter();
@@ -77,7 +76,7 @@ export function DashboardHeader({ user, onCreateRestaurant, onToggleSidebar }: D
           <div className="h-6 w-px bg-border hidden sm:block" />
           
           <div className="hidden lg:block">
-            <RestaurantSelector onCreateRestaurant={onCreateRestaurant} />
+            <RestaurantSelector />
           </div>
         </div>
 

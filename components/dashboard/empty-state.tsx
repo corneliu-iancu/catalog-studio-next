@@ -3,10 +3,10 @@
 import { Plus, Store, UtensilsCrossed, Palette, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 
-interface EmptyStateProps {
-  onCreateRestaurant: () => void;
-}
+// No props needed - using router navigation
+type EmptyStateProps = Record<string, never>;
 
 const features = [
   {
@@ -31,7 +31,13 @@ const features = [
   },
 ];
 
-export function EmptyState({ onCreateRestaurant }: EmptyStateProps) {
+export function EmptyState({}: EmptyStateProps) {
+  const router = useRouter();
+
+  const handleCreateRestaurant = () => {
+    router.push('/dashboard/restaurant/new');
+  };
+
   return (
     <div className="flex-1 flex items-center justify-center p-6">
       <div className="max-w-2xl w-full text-center space-y-8">
@@ -40,7 +46,7 @@ export function EmptyState({ onCreateRestaurant }: EmptyStateProps) {
           <div className="mx-auto h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
             <Store className="h-12 w-12 text-primary" />
           </div>
-          
+
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
               Welcome to Catalog Studio!
@@ -53,8 +59,8 @@ export function EmptyState({ onCreateRestaurant }: EmptyStateProps) {
 
         {/* CTA Button */}
         <div>
-          <Button 
-            onClick={onCreateRestaurant}
+          <Button
+            onClick={handleCreateRestaurant}
             size="lg"
             className="h-12 px-8 text-base"
           >

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -20,11 +19,10 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => void }) {
+function DashboardContent() {
   const { selectedRestaurant, hasRestaurants, isLoading } = useRestaurant();
   const { selectedMenu } = useMenu();
   const t = useTranslations('dashboard');
-  const tCommon = useTranslations('common');
   const [stats, setStats] = useState({
     totalCategories: 0,
     totalItems: 0,
@@ -110,7 +108,7 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
   }
 
   if (!hasRestaurants) {
-    return <EmptyState onCreateRestaurant={onCreateRestaurant} />;
+    return <EmptyState />;
   }
 
   return (
@@ -314,7 +312,6 @@ function DashboardContent({ onCreateRestaurant }: { onCreateRestaurant: () => vo
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showCreateRestaurant, setShowCreateRestaurant] = useState(false);
   const supabase = createClient();
   const tCommon = useTranslations('common');
 
@@ -326,10 +323,6 @@ export default function DashboardPage() {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
     setLoading(false);
-  };
-
-  const handleCreateRestaurant = () => {
-    setShowCreateRestaurant(true);
   };
 
   if (loading) {
@@ -344,13 +337,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <DashboardLayout
-      user={user}
-      showCreateRestaurant={showCreateRestaurant}
-      onCreateRestaurant={handleCreateRestaurant}
-      onCloseCreateRestaurant={() => setShowCreateRestaurant(false)}
-    >
-      <DashboardContent onCreateRestaurant={handleCreateRestaurant} />
+    <DashboardLayout user={user}>
+      <DashboardContent />
     </DashboardLayout>
   );
 }

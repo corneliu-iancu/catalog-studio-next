@@ -139,6 +139,11 @@ export class MenuShowcaseService {
             .map(cp => {
               // Handle both object and array cases
               const product = Array.isArray(cp.products) ? cp.products[0] : cp.products;
+              
+              // Find primary image
+              const productImages = product.product_images || [];
+              const primaryImage = productImages.find((img: any) => img.is_primary) || productImages[0];
+              
               return {
                 id: product.id,
                 name: product.name,
@@ -147,7 +152,8 @@ export class MenuShowcaseService {
                 long_description: product.long_description,
                 price: product.price,
                 discount_price: product.discount_price,
-                product_images: product.product_images || [],
+                image_url: primaryImage?.s3_key || null,
+                product_images: productImages,
                 ingredients: product.ingredients,
                 allergens: product.allergens,
                 spice_level: product.spice_level,

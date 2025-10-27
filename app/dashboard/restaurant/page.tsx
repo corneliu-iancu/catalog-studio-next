@@ -365,7 +365,6 @@ function RestaurantProfileContent() {
                   folder="restaurants"
                   label={t('restaurant.basicInfo.logo')}
                   description={t('restaurant.basicInfo.logoDescription')}
-                  aspect={undefined}
                   compressionSettings={{
                     maxSizeMB: 2,
                     maxWidthOrHeight: 1024,

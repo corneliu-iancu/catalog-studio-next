@@ -71,6 +71,12 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       console.log(`Fetching items for category: ${categoryId}, forceRefresh: ${forceRefresh}`);
 
+      // TODO [refactor]: Replace direct supabase queries with server actions for category-product fetching.
+      // Plan:
+      // 1. Move the logic to fetch items for a category to a server action (e.g. app/actions/items/fetchItemsByCategory.ts)
+      // 2. Call the server action here (passing categoryId), instead of hitting supabase directly from the client.
+      // 3. Adjust arguments/returns as needed and handle loading/errors as before.
+      // 4. Remove all direct supabase usage from the client context after migration.
       const { data, error } = await supabase
         .from('category_products')
         .select(`

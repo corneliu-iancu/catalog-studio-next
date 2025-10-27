@@ -32,8 +32,6 @@ function uploadReducer(state: UploadState, action: UploadAction): UploadState {
 
 export function useImageUpload() {
   const [state, dispatch] = useReducer(uploadReducer, initialState);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Cleanup function for object URLs
   const cleanupPreview = useCallback((file: FileWithPreview | null) => {
@@ -82,87 +80,8 @@ export function useImageUpload() {
     }
   }, []);
 
-  const extractCroppedImage = useCallback((completedCrop: { x: number; y: number; width: number; height: number }): Promise<File | null> => {
-    return new Promise((resolve) => {
-      if (!completedCrop || !imgRef.current || !canvasRef.current || !state.file) {
-        resolve(null);
-        return;
-      }
-
-      // Validate crop dimensions
-      if (completedCrop.width <= 0 || completedCrop.height <= 0) {
-        resolve(null);
-        return;
-      }
-
-      const canvas = canvasRef.current;
-      const image = imgRef.current;
-      const ctx = canvas.getContext('2d');
-      
-      if (!ctx) {
-        resolve(null);
-        return;
-      }
-
-      // Calculate scale factors to convert from displayed image coordinates to natural image coordinates
-      const scaleX = image.naturalWidth / image.width;
-      const scaleY = image.naturalHeight / image.height;
-
-      // Convert crop coordinates from displayed image space to natural image space
-      const sourceX = completedCrop.x * scaleX;
-      const sourceY = completedCrop.y * scaleY;
-      const sourceWidth = completedCrop.width * scaleX;
-      const sourceHeight = completedCrop.height * scaleY;
-
-      // Create a reasonably-sized output canvas maintaining aspect ratio
-      const maxOutputSize = 2048; // Maximum dimension for output
-      const cropAspectRatio = sourceWidth / sourceHeight;
-      
-      let outputWidth, outputHeight;
-      if (cropAspectRatio > 1) {
-        // Landscape: limit width
-        outputWidth = Math.min(sourceWidth, maxOutputSize);
-        outputHeight = outputWidth / cropAspectRatio;
-      } else {
-        // Portrait/Square: limit height
-        outputHeight = Math.min(sourceHeight, maxOutputSize);
-        outputWidth = outputHeight * cropAspectRatio;
-      }
-
-
-      // Set canvas to reasonable output size
-      canvas.width = outputWidth;
-      canvas.height = outputHeight;
-
-      // Draw the cropped portion from the natural image, scaled to fit canvas
-      ctx.drawImage(
-        image,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        0,
-        0,
-        outputWidth,
-        outputHeight
-      );
-
-      canvas.toBlob((blob) => {
-        if (blob && state.file) {
-          const croppedFile = new File([blob], `cropped-${state.file.name}`, {
-            type: state.file.type,
-            lastModified: Date.now()
-          });
-          resolve(croppedFile);
-        } else {
-          resolve(null);
-        }
-      }, state.file?.type || 'image/jpeg', 0.99);
-    });
-  }, [state.file]);
 
   const processAndUpload = useCallback(async (
-    completedCrop: { x: number; y: number; width: number; height: number } | undefined,
     settings: CompressionSettings,
     folder: string = 'menu-items'
   ) => {
@@ -174,12 +93,8 @@ export function useImageUpload() {
     dispatch({ type: 'SET_UPLOADING', payload: true });
 
     try {
-      // Get cropped image if crop is available
-      const croppedFile = completedCrop ? await extractCroppedImage(completedCrop) : null;
-      const fileToCompress = croppedFile || state.file;
-      
       // Compress the image
-      const compressedFile = await compressImage(fileToCompress, settings);
+      const compressedFile = await compressImage(state.file, settings);
 
       // Upload to S3
       const uploadResult = await s3UploadService.uploadFile(compressedFile, {
@@ -189,7 +104,7 @@ export function useImageUpload() {
         }
       });
       
-      setSuccess(`Successfully uploaded ${croppedFile ? 'cropped and compressed' : 'compressed'} image to S3!`);
+      setSuccess(`Successfully uploaded compressed image to S3!`);
       
       console.log('S3 upload complete:', uploadResult);
       
@@ -203,12 +118,10 @@ export function useImageUpload() {
       console.error('Upload error:', err);
       return null;
     }
-  }, [state.file, extractCroppedImage, compressImage, setError, setSuccess]);
+  }, [state.file, compressImage, setError, setSuccess]);
 
   return {
     ...state,
-    imgRef,
-    canvasRef,
     setFile,
     setError,
     setSuccess,

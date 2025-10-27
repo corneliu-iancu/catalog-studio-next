@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { X, Image as ImageIcon, Plus, GripVertical, Star } from 'lucide-react';
+import { X, Image as ImageIcon, Plus, GripVertical } from 'lucide-react';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
 import { useDisplayImage } from '@/lib/utils/image-display';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -23,7 +22,7 @@ export interface UploadedImage {
   height?: number;
 }
 
-// Sortable image item component
+// Sortable image item component - Compact design with drag-to-reorder primary selection
 function SortableImageItem({
   image,
   index,
@@ -61,83 +60,72 @@ function SortableImageItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 p-2 bg-card border rounded-lg hover:bg-accent/50 transition-colors"
+      className="relative group"
     >
-      {/* Drag Handle */}
-      <button
-        type="button"
-        className="cursor-grab active:cursor-grabbing touch-none text-muted-foreground hover:text-foreground"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-5 w-5" />
-      </button>
-
-      {/* Thumbnail */}
-      <button
-        type="button"
-        onClick={() => onPreview(image)}
-        className="relative h-[60px] w-[60px] rounded overflow-hidden bg-muted flex-shrink-0 hover:ring-2 hover:ring-primary transition-all"
-      >
-        {loading ? (
-          <div className="w-full h-full flex items-center justify-center">
-            <ImageIcon className="h-6 w-6 text-muted-foreground animate-pulse" />
-          </div>
-        ) : displayUrl ? (
-          <img
-            src={displayUrl}
-            alt={image.alt_text || `Image ${index + 1}`}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <ImageIcon className="h-6 w-6 text-muted-foreground" />
-          </div>
-        )}
+      {/* Compact Card */}
+      <div className={`bg-card border rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 ${
+        isPrimary 
+          ? 'border-primary/50 ring-1 ring-primary/20' 
+          : 'hover:border-primary/30'
+      }`}>
+        
+        {/* Primary Badge - Top Center */}
         {isPrimary && (
-          <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-[10px] font-medium text-center py-0.5">
-            Primary
+          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 z-10">
+            <div className="bg-primary text-primary-foreground text-[10px] font-medium px-2 py-0.5 rounded-full">
+              Primary
+            </div>
           </div>
         )}
-      </button>
 
-      {/* Image Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">
-          Image {index + 1}
-        </p>
-        {isPrimary && (
-          <Badge variant="secondary" className="mt-1 h-5 text-xs">
-            <Star className="h-3 w-3 mr-1" />
-            Primary
-          </Badge>
-        )}
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-2">
-        {!isPrimary && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onSetPrimary(image.id)}
-            disabled={disabled}
-            className="h-8 text-xs"
-          >
-            Set Primary
-          </Button>
-        )}
-        <Button
+        {/* Image Thumbnail */}
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => onDelete(image)}
-          disabled={disabled}
-          className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+          onClick={() => onPreview(image)}
+          className="relative w-full aspect-square bg-muted hover:bg-muted/80 transition-colors block p-0 border-0"
         >
-          <X className="h-4 w-4" />
-        </Button>
+          {loading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <ImageIcon className="h-8 w-8 text-muted-foreground animate-pulse" />
+            </div>
+          ) : displayUrl ? (
+            <img
+              src={displayUrl}
+              alt={image.alt_text || `Image ${index + 1}`}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
+          )}
+        </button>
+
+        {/* Bottom Actions */}
+        <div className="absolute bottom-1 left-1 right-1 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {/* Drag Handle */}
+          <button
+            type="button"
+            className="p-1 rounded bg-black/50 text-white/70 hover:text-white cursor-grab active:cursor-grabbing touch-none transition-colors"
+            {...attributes}
+            {...listeners}
+            title="Drag to reorder (first position = primary)"
+          >
+            <GripVertical className="h-3 w-3" />
+          </button>
+
+          {/* Delete Button */}
+          <button
+            type="button"
+            onClick={() => onDelete(image)}
+            disabled={disabled}
+            className="p-1 rounded bg-black/50 text-red-400 hover:text-red-300 transition-colors"
+            title="Delete image"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+
       </div>
     </div>
   );
@@ -277,7 +265,7 @@ export function MultiImageUpload({
               onImageUploaded={handleImageUploaded}
               folder={uploadPath}
               label=""
-              description="Upload and crop your image"
+              description="Upload your image"
             />
           </div>
         </Card>
@@ -294,7 +282,7 @@ export function MultiImageUpload({
             items={images.map(img => img.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {images.map((image, index) => (
                 <SortableImageItem
                   key={image.id}

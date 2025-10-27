@@ -3,17 +3,73 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useItems } from '@/lib/contexts/items-context';
+import { useMenu } from '@/lib/contexts/menu-context';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/lib/types/database';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Loader2, RefreshCw, Utensils, Trash2, Edit, Plus, Settings } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ArrowLeft, Loader2, RefreshCw, Utensils, Trash2, Edit, Plus, Settings, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useDisplayImage } from '@/lib/utils/image-display';
+import { getPrimaryImage } from '@/lib/utils/product-images';
+import { formatPrice, type SupportedCurrency } from '@/lib/utils/currency';
 import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 
 type Category = Database['public']['Tables']['categories']['Row'];
+type MenuItem = Database['public']['Tables']['products']['Row'];
+
+// Component for displaying item thumbnail with fallback
+function ItemThumbnail({ item }: { item: MenuItem }) {
+  const [primaryImageKey, setPrimaryImageKey] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(true);
+  const { displayUrl, loading: urlLoading } = useDisplayImage(primaryImageKey);
+
+  useEffect(() => {
+    const fetchPrimaryImage = async () => {
+      try {
+        const imageKey = await getPrimaryImage(item.id);
+        setPrimaryImageKey(imageKey);
+      } catch (error) {
+        console.error('Error fetching primary image:', error);
+        setPrimaryImageKey(null);
+      } finally {
+        setImageLoading(false);
+      }
+    };
+
+    fetchPrimaryImage();
+  }, [item.id]);
+
+  if (imageLoading || urlLoading) {
+    return (
+      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (displayUrl) {
+    return (
+      <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+        <img
+          src={displayUrl}
+          alt={item.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+      <Utensils className="h-5 w-5 text-muted-foreground" />
+    </div>
+  );
+}
 
 function ItemsPageContent({ user }: { user: User | null }) {
   const params = useParams();
@@ -21,13 +77,21 @@ function ItemsPageContent({ user }: { user: User | null }) {
   const categoryId = params.id as string;
   
   const { items, isLoading, fetchItemsByCategory, deleteItem } = useItems();
+  const { selectedMenu } = useMenu();
   
   const [category, setCategory] = useState<Category | null>(null);
   const [categoryLoading, setCategoryLoading] = useState(true);
   const [categoryLoaded, setCategoryLoaded] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const supabase = createClient();
+
+  // Filter items based on search query
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   const handleDeleteItem = async (itemId: string) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
@@ -88,7 +152,7 @@ function ItemsPageContent({ user }: { user: User | null }) {
       console.log('Current items count before fetch:', items.length);
       fetchItemsByCategory(categoryId);
     }
-  }, [categoryId, categoryLoaded]); // Use boolean flag instead of object reference
+  }, [categoryId, categoryLoaded, fetchItemsByCategory, items.length]);
 
   // Add a retry mechanism for failed loads
   const retryLoadItems = useCallback(() => {
@@ -96,7 +160,7 @@ function ItemsPageContent({ user }: { user: User | null }) {
       console.log('Retrying items load for category:', categoryId);
       fetchItemsByCategory(categoryId, true); // Force refresh on retry
     }
-  }, [categoryId]); // Removed fetchItemsByCategory from dependencies
+  }, [categoryId, fetchItemsByCategory]);
 
   if (categoryLoading) {
     return (
@@ -208,13 +272,31 @@ function ItemsPageContent({ user }: { user: User | null }) {
         </CardContent>
       </Card>
 
-      {/* Items List */}
+      {/* Search Bar */}
+      {items.length > 0 && (
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Badge variant="outline">
+            {filteredItems.length} of {items.length} items
+          </Badge>
+        </div>
+      )}
+
+      {/* Items Table */}
       {items.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Items List ({items.length})</CardTitle>
+            <CardTitle>Items List ({filteredItems.length})</CardTitle>
             <CardDescription>
-              Manage existing items in this category
+              {searchQuery ? `Showing ${filteredItems.length} of ${items.length} items` : 'Manage existing items in this category'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -225,49 +307,95 @@ function ItemsPageContent({ user }: { user: User | null }) {
                   <span>Loading items...</span>
                 </div>
               </div>
+            ) : filteredItems.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="w-32">Price</TableHead>
+                    <TableHead className="w-24">Status</TableHead>
+                    <TableHead className="w-24">Created</TableHead>
+                    <TableHead className="w-32 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredItems.map((item) => (
+                    <TableRow key={item.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <ItemThumbnail item={item} />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{item.name}</div>
+                          {item.description && (
+                            <div className="text-sm text-muted-foreground line-clamp-1">
+                              {item.description}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {item.price ? (
+                          <span className="font-medium">
+                            {formatPrice(item.price, (selectedMenu?.currency as SupportedCurrency) || 'USD')}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={item.is_active ? "default" : "secondary"}>
+                          {item.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button asChild variant="ghost" size="sm">
+                            <Link href={`/dashboard/menu/categories/${categoryId}/items/${item.id}/edit`}>
+                              <Edit className="h-4 w-4" />
+                              <span className="sr-only">Edit {item.name}</span>
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteItem(item.id)}
+                            disabled={deletingItemId === item.id}
+                          >
+                            {deletingItemId === item.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">Delete {item.name}</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             ) : (
-            <div className="space-y-3">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <Utensils className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">{item.name}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Added {item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={item.is_active ? "default" : "secondary"}>
-                      {item.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href={`/dashboard/menu/categories/${categoryId}/items/${item.id}/edit`}>
-                        <Edit className="h-4 w-4" />
-                      </Link>
-                    </Button>
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {searchQuery ? 'No items match your search' : 'No items in this category'}
+                  </p>
+                  {searchQuery && (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteItem(item.id)}
-                      disabled={deletingItemId === item.id}
+                      onClick={() => setSearchQuery('')}
                     >
-                      {deletingItemId === item.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
+                      Clear search
                     </Button>
-                  </div>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
             )}
           </CardContent>
         </Card>

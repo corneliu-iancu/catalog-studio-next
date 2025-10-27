@@ -4,13 +4,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { FileDropzone } from '@/components/ui/file-dropzone';
 import { useImageUpload } from '@/lib/hooks/useImageUpload';
 import { CompressionSettings } from '@/lib/types/image-upload';
 import { useDisplayImage } from '@/lib/utils/image-display';
-import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
-import { Upload, Image as ImageIcon, X, Check, Loader2 } from 'lucide-react';
-import 'react-image-crop/dist/ReactCrop.css';
+import { Upload, Image as ImageIcon, X, Check, Loader2, FileText, Settings, Target, Folder } from 'lucide-react';
 
 interface ImageUploadFieldProps {
   currentImageUrl?: string;
@@ -22,28 +22,6 @@ interface ImageUploadFieldProps {
   maxFileSize?: number;
   compressionSettings?: CompressionSettings;
   className?: string;
-  aspect?: number; // Optional aspect ratio (e.g., 1 for square, 16/9 for landscape, undefined for free crop)
-}
-
-// Helper function to create a centered aspect crop
-function centerAspectCrop(
-  mediaWidth: number,
-  mediaHeight: number,
-  aspect: number,
-) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: '%',
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight,
-    ),
-    mediaWidth,
-    mediaHeight,
-  );
 }
 
 export function ImageUploadField({
@@ -60,16 +38,13 @@ export function ImageUploadField({
     useWebWorker: true,
     quality: 0.92
   },
-  className = '',
-  aspect = 1 // undefined = free crop, number = locked aspect ratio
+  className = ''
 }: ImageUploadFieldProps) {
   const { 
     file, 
     isUploading, 
     error, 
     success, 
-    imgRef, 
-    canvasRef, 
     setFile, 
     setError, 
     reset, 
@@ -78,98 +53,22 @@ export function ImageUploadField({
   
   const { displayUrl, loading: imageLoading } = useDisplayImage(currentImageUrl || null);
 
-  const [crop, setCrop] = useState<Crop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [showUploader, setShowUploader] = useState(!currentImageUrl);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
 
-  // Update preview when crop changes
-  useEffect(() => {
-    if (!completedCrop || !imgRef.current || !canvasRef.current) {
-      return;
-    }
 
-    const image = imgRef.current;
-    const canvas = canvasRef.current;
-    const crop = completedCrop;
-
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-
-    // Set canvas to desired preview size
-    const previewMaxSize = 300;
-    const cropAspect = crop.width / crop.height;
-    let canvasWidth, canvasHeight;
-    
-    if (cropAspect > 1) {
-      // Landscape
-      canvasWidth = previewMaxSize;
-      canvasHeight = previewMaxSize / cropAspect;
-    } else {
-      // Portrait or square
-      canvasHeight = previewMaxSize;
-      canvasWidth = previewMaxSize * cropAspect;
-    }
-    
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw the cropped image scaled to preview size
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      canvasWidth,
-      canvasHeight
-    );
-
-    // Convert canvas to blob URL for preview
-    canvas.toBlob((blob) => {
-      if (blob) {
-        // Cleanup previous preview URL
-        if (previewUrl) {
-          URL.revokeObjectURL(previewUrl);
-        }
-        const url = URL.createObjectURL(blob);
-        setPreviewUrl(url);
-      }
-    }, 'image/jpeg', 0.95);
-  }, [completedCrop, imgRef, canvasRef]);
-
-  // Cleanup preview URL on unmount
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
 
   const handleFileSelected = (files: any[]) => {
     const selectedFile = files[0] || null;
-    setCrop(undefined); // Reset crop for new image
-    setCompletedCrop(undefined);
-    setImageLoaded(false);
-    setPreviewUrl('');
     setFile(selectedFile);
+    setImageDimensions(null); // Reset dimensions for new file
     if (selectedFile) {
       setShowUploader(true);
     }
   };
 
   const handleUpload = async () => {
-    // Always use the crop area that's visible - what you see is what you get!
-    const result = await processAndUpload(completedCrop, compressionSettings, folder);
+    const result = await processAndUpload(compressionSettings, folder);
     
     if (result?.s3Result) {
       onImageUploaded(result.s3Result.s3Key, result.s3Result.publicUrl);
@@ -182,19 +81,13 @@ export function ImageUploadField({
       onImageRemoved();
     }
     reset();
-    setCrop(undefined);
-    setCompletedCrop(undefined);
-    setImageLoaded(false);
-    setPreviewUrl('');
+    setImageDimensions(null);
     setShowUploader(true);
   };
 
   const handleChangeImage = () => {
     reset();
-    setCrop(undefined);
-    setCompletedCrop(undefined);
-    setImageLoaded(false);
-    setPreviewUrl('');
+    setImageDimensions(null);
     setShowUploader(true);
   };
 
@@ -280,82 +173,125 @@ export function ImageUploadField({
               />
             ) : (
               <div className="space-y-4">
-                {/* Crop Interface with Preview */}
-                <div className="border rounded-lg p-4">
-                  <div className="flex flex-col md:flex-row gap-6">
-                    {/* Crop Area */}
-                    <div className="flex-1 min-w-0">
-                      {file.preview && (
-                        <ReactCrop
-                          crop={crop}
-                          onChange={(_, percentCrop) => setCrop(percentCrop)}
-                          onComplete={(c) => setCompletedCrop(c)}
-                          aspect={aspect}
-                          keepSelection={true}
-                          className="max-w-full"
-                        >
-                          <img
-                            ref={imgRef}
-                            src={file.preview}
-                            alt={file.name}
-                            className="max-w-full h-auto max-h-64 block mx-auto"
-                            onLoad={(e) => {
-                              const { width, height } = e.currentTarget;
-                              const initialCrop = centerAspectCrop(width, height, aspect);
-                              setCrop(initialCrop);
-                              setImageLoaded(true);
-                              
-                              // Set the visible crop area as the active crop - what you see is what you get!
-                              if (initialCrop) {
-                                const pixelCrop: PixelCrop = {
-                                  x: (initialCrop.x / 100) * width,
-                                  y: (initialCrop.y / 100) * height,
-                                  width: (initialCrop.width / 100) * width,
-                                  height: (initialCrop.height / 100) * height,
-                                  unit: 'px'
-                                };
-                                setCompletedCrop(pixelCrop);
-                              }
-                            }}
-                          />
-                        </ReactCrop>
-                      )}
-                    </div>
-
-                    {/* Preview */}
-                    {previewUrl && (
-                      <div className="flex flex-col items-center gap-2 md:w-1/2 w-full">
-                        <div className="w-full max-w-xs border-2 border-dashed border-muted-foreground/25 rounded-lg overflow-hidden bg-muted/30">
-                          <img
-                            src={previewUrl}
-                            alt="Crop preview"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground text-center">
-                          This is what will be uploaded
-                        </p>
+                {/* 50/50 Preview Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                  {/* Left Side - Image Preview */}
+                  <div className="flex flex-col items-center justify-center">
+                    {file.preview && (
+                      <div className="w-full">
+                        <img
+                          src={file.preview}
+                          alt={file.name}
+                          className="w-full h-auto max-h-80 object-contain rounded-lg border bg-muted/30"
+                          onLoad={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            setImageDimensions({
+                              width: img.naturalWidth,
+                              height: img.naturalHeight
+                            });
+                          }}
+                        />
                       </div>
                     )}
                   </div>
 
-                  {/* Crop Controls */}
-                  <div className="mt-4 flex justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (imgRef.current) {
-                          const { width, height } = imgRef.current;
-                          setCrop(centerAspectCrop(width, height, aspect));
-                        }
-                      }}
-                    >
-                      Reset Crop
-                    </Button>
+                  {/* Right Side - File Information */}
+                  <div className="space-y-4">
+                    {/* File Details */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-sm">File Details</span>
+                      </div>
+                      <div className="space-y-2 pl-6">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Name:</span>
+                          <span className="text-sm font-mono truncate max-w-[200px]" title={file.name}>
+                            {file.name}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Size:</span>
+                          <Badge variant={file.size > 5 * 1024 * 1024 ? "destructive" : file.size > 2 * 1024 * 1024 ? "secondary" : "default"}>
+                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Type:</span>
+                          <Badge variant="outline">{file.type.split('/')[1].toUpperCase()}</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Dimensions:</span>
+                          <span className="text-sm font-mono">
+                            {imageDimensions 
+                              ? `${imageDimensions.width} × ${imageDimensions.height}`
+                              : 'Loading...'
+                            }
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Compression Settings */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Settings className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-sm">Compression Settings</span>
+                      </div>
+                      <div className="space-y-2 pl-6">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Max Size:</span>
+                          <span className="text-sm">{compressionSettings.maxSizeMB} MB</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Max Dimension:</span>
+                          <span className="text-sm">{compressionSettings.maxWidthOrHeight}px</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Quality:</span>
+                          <span className="text-sm">{Math.round(compressionSettings.quality * 100)}%</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Web Worker:</span>
+                          <Badge variant={compressionSettings.useWebWorker ? "default" : "secondary"}>
+                            {compressionSettings.useWebWorker ? "Enabled" : "Disabled"}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Upload Preview */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-sm">Upload Details</span>
+                      </div>
+                      <div className="space-y-2 pl-6">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Destination:</span>
+                          <div className="flex items-center gap-1">
+                            <Folder className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm font-mono">{folder}</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Est. Size:</span>
+                          <Badge variant="outline" className="text-green-600">
+                            ~{Math.min(file.size / 1024 / 1024, compressionSettings.maxSizeMB * 0.8).toFixed(1)} MB
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Compression:</span>
+                          <Badge variant={file.size > compressionSettings.maxSizeMB * 1024 * 1024 ? "default" : "secondary"}>
+                            {file.size > compressionSettings.maxSizeMB * 1024 * 1024 ? "Required" : "Optional"}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -369,10 +305,7 @@ export function ImageUploadField({
                       e.preventDefault();
                       e.stopPropagation();
                       reset();
-                      setCrop(undefined);
-                      setCompletedCrop(undefined);
-                      setImageLoaded(false);
-                      setPreviewUrl('');
+                      setImageDimensions(null);
                       if (!currentImageUrl) {
                         setShowUploader(true);
                       } else {
@@ -422,11 +355,6 @@ export function ImageUploadField({
             )}
           </CardContent>
 
-          {/* Hidden Canvas */}
-          <canvas
-            ref={canvasRef}
-            style={{ display: 'none' }}
-          />
         </Card>
       )}
     </div>

@@ -16,8 +16,9 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getSupportedCurrencies, type SupportedCurrency } from '@/lib/utils/currency';
-import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X, Upload, QrCode as QrCodeIcon } from 'lucide-react';
+import { Plus, ChefHat, Utensils, MoreVertical, Edit, Trash2, Clock, Calendar, Eye, Save, X, Upload, QrCode as QrCodeIcon, Search, Loader2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import CreateMenuDialog from '@/components/dashboard/create-menu-dialog';
@@ -58,6 +59,7 @@ function MenuManagementContent() {
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
   const [showDeleteCategoryConfirm, setShowDeleteCategoryConfirm] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -68,6 +70,12 @@ function MenuManagementContent() {
   });
 
   const supabase = createClient();
+
+  // Filter categories based on search query
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (category.description && category.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
 
 
@@ -634,14 +642,32 @@ function MenuManagementContent() {
         </Card>
       )}
 
-      {/* Categories */}
+      {/* Search Bar for Categories */}
+      {categories.length > 0 && (
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search categories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Badge variant="outline">
+            {filteredCategories.length} of {categories.length} categories
+          </Badge>
+        </div>
+      )}
+
+      {/* Categories Table */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{t('menuManagement.categories.title')}</CardTitle>
+              <CardTitle>{t('menuManagement.categories.title')} ({filteredCategories.length})</CardTitle>
               <CardDescription>
-                {t('menuManagement.categories.description')}
+                {searchQuery ? `Showing ${filteredCategories.length} of ${categories.length} categories` : t('menuManagement.categories.description')}
               </CardDescription>
             </div>
             <Button asChild>
@@ -653,81 +679,105 @@ function MenuManagementContent() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {categories.map((category, index) => (
-              <div
-                key={category.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-sm font-medium">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium">{category.name}</h3>
-                      <div className="flex items-center gap-1">
-                        {!category.is_active && (
-                          <Badge variant="secondary">{t('common.inactive')}</Badge>
-                        )}
-                        {category.is_featured && (
-                          <Badge variant="outline">Featured</Badge>
+          {filteredCategories.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-16">Icon</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead className="w-24">Items</TableHead>
+                  <TableHead className="w-24">Status</TableHead>
+                  <TableHead className="w-24">Created</TableHead>
+                  <TableHead className="w-40 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCategories.map((category, index) => (
+                  <TableRow key={category.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+                        <Utensils className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium flex items-center gap-2">
+                          {category.name}
+                          {category.is_featured && (
+                            <Badge variant="outline" className="text-xs">Featured</Badge>
+                          )}
+                        </div>
+                        {category.description && (
+                          <div className="text-sm text-muted-foreground line-clamp-1">
+                            {category.description}
+                          </div>
                         )}
                       </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {category.description || t('restaurant.basicInfo.noDescription')}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {category.item_count || 0} {t('menuManagement.categories.items')}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/dashboard/menu/categories/${category.id}/items`}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      {t('menuManagement.categories.viewItems')} ({category.item_count || 0})
-                    </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {category.item_count || 0}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={category.is_active ? "default" : "secondary"}>
+                        {category.is_active ? t('common.active') : t('common.inactive')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {category.created_at ? new Date(category.created_at).toLocaleDateString() : '—'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button asChild variant="outline" size="sm">
+                          <Link href={`/dashboard/menu/categories/${category.id}/items`}>
+                            <Eye className="h-4 w-4 mr-1" />
+                            View ({category.item_count || 0})
+                          </Link>
+                        </Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/dashboard/menu/categories/${category.id}/edit`}>
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Edit {category.name}</span>
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => confirmDeleteCategory(category)}
+                          disabled={deletingCategoryId === category.id}
+                        >
+                          {deletingCategoryId === category.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                          <span className="sr-only">Delete {category.name}</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  {searchQuery ? 'No categories match your search' : 'No categories in this menu'}
+                </p>
+                {searchQuery && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    Clear search
                   </Button>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link href={`/dashboard/menu/categories/${category.id}/edit`}>
-                      <Edit className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/menu/categories/${category.id}/items`}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          {t('menuManagement.categories.viewItems')}
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/menu/categories/${category.id}/edit`}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          {t('menuManagement.categories.editCategory')}
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        className="text-destructive"
-                        onClick={() => confirmDeleteCategory(category)}
-                        disabled={deletingCategoryId === category.id}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        {t('menuManagement.categories.deleteCategory')}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -68,3 +68,17 @@
     font-family: var(--font-geist-sans), sans-serif;
   }
 }
+
+/* Template-specific body styles */
+.template-layout {
+  min-height: 100vh;
+}
+
+.template-layout[data-template="urban"] {
+  background-color: #0a0a0a;
+}
+
+/* Ensure body inherits the background when urban template is active */
+body:has(.template-layout[data-template="urban"]) {
+  background-color: #0a0a0a;
+}

@@ -261,8 +261,42 @@ export class MenuShowcaseService {
    * Get display settings for a restaurant (with defaults)
    */
   private async getDisplaySettings(restaurantId: string): Promise<MenuDisplaySettings> {
-    // For now, return default settings
-    // In the future, this could be stored in a restaurant_settings table
+    try {
+      const { data, error } = await this.supabase
+        .from('restaurants')
+        .select('settings')
+        .eq('id', restaurantId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching restaurant settings:', error);
+        return this.getDefaultDisplaySettings();
+      }
+
+      // Extract display_settings from the settings JSONB column
+      const settings = data?.settings as any;
+      const displaySettings = settings?.display_settings;
+
+      // If display settings exist, merge with defaults to ensure all fields are present
+      if (displaySettings) {
+        return {
+          ...this.getDefaultDisplaySettings(),
+          ...displaySettings
+        };
+      }
+
+      // Return defaults if no display settings found
+      return this.getDefaultDisplaySettings();
+    } catch (error) {
+      console.error('Error loading display settings:', error);
+      return this.getDefaultDisplaySettings();
+    }
+  }
+
+  /**
+   * Get default display settings
+   */
+  private getDefaultDisplaySettings(): MenuDisplaySettings {
     return {
       template: 'classic',
       show_prices: true,
@@ -294,9 +328,42 @@ export class MenuShowcaseService {
     settings: Partial<MenuDisplaySettings>
   ): Promise<boolean> {
     try {
-      // This would update the restaurant_settings table
-      // For now, we'll just return true as a placeholder
-      console.log('Updating display settings for restaurant:', restaurantId, settings);
+      // First, get the current settings
+      const { data: currentData, error: fetchError } = await this.supabase
+        .from('restaurants')
+        .select('settings')
+        .eq('id', restaurantId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching current settings:', fetchError);
+        return false;
+      }
+
+      // Merge new display settings with existing settings
+      const currentSettings = (currentData?.settings as any) || {};
+      const updatedSettings = {
+        ...currentSettings,
+        display_settings: {
+          ...(currentSettings.display_settings || {}),
+          ...settings
+        }
+      };
+
+      // Update the settings in the database
+      const { error: updateError } = await this.supabase
+        .from('restaurants')
+        .update({ 
+          settings: updatedSettings,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', restaurantId);
+
+      if (updateError) {
+        console.error('Error updating display settings:', updateError);
+        return false;
+      }
+
       return true;
     } catch (error) {
       console.error('Error updating display settings:', error);
@@ -305,16 +372,34 @@ export class MenuShowcaseService {
   }
 
   /**
-   * Get available templates (single default template)
+   * Load display settings for a restaurant (public method for dashboard)
+   */
+  async loadDisplaySettings(restaurantId: string): Promise<MenuDisplaySettings> {
+    return this.getDisplaySettings(restaurantId);
+  }
+
+  /**
+   * Get available templates
    */
   getAvailableTemplates() {
     return [
       {
         id: 'default',
-        name: 'Default Template',
-        description: 'Elegant menu with rich Middle Eastern-inspired design',
+        name: 'Classic',
+        description: 'Sophisticated menu with Art Deco-inspired design - perfect for upscale dining',
         template: 'classic' as const,
-        preview: '/templates/default.jpg'
+        preview: '/templates/default.jpg',
+        gradient: 'from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40',
+        accentColor: 'purple'
+      },
+      {
+        id: 'urban',
+        name: 'Urban',
+        description: 'Bold and modern design - perfect for burgers, casual dining, and street food',
+        template: 'urban' as const,
+        preview: '/templates/minimal.jpg',
+        gradient: 'from-orange-100 to-red-100 dark:from-orange-900/40 dark:to-red-900/40',
+        accentColor: 'orange'
       }
     ];
   }

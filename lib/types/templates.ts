@@ -1,6 +1,6 @@
 // Template system types for menu showcase
 
-export type TemplateType = 'classic' | 'minimal'  // Traditional restaurant menu layout | Minimal layout with just restaurant name
+export type TemplateType = 'classic' | 'urban'  // Traditional restaurant menu layout | Modern urban/casual style
 
 // Removed ColorTheme - using single template styling
 
@@ -104,6 +104,17 @@ export const AVAILABLE_TEMPLATES: TemplateConfig[] = [
       { id: 'categories', name: 'Category Sections', description: 'Organized by menu categories', enabled: true },
       { id: 'prices', name: 'Price Display', description: 'Show item prices', enabled: true },
       { id: 'descriptions', name: 'Item Descriptions', description: 'Show detailed descriptions', enabled: true },
+    ]
+  },
+  {
+    id: 'urban',
+    name: 'Urban',
+    description: 'Bold and modern design for casual dining',
+    type: 'urban',
+    features: [
+      { id: 'contact', name: 'Contact Information', description: 'Display address, phone, and website', enabled: true },
+      { id: 'hours', name: 'Opening Hours', description: 'Show business hours', enabled: true },
+      { id: 'description', name: 'Restaurant Description', description: 'About your restaurant', enabled: true },
     ]
   }
 ];

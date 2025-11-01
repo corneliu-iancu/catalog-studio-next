@@ -1,6 +1,6 @@
 'use client';
 
-import { PublicMenuData } from '@/lib/types/templates';
+import { PublicMenuData, TemplateType } from '@/lib/types/templates';
 import { formatPrice, type SupportedCurrency } from '@/lib/utils/currency';
 import { ArrowLeft, ChefHat, AlertTriangle, Star, ImageIcon, Loader2, UtensilsCrossed, FileText, MapPin, Phone } from 'lucide-react';
 import { ItemImage } from './templates/classic-template';
@@ -13,19 +13,24 @@ interface ProductPageProps {
   item: PublicMenuData['menu']['categories'][0]['items'][0];
   restaurant: PublicMenuData['restaurant'];
   currency?: SupportedCurrency;
+  template?: TemplateType;
   onBack?: () => void;
 }
 
-// Hero Image component with dark theme styling
-function HeroImage({ imageUrl, itemName }: { 
+// Hero Image component with template-aware styling
+function HeroImage({ imageUrl, itemName, isUrban }: { 
   imageUrl?: string | null; 
   itemName: string;
+  isUrban?: boolean;
 }) {
   const { displayUrl, loading } = useDisplayImage(imageUrl || null);
   
+  const bgClass = isUrban ? 'bg-transparent' : 'bg-gray-800';
+  const borderClass = isUrban ? '' : 'border border-amber-400/20';
+  
   if (loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+      <div className={`w-full h-full flex items-center justify-center ${bgClass}`}>
         <Loader2 className="h-12 w-12 text-amber-400/50 animate-spin" />
       </div>
     );
@@ -33,7 +38,7 @@ function HeroImage({ imageUrl, itemName }: {
   
   if (!displayUrl) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+      <div className={`w-full h-full flex items-center justify-center ${bgClass}`}>
         <ImageIcon className="h-16 w-16 text-amber-400/30" />
       </div>
     );
@@ -43,13 +48,37 @@ function HeroImage({ imageUrl, itemName }: {
     <img 
       src={displayUrl} 
       alt={`${itemName} image`}
-      className="w-full h-full object-cover aspect-square border border-amber-400/20 rounded-2xl"
+      className={`w-full h-full object-cover aspect-square ${borderClass} rounded-2xl`}
     />
   );
 }
 
-export function ProductPage({ item, restaurant, currency = 'USD', onBack }: ProductPageProps) {
+export function ProductPage({ item, restaurant, currency = 'USD', template = 'classic', onBack }: ProductPageProps) {
   const router = useRouter();
+  
+  // Template-specific styling
+  const isUrban = template === 'urban';
+  
+  const colors = isUrban ? {
+    bg: 'bg-[#0D0D0D]',
+    text: 'text-amber-100',
+    accent: 'text-amber-500',
+    border: 'border-amber-600/30',
+    cardBg: 'bg-zinc-900/50',
+    cardBorder: 'border-amber-600/20',
+    accentBg: 'bg-amber-600/20',
+    icon: 'text-amber-500'
+  } : {
+    bg: 'bg-[#1A202C]',
+    text: 'text-white',
+    accent: 'text-amber-400',
+    border: 'border-amber-400/20',
+    cardBg: 'bg-gray-800/30',
+    cardBorder: 'border-amber-400/20',
+    accentBg: 'bg-amber-400/20',
+    icon: 'text-amber-400'
+  };
+  
   const getSpiceLevelIcon = (level?: string) => {
     if (!level) return null;
     const spiceCount = {
@@ -65,10 +94,10 @@ export function ProductPage({ item, restaurant, currency = 'USD', onBack }: Prod
   };
 
   return (
-    <TemplateWrapper className="classic-template bg-[#1A202C]">
-      <div className="min-h-screen">
+    <TemplateWrapper className="product-page">
+      <div className={`min-h-screen ${colors.bg}`}>
         {/* Minimalistic Header */}
-        <header className="py-6 px-4 md:px-8 border-b border-amber-400/20">
+        <header className={`py-6 px-4 md:px-8 border-b ${colors.border}`}>
           <div className="max-w-7xl mx-auto flex items-center justify-center relative">
             {/* Back button */}
             <button
@@ -76,11 +105,11 @@ export function ProductPage({ item, restaurant, currency = 'USD', onBack }: Prod
               className="absolute left-0 p-2 rounded-full hover:bg-gray-800/50 transition-colors"
               aria-label="Go back"
             >
-              <ArrowLeft className="w-5 h-5 text-amber-400" />
+              <ArrowLeft className={`w-5 h-5 ${colors.accent}`} />
             </button>
             
             {/* Centered menu text */}
-            <span className="text-xs text-gray-400 uppercase tracking-wider">
+            <span className={`text-xs text-gray-400 uppercase tracking-wider ${isUrban ? 'font-bold' : ''}`}>
               {restaurant.cuisine || 'Restaurant'} Menu
             </span>
           </div>
@@ -93,10 +122,11 @@ export function ProductPage({ item, restaurant, currency = 'USD', onBack }: Prod
               {item.image_url ? (
                 <div className="flex flex-col lg:flex-row lg:gap-12">
                   {/* Image Container - Square aspect ratio */}
-                  <div className="w-full lg:w-96 mx-auto lg:mx-0 aspect-square bg-gray-800 overflow-hidden flex-shrink-0 rounded-2xl">
+                  <div className={`w-full lg:w-96 mx-auto lg:mx-0 aspect-square ${isUrban ? 'bg-transparent' : 'bg-gray-800'} overflow-hidden flex-shrink-0 rounded-2xl`}>
                     <HeroImage 
                       imageUrl={item.image_url} 
                       itemName={item.name}
+                      isUrban={isUrban}
                     />
                   </div>
                   

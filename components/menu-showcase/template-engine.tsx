@@ -2,6 +2,7 @@
 
 import { PublicMenuData } from '@/lib/types/templates';
 import { ClassicTemplate } from './templates/classic-template';
+import { UrbanTemplate } from './templates/urban-template';
 import { Badge } from '../ui/badge';
 import { UtensilsCrossed, MapPin, Phone, Loader2, Store } from 'lucide-react';
 import { useDisplayImage } from '@/lib/utils/image-display';
@@ -19,6 +20,9 @@ export function TemplateEngine({ menuData, className }: TemplateEngineProps) {
   const renderTemplate = () => {
     switch (display_settings.template) {
       case 'classic':
+        return <ClassicTemplate menuData={menuData} />;
+      case 'urban':
+        return <UrbanTemplate menuData={menuData} />;
       default:
         return <ClassicTemplate menuData={menuData} />;
     }

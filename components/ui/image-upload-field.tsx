@@ -31,7 +31,7 @@ export function ImageUploadField({
   folder = 'menu-items',
   label = 'Item Image',
   description = 'Upload an image for this item',
-  maxFileSize = 10 * 1024 * 1024, // 10MB
+  maxFileSize = 15 * 1024 * 1024, // 10MB
   compressionSettings = {
     maxSizeMB: 3,
     maxWidthOrHeight: 2048,

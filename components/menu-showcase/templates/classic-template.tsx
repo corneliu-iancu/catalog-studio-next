@@ -211,8 +211,8 @@ export function ClassicTemplate({ menuData }: ClassicTemplateProps) {
   const [column1, column2] = balanceCategories();
 
   return (
-    <TemplateWrapper className="classic-template bg-[#1A202C]">
-      <div className="min-h-screen">
+    <TemplateWrapper className="classic-template">
+      <div className="min-h-screen bg-[#1A202C]">
         {/* Hero Section */}
         <section className="relative h-96 md:h-[500px] overflow-hidden">
           {logoUrl ? (

@@ -28,6 +28,9 @@ export default async function ItemPage({ params }: ProductPageProps) {
   console.log(`[ItemPage] Found item "${foundItem.name}" in menu "${menu.name}" category "${category.name}"`);
 
   const menuCurrency = (menu.currency as SupportedCurrency) || 'USD';
+  
+  // Load display settings to get the template
+  const displaySettings = await menuShowcaseService.loadDisplaySettings(restaurant.id);
 
   return (
     <AnalyticsProvider restaurantId={restaurant.id} menuId={menu.id}>
@@ -35,6 +38,7 @@ export default async function ItemPage({ params }: ProductPageProps) {
         item={foundItem}
         restaurant={restaurant}
         currency={menuCurrency}
+        template={displaySettings.template}
         // No onBack prop - we'll use browser navigation
       />
     </AnalyticsProvider>

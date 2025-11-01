@@ -64,6 +64,8 @@ export default {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
+        playfair: ["var(--font-playfair)", "serif"],
+        dancing: ["var(--font-dancing)", "cursive"],
       },
       keyframes: {
         "accordion-down": {

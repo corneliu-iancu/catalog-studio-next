@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Palette, Layout, Settings, Eye } from 'lucide-react';
+import { Palette, Layout, Settings, Eye, CheckCircle2, Sparkles } from 'lucide-react';
 import { MenuDisplaySettings } from '@/lib/types/templates';
 import { menuShowcaseService } from '@/lib/services/menu-showcase';
 
@@ -77,34 +77,59 @@ export function TemplateSelector({
           <div>
             <h3 className="text-lg font-semibold mb-4">Choose a Template</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {availableTemplates.map((template) => (
-                <Card 
-                  key={template.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    settings.template === template.template
-                      ? 'ring-2 ring-primary' 
-                      : ''
-                  }`}
-                  onClick={() => handleTemplateSelect(template.id)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-md mb-3 flex items-center justify-center">
-                      <span className="text-2xl">🎨</span>
-                    </div>
-                    <CardTitle className="text-base">{template.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      {template.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex gap-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {template.template}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {availableTemplates.map((template) => {
+                const isSelected = settings.template === template.template;
+                return (
+                  <Card 
+                    key={template.id}
+                    className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] relative ${
+                      isSelected
+                        ? 'ring-2 ring-primary shadow-md' 
+                        : 'hover:border-primary/50'
+                    }`}
+                    onClick={() => handleTemplateSelect(template.id)}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-3 right-3 z-10">
+                        <div className="bg-primary text-primary-foreground rounded-full p-1">
+                          <CheckCircle2 className="h-4 w-4" />
+                        </div>
+                      </div>
+                    )}
+                    <CardHeader className="pb-3">
+                      <div className={`aspect-video bg-gradient-to-br ${template.gradient || 'from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40'} rounded-md mb-3 flex items-center justify-center border ${
+                        template.accentColor === 'orange' 
+                          ? 'border-orange-200/50 dark:border-orange-800/50' 
+                          : 'border-purple-200/50 dark:border-purple-800/50'
+                      } relative overflow-hidden`}>
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
+                        <Palette className={`h-10 w-10 ${
+                          template.accentColor === 'orange'
+                            ? 'text-orange-600 dark:text-orange-400'
+                            : 'text-purple-600 dark:text-purple-400'
+                        } relative z-10`} />
+                      </div>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        {isSelected && <Sparkles className="h-4 w-4 text-primary" />}
+                        {template.name}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {template.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="flex gap-2">
+                        <Badge 
+                          variant={isSelected ? "default" : "secondary"} 
+                          className="text-xs"
+                        >
+                          {template.template}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </TabsContent>

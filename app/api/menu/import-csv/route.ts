@@ -22,13 +22,7 @@ export async function POST(request: NextRequest) {
     // Verify that the user owns the restaurant that contains this menu
     const { data: menuData, error: menuError } = await supabase
       .from('menus')
-      .select(`
-        id,
-        restaurants!inner (
-          id,
-          user_id
-        )
-      `)
+      .select('id, restaurant_id')
       .eq('id', menuId)
       .maybeSingle();
 
@@ -42,14 +36,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user owns the restaurant
-    const restaurant = menuData.restaurants?.[0];
-    if (!restaurant || restaurant.user_id !== user.id) {
+    const { data: restaurant, error: restaurantError } = await supabase
+      .from('restaurants')
+      .select('id, user_id')
+      .eq('id', menuData.restaurant_id)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (restaurantError || !restaurant) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     let createdCategories = 0;
     let createdItems = 0;
+    let linkedItems = 0;
     const errors: string[] = [];
+    const createdCategoryIds: string[] = [];
+    const createdProductIds: string[] = [];
+    const createdLinkIds: string[] = [];
 
     // Process each category and its items
     for (const categoryData of data.categories) {
@@ -91,25 +95,45 @@ export async function POST(request: NextRequest) {
           }
 
           categoryId = newCategory.id;
+          createdCategoryIds.push(categoryId);
           createdCategories++;
         }
 
-        // Process menu items for this category
-        for (const itemData of categoryData.items) {
+        // Process menu items for this category with proper sort order
+        for (let itemIndex = 0; itemIndex < categoryData.items.length; itemIndex++) {
+          const itemData = categoryData.items[itemIndex];
           try {
-            // Check if product already exists (by slug)
+            // Check if product already exists in this menu's categories
+            // This prevents global slug collisions while allowing menu-scoped products
             const { data: existingItem } = await supabase
               .from('products')
-              .select('id, name')
+              .select(`
+                id, 
+                name, 
+                price,
+                category_products!inner (
+                  category_id,
+                  categories!inner (
+                    menu_id
+                  )
+                )
+              `)
               .eq('slug', itemData.slug)
+              .eq('category_products.categories.menu_id', menuId)
               .maybeSingle();
 
             let productId: string;
 
             if (existingItem) {
-              // Use existing product
+              // Product exists in this menu - check if we should update or reuse
               productId = existingItem.id;
-              console.log(`Using existing product: ${existingItem.name}`);
+              
+              // Check if price differs - warn user
+              if (existingItem.price !== itemData.price) {
+                errors.push(`Warning: Item "${itemData.name}" already exists in this menu with different price ($${existingItem.price} vs $${itemData.price}). Using existing product.`);
+              }
+              
+              console.log(`Using existing product in menu: ${existingItem.name}`);
             } else {
               // Create new product
               const { data: newItem, error: itemError } = await supabase
@@ -139,6 +163,7 @@ export async function POST(request: NextRequest) {
               }
 
               productId = newItem.id;
+              createdProductIds.push(productId);
               createdItems++;
             }
 
@@ -151,18 +176,25 @@ export async function POST(request: NextRequest) {
               .maybeSingle();
 
             if (!existingLink) {
-              // Link the product to the category
-              const { error: linkError } = await supabase
+              // Link the product to the category with proper sort order
+              const { data: linkData, error: linkError } = await supabase
                 .from('category_products')
                 .insert({
                   category_id: categoryId,
                   product_id: productId,
-                  sort_order: 1 // Could be enhanced to maintain order from CSV
-                });
+                  sort_order: itemIndex + 1 // Maintain order from CSV (1-based)
+                })
+                .select('id')
+                .single();
 
               if (linkError) {
                 console.error('Error linking product to category:', linkError);
                 errors.push(`Failed to link item "${itemData.name}" to category "${categoryData.name}": ${linkError.message}`);
+              } else {
+                if (linkData?.id) {
+                  createdLinkIds.push(linkData.id);
+                }
+                linkedItems++;
               }
             }
 
@@ -178,12 +210,62 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Check if we had critical errors and should rollback
+    const criticalErrorThreshold = Math.ceil(data.totalItems * 0.3); // 30% failure rate
+    const shouldRollback = errors.length >= criticalErrorThreshold && (createdCategories > 0 || createdItems > 0);
+
+    if (shouldRollback) {
+      console.error('Critical errors detected, rolling back changes...');
+      
+      // Rollback in reverse order: links -> products -> categories
+      try {
+        if (createdLinkIds.length > 0) {
+          await supabase
+            .from('category_products')
+            .delete()
+            .in('id', createdLinkIds);
+        }
+        
+        if (createdProductIds.length > 0) {
+          await supabase
+            .from('products')
+            .delete()
+            .in('id', createdProductIds);
+        }
+        
+        if (createdCategoryIds.length > 0) {
+          await supabase
+            .from('categories')
+            .delete()
+            .in('id', createdCategoryIds);
+        }
+        
+        return NextResponse.json({ 
+          error: 'Import failed with too many errors and has been rolled back',
+          details: errors,
+          summary: {
+            totalErrors: errors.length,
+            totalItems: data.totalItems,
+            rollbackPerformed: true
+          }
+        }, { status: 400 });
+      } catch (rollbackError) {
+        console.error('Rollback failed:', rollbackError);
+        return NextResponse.json({ 
+          error: 'Import failed and rollback was unsuccessful. Manual cleanup may be required.',
+          details: errors,
+          rollbackError: rollbackError instanceof Error ? rollbackError.message : 'Unknown error'
+        }, { status: 500 });
+      }
+    }
+
     // Return results
     const result = {
       success: true,
       summary: {
         categoriesCreated: createdCategories,
         itemsCreated: createdItems,
+        itemsLinked: linkedItems,
         totalCategories: data.totalCategories,
         totalItems: data.totalItems,
         errors: errors.length > 0 ? errors : undefined

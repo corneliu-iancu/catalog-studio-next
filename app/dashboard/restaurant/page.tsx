@@ -10,8 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
-import { LocationPicker } from '@/components/ui/location-picker';
-import { LocationPreviewMap } from '@/components/ui/location-preview-map';
 import { useDisplayImage } from '@/lib/utils/image-display';
 import { 
   Store, 
@@ -84,7 +82,7 @@ function RestaurantProfileContent() {
     }
   }, [selectedRestaurant]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number | null) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -579,77 +577,98 @@ function RestaurantProfileContent() {
       </div>
 
       {/* Location Information - Full Width */}
-      {isEditing ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <MapPin className="mr-2 h-5 w-5" />
-              {t('restaurant.location.title')}
-            </CardTitle>
-            <CardDescription>
-              {t('restaurant.location.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <LocationPicker
-              value={{
-                address: formData.address,
-                latitude: formData.latitude,
-                longitude: formData.longitude,
-              }}
-              onChange={handleLocationChange}
-              label={t('restaurant.location.address')}
-              placeholder={t('restaurant.location.addressPlaceholder')}
-              disabled={isSaving}
-            />
-          </CardContent>
-        </Card>
-      ) : selectedRestaurant.address ? (
-        selectedRestaurant.latitude && selectedRestaurant.longitude ? (
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
-              <h2 className="text-xl font-semibold">{t('restaurant.location.title')}</h2>
-            </div>
-            <LocationPreviewMap
-              address={selectedRestaurant.address}
-              latitude={selectedRestaurant.latitude}
-              longitude={selectedRestaurant.longitude}
-              restaurantName={selectedRestaurant.name}
-            />
-          </div>
-        ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MapPin className="mr-2 h-5 w-5" />
-                  {t('restaurant.location.title')}
-                </CardTitle>
-                <CardDescription>
-                  {t('restaurant.location.description')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <MapPin className="mr-2 h-5 w-5" />
+            {t('restaurant.location.title')}
+          </CardTitle>
+          <CardDescription>
+            {t('restaurant.location.description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isEditing ? (
+            <>
+              <div>
+                <Label htmlFor="address">{t('restaurant.location.address')}</Label>
+                <Textarea
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder={t('restaurant.location.addressPlaceholder')}
+                  disabled={isSaving}
+                  rows={3}
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="latitude">Latitude (optional)</Label>
+                  <Input
+                    id="latitude"
+                    type="number"
+                    step="any"
+                    value={formData.latitude || ''}
+                    onChange={(e) => handleInputChange('latitude', e.target.value ? parseFloat(e.target.value) : null)}
+                    placeholder="e.g., 40.7128"
+                    disabled={isSaving}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="longitude">Longitude (optional)</Label>
+                  <Input
+                    id="longitude"
+                    type="number"
+                    step="any"
+                    value={formData.longitude || ''}
+                    onChange={(e) => handleInputChange('longitude', e.target.value ? parseFloat(e.target.value) : null)}
+                    placeholder="e.g., -74.0060"
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-4">
+              {selectedRestaurant.address && (
                 <div className="flex items-start space-x-4 p-4 rounded-lg bg-muted/30">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex-shrink-0">
+                    <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <Label className="text-sm font-semibold text-orange-700 dark:text-orange-300">
+                    <Label className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                       {t('restaurant.location.address')}
                     </Label>
-                    <p className="text-sm text-foreground font-medium mt-1">
-                      {selectedRestaurant?.address}
+                    <p className="text-sm text-foreground font-medium mt-1 whitespace-pre-wrap">
+                      {selectedRestaurant.address}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Enable location services in edit mode to show map (coordinates missing)
-                    </p>
+                    {selectedRestaurant.latitude && selectedRestaurant.longitude && (
+                      <div className="flex items-center space-x-4 mt-2">
+                        <p className="text-xs text-muted-foreground">
+                          Coordinates: {selectedRestaurant.latitude.toFixed(6)}, {selectedRestaurant.longitude.toFixed(6)}
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const url = `https://www.google.com/maps/search/?api=1&query=${selectedRestaurant.latitude},${selectedRestaurant.longitude}`;
+                            window.open(url, '_blank');
+                          }}
+                          className="h-6 px-2 text-xs"
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          View on Maps
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-        )
-      ) : null}
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

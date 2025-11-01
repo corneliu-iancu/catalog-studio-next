@@ -224,7 +224,8 @@
       "menuDeleted": "Meniul a fost șters cu succes",
       "menuDeleteError": "Eroare la ștergerea meniului",
       "categoryDeleted": "Categoria a fost ștearsă cu succes",
-      "categoryDeleteError": "Eroare la ștergerea categoriei"
+      "categoryDeleteError": "Eroare la ștergerea categoriei",
+      "csvImported": "Importul CSV s-a finalizat cu succes!"
     },
     "loading": "Se încarcă...",
     "noMenuSelected": "Niciun Meniu Selectat",

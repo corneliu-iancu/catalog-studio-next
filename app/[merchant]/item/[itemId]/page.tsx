@@ -14,36 +14,26 @@ interface ProductPageProps {
 export default async function ItemPage({ params }: ProductPageProps) {
   const { merchant, itemId } = await params;
 
-  // Fetch restaurant menu data
-  const menuData = await menuShowcaseService.getPublicMenuData(merchant);
+  // Search for the item across ALL active menus in the restaurant
+  const result = await menuShowcaseService.findItemInRestaurant(merchant, itemId);
 
-  // If no restaurant found, show 404
-  if (!menuData) {
+  // If no item found, show 404
+  if (!result) {
+    console.error(`[ItemPage] Item not found: ${itemId} in restaurant: ${merchant}`);
     notFound();
   }
 
-  // Find the specific item across all categories
-  let foundItem = null;
-  for (const category of menuData.menu.categories) {
-    const item = category.items.find(item => item.id === itemId);
-    if (item) {
-      foundItem = item;
-      break;
-    }
-  }
+  const { item: foundItem, menu, category, restaurant } = result;
+  
+  console.log(`[ItemPage] Found item "${foundItem.name}" in menu "${menu.name}" category "${category.name}"`);
 
-  // If item not found, show 404
-  if (!foundItem) {
-    notFound();
-  }
-
-  const menuCurrency = (menuData.menu.currency as SupportedCurrency) || 'USD';
+  const menuCurrency = (menu.currency as SupportedCurrency) || 'USD';
 
   return (
-    <AnalyticsProvider restaurantId={menuData.restaurant.id} menuId={menuData.menu.id}>
+    <AnalyticsProvider restaurantId={restaurant.id} menuId={menu.id}>
       <ProductPage
         item={foundItem}
-        restaurant={menuData.restaurant}
+        restaurant={restaurant}
         currency={menuCurrency}
         // No onBack prop - we'll use browser navigation
       />
@@ -54,38 +44,23 @@ export default async function ItemPage({ params }: ProductPageProps) {
 export async function generateMetadata({ params }: ProductPageProps) {
   const { merchant, itemId } = await params;
   
-  // Fetch the actual restaurant and menu data
-  const menuData = await menuShowcaseService.getPublicMenuData(merchant);
+  // Search for the item across all menus
+  const result = await menuShowcaseService.findItemInRestaurant(merchant, itemId);
   
-  if (!menuData) {
+  if (!result) {
     return {
       title: 'Menu Item Not Found',
       description: 'The requested menu item could not be found.',
     };
   }
 
-  // Find the specific item across all categories
-  let foundItem = null;
-  for (const category of menuData.menu.categories) {
-    const item = category.items.find(item => item.id === itemId);
-    if (item) {
-      foundItem = item;
-      break;
-    }
-  }
-
-  if (!foundItem) {
-    return {
-      title: 'Menu Item Not Found',
-      description: 'The requested menu item could not be found.',
-    };
-  }
+  const { item: foundItem, restaurant } = result;
 
   // Use actual item name and restaurant name
-  const title = `${foundItem.name} - ${menuData.restaurant.name}`;
+  const title = `${foundItem.name} - ${restaurant.name}`;
   const description = foundItem.description 
-    ? `${foundItem.description} Available at ${menuData.restaurant.name}.`
-    : `${foundItem.name} available at ${menuData.restaurant.name}. View details, ingredients, and pricing.`;
+    ? `${foundItem.description} Available at ${restaurant.name}.`
+    : `${foundItem.name} available at ${restaurant.name}. View details, ingredients, and pricing.`;
   
   return {
     title,

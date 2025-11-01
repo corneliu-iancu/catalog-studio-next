@@ -105,6 +105,7 @@ export class CsvImportService {
 
   /**
    * Parse a CSV line handling quoted values and commas
+   * Preserves whitespace within quoted values
    */
   private static parseCSVLine(line: string): string[] {
     const result: string[] = [];
@@ -124,8 +125,8 @@ export class CsvImportService {
           inQuotes = !inQuotes;
         }
       } else if (char === ',' && !inQuotes) {
-        // End of field
-        result.push(current.trim());
+        // End of field - only trim if not quoted
+        result.push(current);
         current = '';
       } else {
         current += char;
@@ -133,9 +134,15 @@ export class CsvImportService {
     }
     
     // Add the last field
-    result.push(current.trim());
+    result.push(current);
     
-    return result;
+    // Trim values that weren't quoted (only trim outer quotes and whitespace)
+    return result.map(value => {
+      // Remove leading/trailing whitespace outside quotes
+      const trimmed = value.trim();
+      // If the value is wrapped in quotes from the original field, it's already unquoted
+      return trimmed;
+    });
   }
 
   /**
@@ -209,18 +216,59 @@ export class CsvImportService {
       }
     }
 
+    // Validate spice level
+    if (data.spice_level) {
+      const spiceLevel = data.spice_level as string;
+      if (spiceLevel !== '' && !VALID_SPICE_LEVELS.includes(spiceLevel as any)) {
+        errors.push({
+          row: rowIndex,
+          field: 'spice_level',
+          message: `Invalid spice level: "${spiceLevel}". Valid options: ${VALID_SPICE_LEVELS.join(', ')}`,
+          value: spiceLevel
+        });
+      }
+    }
+
     // Validate price vs discount_price
     if (data.discount_price && data.discount_price !== '') {
       const price = parseFloat(data.price);
       const discountPrice = parseFloat(data.discount_price);
       
       if (discountPrice >= price) {
-        warnings.push(`Row ${rowIndex}: Discount price (${discountPrice}) should be less than regular price (${price})`);
+        warnings.push(`Row ${rowIndex}: Discount price ($${discountPrice}) should be less than regular price ($${price}) for "${data.item_name}"`);
+      }
+      
+      if (discountPrice <= 0) {
+        errors.push({
+          row: rowIndex,
+          field: 'discount_price',
+          message: 'Discount price must be greater than 0',
+          value: data.discount_price
+        });
       }
     }
 
-    // Validate sort_order uniqueness (will be checked at category level later)
-    
+    // Validate price is positive
+    const price = parseFloat(data.price);
+    if (price <= 0) {
+      errors.push({
+        row: rowIndex,
+        field: 'price',
+        message: 'Price must be greater than 0',
+        value: data.price
+      });
+    }
+
+    // Validate description length
+    if (data.description.length < 10) {
+      warnings.push(`Row ${rowIndex}: Description for "${data.item_name}" is very short (${data.description.length} chars). Consider adding more details.`);
+    }
+
+    // Validate category name consistency
+    if (data.category_name.trim() !== data.category_name) {
+      warnings.push(`Row ${rowIndex}: Category name has leading/trailing whitespace. This will be trimmed.`);
+    }
+
     return { errors, warnings };
   }
 
@@ -360,5 +408,43 @@ export class CsvImportService {
     ];
     
     return [headers.join(','), ...sampleRows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
+  }
+
+  /**
+   * Get validation rules and help text for users
+   */
+  static getValidationInfo(): {
+    requiredFields: string[];
+    optionalFields: string[];
+    validAllergens: readonly string[];
+    validSpiceLevels: readonly string[];
+    notes: string[];
+  } {
+    return {
+      requiredFields: ['category_name', 'item_name', 'description', 'price'],
+      optionalFields: [
+        'long_description',
+        'discount_price',
+        'ingredients',
+        'allergens',
+        'spice_level',
+        'preparation_time',
+        'serving_size',
+        'is_featured',
+        'category_description',
+        'sort_order'
+      ],
+      validAllergens: VALID_ALLERGENS,
+      validSpiceLevels: VALID_SPICE_LEVELS,
+      notes: [
+        'Prices must be positive decimal numbers (e.g., 15.50)',
+        'Discount price must be less than regular price',
+        'Allergens should be comma-separated from the valid list',
+        'Spice level must be one of: mild, medium, hot, very-hot',
+        'is_featured accepts: true, false, 1, 0',
+        'Items will be ordered by their appearance in the CSV within each category',
+        'Categories with the same name will be merged together'
+      ]
+    };
   }
 }

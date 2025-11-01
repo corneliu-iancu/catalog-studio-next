@@ -69,7 +69,6 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setIsLoading(true);
-      console.log(`Fetching items for category: ${categoryId}, forceRefresh: ${forceRefresh}`);
 
       // TODO [refactor]: Replace direct supabase queries with server actions for category-product fetching.
       // Plan:

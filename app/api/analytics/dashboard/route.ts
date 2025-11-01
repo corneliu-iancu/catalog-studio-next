@@ -47,8 +47,6 @@ export async function GET(request: NextRequest) {
 
     // If no aggregated data exists, calculate from raw events
     if (!dailyStats || dailyStats.length === 0) {
-      console.log('No aggregated data found, calculating from raw events');
-      
       // Get raw analytics events
       const { data: rawEvents, error: rawError } = await supabase
         .from('menu_analytics')
@@ -63,12 +61,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 });
       }
 
-      console.log(`Found ${rawEvents?.length || 0} raw events for restaurant ${restaurantId}`);
-      if (rawEvents && rawEvents.length > 0) {
-        console.log('Sample raw events:', rawEvents.slice(0, 3));
-      }
-
-      // Group by date and calculate daily metrics
       const dailyGroups = rawEvents?.reduce((acc: any, event: any) => {
         const date = event.timestamp.split('T')[0];
         if (!acc[date]) {
@@ -100,8 +92,6 @@ export async function GET(request: NextRequest) {
         bounceRate: 0, // Can't calculate bounce rate from raw data easily
       }));
 
-      console.log('Calculated daily groups:', dailyGroups);
-      console.log('Transformed traffic data:', trafficData);
     } else {
       // Use aggregated data
       trafficData = dailyStats.map(stat => ({
@@ -139,9 +129,6 @@ export async function GET(request: NextRequest) {
       percentChange,
       totalUniqueVisitors,
     };
-
-    console.log('Final calculated metrics:', metrics);
-    console.log('Traffic data length:', trafficData.length);
 
     return NextResponse.json({
       data: trafficData,

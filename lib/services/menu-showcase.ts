@@ -79,8 +79,6 @@ export class MenuShowcaseService {
         return null;
       }
 
-      console.log(`Found menu: "${menuData.name}" (${menuData.id}) for restaurant "${restaurant.name}"`);
-
       // Now fetch categories and items for this menu
       const { data: categoriesData, error: categoriesError } = await this.supabase
         .from('categories')
@@ -126,11 +124,8 @@ export class MenuShowcaseService {
       }
 
       // Transform the data structure
-      console.log('Raw categories data:', JSON.stringify(categoriesData, null, 2));
-      
       const categories = (categoriesData || [])
         .map(category => {
-          console.log(`Processing category: ${category.name}`);
           
           const items = (category.category_products || [])
             .filter(cp => {
@@ -163,8 +158,6 @@ export class MenuShowcaseService {
             })
             .sort((a, b) => a.sort_order - b.sort_order);
             
-          console.log(`Items for ${category.name}:`, items);
-          
           return {
             id: category.id,
             name: category.name,
@@ -195,6 +188,71 @@ export class MenuShowcaseService {
 
     } catch (error) {
       console.error('Error fetching public menu data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Find a specific item across all active menus for a restaurant
+   * @param restaurantSlug - The restaurant slug
+   * @param itemId - The item/product ID to find
+   */
+  async findItemInRestaurant(restaurantSlug: string, itemId: string): Promise<{
+    item: any;
+    menu: any;
+    category: any;
+    restaurant: any;
+  } | null> {
+    try {
+      // Fetch restaurant data
+      const { data: restaurant, error: restaurantError } = await this.supabase
+        .from('restaurants')
+        .select('id, name, slug, description, logo_url, cuisine, address, phone, website, hours')
+        .eq('slug', restaurantSlug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (restaurantError || !restaurant) {
+        console.error('Restaurant not found or error:', restaurantError);
+        return null;
+      }
+
+      // Fetch all active menus for this restaurant
+      const { data: menus, error: menusError } = await this.supabase
+        .from('menus')
+        .select('id, name, slug, description, currency')
+        .eq('restaurant_id', restaurant.id)
+        .eq('is_active', true);
+
+      if (menusError || !menus || menus.length === 0) {
+        console.error('No active menus found:', menusError);
+        return null;
+      }
+
+      // Search for the item across all menus
+      for (const menu of menus) {
+        const menuData = await this.getPublicMenuData(restaurantSlug, menu.slug);
+        
+        if (!menuData) continue;
+
+        // Search through categories for the item
+        for (const category of menuData.menu.categories) {
+          const item = category.items.find(item => item.id === itemId);
+          if (item) {
+            return {
+              item,
+              menu: menuData.menu,
+              category,
+              restaurant: menuData.restaurant
+            };
+          }
+        }
+      }
+
+      console.log(`Item ${itemId} not found in any menu for restaurant ${restaurantSlug}`);
+      return null;
+    } catch (error) {
+      console.error('Error finding item in restaurant:', error);
       return null;
     }
   }

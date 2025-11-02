@@ -401,10 +401,10 @@
       },
       "product": {
         "title": "Produs",
-        "plans": "Planuri",
-        "getStarted": "Începe",
-        "liveDemo": "Demo Live",
-        "dashboard": "Panou"
+        "plans": "Prețuri & Abonamente",
+        "getStarted": "Înregistrează-te",
+        "demoMenu": "Meniu Demo",
+        "dashboard": "Administrare cont"
       },
       "company": {
         "title": "Companie",
@@ -737,5 +737,376 @@
       "startButton": "Începe perioada gratuită",
       "plansButton": "Vezi Prețurile"
     }
+  },
+  "faq": {
+    "meta": {
+      "title": "Întrebări frecvente - FAQ",
+      "description": "Găsește răspunsuri la întrebări comune despre Catalog Studio, funcțiile noastre, prețuri și suport."
+    },
+    "hero": {
+      "badge": "Centru de Ajutor",
+      "title": "Întrebări frecvente",
+      "subtitle": "Tot ce trebuie să știi despre Catalog Studio. Nu găsești ce cauți? Contactează echipa noastră de suport."
+    },
+    "stats": {
+      "businessHours": "Program (Luni-Vineri) · Extins pentru Premium",
+      "responseTime": "Timp mediu de răspuns"
+    },
+    "categories": {
+      "general": {
+        "title": "Întrebări generale",
+        "questions": {
+          "whatIs": {
+            "question": "Ce este Catalog Studio?",
+            "answer": "Catalog Studio este o platformă modernă de meniuri digitale concepută pentru restaurante. Îți permite să creezi, să gestionezi și să distribui meniuri online frumoase clienților tăi. Clienții pot vizualiza meniul scanând un cod QR sau accesând URL-ul unic al restaurantului - nu este necesară descărcarea unei aplicații."
+          },
+          "howWorks": {
+            "question": "Cum funcționează Catalog Studio?",
+            "answer": "Este simplu! Înregistrează-te, creează profilul restaurantului, adaugă produsele din meniu cu fotografii și descrieri, personalizează aspectul meniului și distribuie-l clienților prin cod QR sau URL. Actualizările pe care le faci se reflectă instant în meniul live."
+          },
+          "whoFor": {
+            "question": "Pentru cine este Catalog Studio?",
+            "answer": "Catalog Studio este perfect pentru orice afacere din industria alimentară: restaurante, cafenele, food truck-uri, baruri, brutării și multe altele. Fie că ești un restaurant de familie mic sau gestionezi multiple locații, avem un plan potrivit pentru nevoile tale."
+          },
+          "languages": {
+            "question": "Ce limbi sunt suportate?",
+            "answer": "Catalog Studio suportă mai multe limbi, inclusiv engleza și româna. Poți crea meniuri în diferite limbi pentru a servi clienți internaționali, iar interfața platformei este, de asemenea, disponibilă în mai multe limbi."
+          }
+        }
+      },
+      "pricing": {
+        "title": "Prețuri și Facturare",
+        "questions": {
+          "freeTrial": {
+            "question": "Există un plan gratuit?",
+            "answer": "Da! Oferim un plan gratuit care include 1 restaurant/meniu, până la 20 de produse, 2 șabloane și funcții de bază. Este perfect pentru restaurante mici sau pentru a testa platforma. Poți face upgrade oricând pe măsură ce nevoile tale cresc."
+          },
+          "paymentMethods": {
+            "question": "Ce metode de plată acceptați?",
+            "answer": "Acceptăm toate cardurile majore de credit (Visa, Mastercard, American Express) și procesăm plățile securizat prin Stripe. Oferim opțiuni de facturare lunară și anuală, cu economii pentru planurile anuale."
+          },
+          "cancelAnytime": {
+            "question": "Pot anula abonamentul oricând?",
+            "answer": "Absolut! Nu există contracte pe termen lung. Poți anula abonamentul oricând din setările contului. Dacă anulezi, vei avea acces la funcțiile plătite până la sfârșitul perioadei de facturare."
+          },
+          "refunds": {
+            "question": "Care este politica de rambursare?",
+            "answer": "Oferim o garanție de returnare a banilor de 14 zile pentru toate planurile plătite. Dacă nu ești mulțumit de Catalog Studio din orice motiv, contactează-ne în termen de 14 zile de la achiziție pentru o rambursare completă, fără întrebări."
+          }
+        }
+      },
+      "features": {
+        "title": "Funcții și Funcționalități",
+        "questions": {
+          "updateMenu": {
+            "question": "Pot actualiza meniul oricând?",
+            "answer": "Da! Unul dintre avantajele cheie ale Catalog Studio este actualizarea instantanee. Poți adăuga, edita sau elimina produse din meniu, schimba prețuri, actualiza descrieri și încărca fotografii noi oricând. Modificările se reflectă imediat în meniul live."
+          },
+          "qrCode": {
+            "question": "Cum funcționează codurile QR?",
+            "answer": "Generăm un cod QR unic pentru meniul restaurantului tău. Poți descărca și imprima acest cod QR pentru a-l plasa pe mese, la intrare sau pe materiale promoționale. Când clienții îl scanează cu camera telefonului, sunt direcționați instant către meniul tău."
+          },
+          "multipleRestaurants": {
+            "question": "Pot gestiona mai multe restaurante?",
+            "answer": "Da! În funcție de planul tău, poți gestiona mai multe restaurante dintr-un singur cont. Planul Basic include până la 3 restaurante, iar planul Premium oferă restaurante nelimitate - perfect pentru grupuri sau lanțuri de restaurante."
+          },
+          "customDomain": {
+            "question": "Pot folosi propriul meu nume de domeniu?",
+            "answer": "Da! Planurile Basic și Premium includ suport pentru domeniu personalizat. Poți conecta propriul tău domeniu (ex: menu.restaurantultau.ro) la meniul tău Catalog Studio pentru o experiență mai profesională și în concordanță cu brandul."
+          }
+        }
+      },
+      "technical": {
+        "title": "Întrebări tehnice",
+        "questions": {
+          "needApp": {
+            "question": "Clienții trebuie să descarce o aplicație?",
+            "answer": "Nu! Aceasta este una dintre cele mai bune caracteristici ale Catalog Studio. Meniul tău digital este o aplicație web accesibilă prin orice browser web. Clienții scanează pur și simplu codul QR sau accesează URL-ul tău - nu sunt necesare descărcări sau instalări."
+          },
+          "templates": {
+            "question": "Pot personaliza aspectul meniului meu?",
+            "answer": "Absolut! Oferim șabloane proiectate profesional pe care le poți personaliza cu culorile brandului tău, fonturi și logo. Numărul de șabloane disponibile depinde de planul tău, abonații Premium având acces la toate cele 25+ șabloane și opțiuni de teme personalizate."
+          },
+          "imageUpload": {
+            "question": "Ce calitate de imagini pot încărca?",
+            "answer": "Calitatea imaginilor variază în funcție de plan. Planul Gratuit suportă imagini 720p, planul Basic suportă imagini HD 1080p, iar planul Premium suportă imagini Ultra HD 4K. Optimizăm automat imaginile pentru încărcare rapidă menținând în același timp calitatea."
+          },
+          "dataBackup": {
+            "question": "Sunt datele mele salvate și securizate?",
+            "answer": "Da! Folosim securitate de nivel enterprise și backup-uri automate pentru a-ți proteja datele. Toate informațiile sunt stocate securizat cu criptare și efectuăm backup-uri regulate. De asemenea, ai acces oricând la exporturile datelor tale."
+          }
+        }
+      },
+      "support": {
+        "title": "Suport și Ajutor",
+        "questions": {
+          "getHelp": {
+            "question": "Cum pot obține ajutor dacă am probleme?",
+            "answer": "Oferim mai multe canale de suport: suport prin email pentru toate planurile (răspundem de obicei în 2-4 ore în timpul programului), suport prioritar pentru clienții Basic și Premium, documentație completă, tutoriale video și ne poți contacta oricând prin pagina de contact."
+          },
+          "trainingAvailable": {
+            "question": "Este disponibilă instruirea?",
+            "answer": "Da! Oferim documentație extinsă și tutoriale video pentru a te ajuta să începi. Abonații planului Premium pot programa și sesiuni de instruire personalizate și demo-uri. Platforma noastră este concepută să fie intuitivă, astfel încât majoritatea utilizatorilor pot începe în câteva minute."
+          },
+          "setupHelp": {
+            "question": "Mă puteți ajuta să configurez meniul?",
+            "answer": "Desigur! Deși platforma noastră este concepută să fie ușor de folosit, suntem bucuroși să te ajutăm. Contactează echipa noastră de suport și te putem ghida prin procesul de configurare. Clienții Premium pot programa o sesiune personalizată de onboarding."
+          },
+          "responseTime": {
+            "question": "Cât de repede răspundeți la solicitările de suport?",
+            "answer": "De obicei, răspundem la toate solicitările de suport în 2-4 ore în timpul programului (Luni-Vineri, 9:00-18:00 EET). Clienții planurilor Basic și Premium primesc suport prioritar cu timpi de răspuns și mai rapizi."
+          }
+        }
+      }
+    },
+    "stillQuestions": {
+      "title": "Mai ai întrebări?",
+      "subtitle": "Nu găsești răspunsul pe care îl cauți? Echipa noastră de suport este aici să te ajute.",
+      "contactButton": "Contactează Suportul",
+      "tryButton": "Încearcă gratuit"
+    },
+    "cta": {
+      "badge": "Gata să începi?",
+      "title": "Creează meniul tău digital astăzi",
+      "subtitle": "Alătură-te sutelor de restaurante care creează meniuri frumoase cu Catalog Studio",
+      "startButton": "Începe perioada gratuită",
+      "plansButton": "Vezi Planurile",
+      "trial": "Fără card necesar · Garanție de returnare a banilor 14 zile"
+    }
+  },
+  "terms": {
+    "meta": {
+      "title": "Termeni și Condiții",
+      "description": "Termenii și condițiile de utilizare a serviciilor Catalog Studio."
+    },
+    "title": "Termeni și Condiții",
+    "lastUpdated": "Ultima actualizare: {date}",
+    "tableOfContents": "Pe această pagină",
+    "introduction": "Acești Termeni și Condiții reglementează utilizarea {appName} și furnizează informații despre serviciul {appName}. Prin utilizarea serviciului nostru, sunteți de acord cu acești termeni.",
+    "sections": {
+      "acceptance": {
+        "title": "1. Acceptarea Termenilor",
+        "content1": "Prin accesarea și utilizarea Catalog Studio, acceptați și sunteți de acord să fiți legat de acești Termeni și Condiții și de toate legile și reglementările aplicabile. Dacă nu sunteți de acord cu oricare dintre acești termeni, vă este interzis să utilizați sau să accesați acest site.",
+        "content2": "Utilizarea continuă a Serviciului va constitui acceptarea dvs. a oricăror modificări ale acestor termeni."
+      },
+      "definitions": {
+        "title": "2. Definiții",
+        "intro": "În sensul acestor Termeni:",
+        "service": {
+          "term": "Serviciu",
+          "definition": "se referă la platforma de meniuri digitale Catalog Studio și toate funcțiile, aplicațiile și serviciile asociate."
+        },
+        "user": {
+          "term": "Utilizator",
+          "definition": "se referă la orice persoană fizică sau juridică care creează un cont și utilizează Serviciul nostru."
+        },
+        "content": {
+          "term": "Conținut Utilizator",
+          "definition": "se referă la toate textele, imaginile, datele și alte materiale pe care le încărcați sau le trimiteți în Serviciu."
+        },
+        "account": {
+          "term": "Cont",
+          "definition": "se referă la contul unic creat pentru dvs. pentru a accesa Serviciul nostru."
+        }
+      },
+      "account": {
+        "title": "3. Înregistrarea și Securitatea Contului",
+        "content1": "Pentru a utiliza anumite funcții ale Serviciului, trebuie să vă înregistrați pentru un cont. Sunteți de acord să furnizați informații exacte, actuale și complete în timpul procesului de înregistrare și să actualizați astfel de informații pentru a le menține exacte, actuale și complete.",
+        "content2": "Sunteți responsabil pentru protejarea parolei contului dvs. și pentru orice activități sau acțiuni efectuate sub contul dvs. Trebuie să ne notificați imediat despre orice acces neautorizat la sau utilizare a contului dvs.",
+        "content3": "Ne rezervăm dreptul de a suspenda sau înceta contul dvs. dacă orice informație furnizată se dovedește a fi inexactă, falsă sau înșelătoare."
+      },
+      "subscription": {
+        "title": "4. Abonament și Plăți",
+        "content1": "Anumite funcții ale Serviciului necesită un abonament plătit. Prin abonarea la un plan plătit, sunteți de acord să plătiți taxele specificate pentru acel plan. Toate taxele sunt exclusive de taxele aplicabile, cu excepția cazului în care se prevede altfel.",
+        "content2": "Abonamentele se reînnoiesc automat la sfârșitul fiecărui ciclu de facturare, cu excepția cazului în care sunt anulate înainte de data de reînnoire. Puteți anula abonamentul oricând prin setările contului dvs.",
+        "content3": "Oferim o garanție de returnare a banilor de 14 zile pentru toate planurile plătite. Cererile de rambursare trebuie făcute în termen de 14 zile de la achiziția inițială."
+      },
+      "usage": {
+        "title": "5. Politica de Utilizare Acceptabilă",
+        "intro": "Sunteți de acord să nu utilizați Serviciul pentru a:",
+        "rule1": "Încălca orice legi sau reglementări aplicabile",
+        "rule2": "Încălca drepturile de proprietate intelectuală ale altora",
+        "rule3": "Încărca sau distribui viruși, malware sau orice alt cod rău intenționat",
+        "rule4": "Desfășura orice activitate care ar putea dăuna, dezactiva sau deteriora Serviciul",
+        "rule5": "Încerca să obțineți acces neautorizat la orice parte a Serviciului sau la alte conturi"
+      },
+      "content": {
+        "title": "6. Conținutul Utilizatorului și Proprietatea",
+        "content1": "Păstrați toate drepturile asupra conținutului pe care îl încărcați în Serviciu, inclusiv elementele din meniu, imaginile, descrierile și informațiile despre restaurant. Prin încărcarea conținutului, ne acordați o licență de a utiliza, stoca și afișa conținutul dvs. exclusiv în scopul furnizării Serviciului către dvs.",
+        "content2": "Declarați și garantați că aveți toate drepturile necesare asupra conținutului pe care îl încărcați și că conținutul dvs. nu încalcă drepturile niciunei terțe părți sau legile aplicabile.",
+        "content3": "Ne rezervăm dreptul de a elimina orice conținut care încalcă acești Termeni sau este în alt mod contestabil, la discreția noastră exclusivă."
+      },
+      "intellectual": {
+        "title": "7. Drepturi de Proprietate Intelectuală",
+        "content1": "Serviciul și conținutul său original (cu excepția Conținutului Utilizatorului), funcțiile și funcționalitatea sunt deținute de Catalog Studio și sunt protejate de legile internaționale privind drepturile de autor, mărcile comerciale, brevetele, secretele comerciale și alte legi privind proprietatea intelectuală.",
+        "content2": "Nu puteți copia, modifica, crea lucrări derivate, afișa public, executa public, republica, descărca, stoca sau transmite niciun material de pe Serviciul nostru, cu excepția cazului în care este permis în general și în mod obișnuit prin Serviciu pentru utilizarea dvs. personală, necomercială."
+      },
+      "termination": {
+        "title": "8. Încetare",
+        "content1": "Putem înceta sau suspenda contul dvs. și accesul la Serviciu imediat, fără preaviz sau răspundere, pentru orice motiv, inclusiv dacă încălcați acești Termeni.",
+        "content2": "La încetare, dreptul dvs. de a utiliza Serviciul va înceta imediat. Toate prevederile acestor Termeni care prin natura lor ar trebui să supraviețuiască încetării vor supraviețui, inclusiv prevederile privind proprietatea, renunțările la garanții și limitările de răspundere."
+      },
+      "disclaimers": {
+        "title": "9. Renunțări și Garanții",
+        "content1": "Serviciul este furnizat \"ca atare\" și \"după disponibilitate\" fără garanții de niciun fel, fie exprese, fie implicite.",
+        "content2": "Nu garantăm că Serviciul va fi neîntrerupt, securizat sau fără erori, că defectele vor fi corectate sau că Serviciul sau serverul care îl face disponibil sunt lipsite de viruși sau alte componente dăunătoare."
+      },
+      "limitation": {
+        "title": "10. Limitarea Răspunderii",
+        "content1": "În măsura maximă permisă de legea aplicabilă, Catalog Studio nu va fi responsabil pentru niciun fel de daune indirecte, incidentale, speciale, consecvente sau punitive, sau pentru orice pierdere de profituri sau venituri, fie directe sau indirecte, sau pentru orice pierdere de date, utilizare, goodwill sau alte pierderi intangibile.",
+        "content2": "Răspunderea noastră totală față de dvs. pentru toate revendicările care decurg din sau sunt legate de Serviciu nu va depăși suma pe care ați plătit-o către noi în cele douăsprezece (12) luni anterioare revendicării."
+      },
+      "changes": {
+        "title": "11. Modificări ale Termenilor",
+        "content1": "Ne rezervăm dreptul de a modifica acești Termeni în orice moment. Vom notifica utilizatorii despre orice modificări materiale prin postarea noilor Termeni pe această pagină și actualizarea datei \"Ultima actualizare\".",
+        "content2": "Utilizarea continuă a Serviciului după orice astfel de modificări constituie acceptarea dvs. a noilor Termeni."
+      },
+      "contact": {
+        "title": "12. Informații de Contact",
+        "content": "Dacă aveți întrebări despre acești Termeni și Condiții, vă rugăm să ne contactați:",
+        "email": "Email:"
+      }
+    },
+    "alsoSee": "Vezi și",
+    "privacyPolicy": "Politica de Confidențialitate"
+  },
+  "privacy": {
+    "meta": {
+      "title": "Politica de Confidențialitate",
+      "description": "Cum colectăm, utilizăm și protejăm informațiile tale personale."
+    },
+    "title": "Politica de Confidențialitate",
+    "lastUpdated": "Ultima actualizare: {date}",
+    "tableOfContents": "Pe această pagină",
+    "intro": "La {appName}, respectăm confidențialitatea ta și ne angajăm să protejăm datele tale personale. Această Politică de Confidențialitate explică cum colectăm, utilizăm, divulgăm și protejăm informațiile tale.",
+    "sections": {
+      "introduction": {
+        "title": "1. Introducere",
+        "content1": "Această Politică de Confidențialitate se aplică tuturor informațiilor colectate prin Serviciul nostru și explică ce informații colectăm despre tine și de ce, cum le folosim și cum poți actualiza, gestiona, exporta și șterge informațiile tale.",
+        "content2": "Prin utilizarea Serviciului nostru, ești de acord cu colectarea și utilizarea informațiilor în conformitate cu această Politică de Confidențialitate."
+      },
+      "information": {
+        "title": "2. Informațiile pe care le Colectăm",
+        "provided": {
+          "title": "Informații pe care le Furnizezi",
+          "content": "Colectăm informații pe care ni le furnizezi voluntar atunci când:",
+          "item1": "Te înregistrezi pentru un cont și creezi un profil",
+          "item2": "Încarci elemente de meniu, imagini și informații despre restaurant",
+          "item3": "Te abonezi la un plan plătit și furnizezi informații de plată",
+          "item4": "Ne contactezi pentru suport sau ne trimiți comunicări"
+        },
+        "automatic": {
+          "title": "Informații Colectate Automat",
+          "content": "Când utilizezi Serviciul nostru, colectăm automat anumite informații, inclusiv:",
+          "item1": "Date de jurnal (adresă IP, tip browser, pagini vizitate, timp petrecut)",
+          "item2": "Informații despre dispozitiv (tip dispozitiv, sistem de operare, identificatori unici)",
+          "item3": "Date de utilizare (funcții utilizate, acțiuni efectuate, frecvența de utilizare)"
+        }
+      },
+      "usage": {
+        "title": "3. Cum Utilizăm Informațiile Tale",
+        "intro": "Folosim informațiile pe care le colectăm în diverse scopuri, inclusiv:",
+        "purpose1": "Pentru a furniza, menține și îmbunătăți Serviciul nostru",
+        "purpose2": "Pentru a procesa tranzacțiile tale și a gestiona abonamentul tău",
+        "purpose3": "Pentru a-ți trimite notificări tehnice, actualizări și mesaje de suport",
+        "purpose4": "Pentru a răspunde comentariilor, întrebărilor și solicitărilor tale de asistență",
+        "purpose5": "Pentru a monitoriza și analiza tendințele, utilizarea și activitățile în legătură cu Serviciul nostru",
+        "purpose6": "Pentru a detecta, preveni și aborda probleme tehnice și amenințări de securitate"
+      },
+      "sharing": {
+        "title": "4. Cum Partajăm Informațiile Tale",
+        "content1": "Nu vindem informațiile tale personale. Putem partaja informațiile tale în următoarele circumstanțe:",
+        "service": {
+          "term": "Furnizori de Servicii",
+          "description": "Putem partaja informațiile tale cu furnizori terți de servicii care prestează servicii în numele nostru, cum ar fi procesarea plăților, găzduirea datelor și analiza."
+        },
+        "legal": {
+          "term": "Cerințe Legale",
+          "description": "Putem divulga informațiile tale dacă suntem obligați prin lege sau dacă credem că o astfel de acțiune este necesară pentru a respecta obligațiile legale sau pentru a ne proteja drepturile."
+        },
+        "business": {
+          "term": "Transferuri de Afaceri",
+          "description": "Dacă suntem implicați într-o fuziune, achiziție sau vânzare de active, informațiile tale pot fi transferate ca parte a acestei tranzacții."
+        },
+        "consent": {
+          "term": "Cu Consimțământul Tău",
+          "description": "Putem partaja informațiile tale în orice alt scop cu consimțământul tău."
+        }
+      },
+      "cookies": {
+        "title": "5. Cookie-uri și Tehnologii de Urmărire",
+        "content1": "Folosim cookie-uri și tehnologii similare de urmărire pentru a urmări activitatea pe Serviciul nostru și pentru a stoca anumite informații. Cookie-urile sunt fișiere cu o cantitate mică de date care sunt trimise către browserul tău de pe un site web și stocate pe dispozitivul tău.",
+        "content2": "Folosim următoarele tipuri de cookie-uri:",
+        "essential": {
+          "term": "Cookie-uri Esențiale",
+          "description": "Necesare pentru ca Serviciul să funcționeze corespunzător, cum ar fi autentificarea și securitatea."
+        },
+        "preference": {
+          "term": "Cookie-uri de Preferință",
+          "description": "Memorează setările și preferințele tale, cum ar fi selecția limbii."
+        },
+        "analytics": {
+          "term": "Cookie-uri de Analiză",
+          "description": "Ne ajută să înțelegem cum vizitatorii folosesc Serviciul nostru și să îmbunătățim experiența utilizatorului."
+        }
+      },
+      "security": {
+        "title": "6. Securitatea Datelor",
+        "content1": "Implementăm măsuri tehnice și organizatorice adecvate pentru a proteja informațiile tale personale împotriva accesului neautorizat, modificării, divulgării sau distrugerii. Aceasta include criptarea datelor în tranzit și în repaus, evaluări regulate de securitate și controale de acces.",
+        "content2": "Cu toate acestea, nicio metodă de transmitere prin Internet sau stocare electronică nu este 100% sigură. În timp ce ne străduim să folosim mijloace acceptabile comercial pentru a proteja informațiile tale personale, nu putem garanta securitatea lor absolută."
+      },
+      "retention": {
+        "title": "7. Păstrarea Datelor",
+        "content1": "Păstrăm informațiile tale personale atâta timp cât este necesar pentru a îndeplini scopurile prezentate în această Politică de Confidențialitate, cu excepția cazului în care o perioadă mai lungă de păstrare este necesară sau permisă de lege.",
+        "content2": "Când îți ștergi contul, vom șterge sau anonimiza informațiile tale personale într-un termen rezonabil, cu excepția cazului în care suntem obligați să le păstrăm pentru scopuri legale sau de afaceri legitime."
+      },
+      "rights": {
+        "title": "8. Drepturile Tale de Confidențialitate",
+        "intro": "În funcție de locația ta, poți avea anumite drepturi cu privire la informațiile tale personale:",
+        "access": {
+          "term": "Acces",
+          "description": "Poți solicita acces la informațiile personale pe care le deținem despre tine."
+        },
+        "correction": {
+          "term": "Corectare",
+          "description": "Poți solicita să corectăm informațiile inexacte sau incomplete."
+        },
+        "deletion": {
+          "term": "Ștergere",
+          "description": "Poți solicita să ștergem informațiile tale personale."
+        },
+        "portability": {
+          "term": "Portabilitatea Datelor",
+          "description": "Poți solicita o copie a datelor tale într-un format structurat, lizibil de mașină."
+        },
+        "objection": {
+          "term": "Obiecție",
+          "description": "Poți obiecta la procesarea informațiilor tale personale în anumite circumstanțe."
+        },
+        "exercise": "Pentru a exercita oricare dintre aceste drepturi, te rugăm să ne contactezi folosind informațiile furnizate mai jos."
+      },
+      "children": {
+        "title": "9. Confidențialitatea Copiilor",
+        "content1": "Serviciul nostru nu este destinat copiilor sub vârsta de 16 ani. Nu colectăm cu bună știință informații personale de la copii sub 16 ani. Dacă ești părinte sau tutore și crezi că copilul tău ne-a furnizat informații personale, te rugăm să ne contactezi.",
+        "content2": "Dacă aflăm că am colectat informații personale de la copii fără verificarea consimțământului părinților, vom lua măsuri pentru a elimina aceste informații de pe serverele noastre."
+      },
+      "international": {
+        "title": "10. Transferuri Internaționale de Date",
+        "content1": "Informațiile tale pot fi transferate și menținute pe servere situate în afara țării tale, unde legile privind protecția datelor pot diferi de cele din jurisdicția ta.",
+        "content2": "Prin utilizarea Serviciului nostru, consimți la transferul informațiilor tale în țări în afara țării tale de reședință, care pot avea reguli diferite de protecție a datelor."
+      },
+      "changes": {
+        "title": "11. Modificări ale acestei Politici de Confidențialitate",
+        "content1": "Putem actualiza această Politică de Confidențialitate din când în când pentru a reflecta modificările în practicile noastre sau din motive legale, operaționale sau de reglementare. Te vom notifica despre orice modificări materiale prin postarea noii Politici de Confidențialitate pe această pagină și actualizarea datei \"Ultima actualizare\".",
+        "content2": "Utilizarea continuă a Serviciului după orice modificări ale acestei Politici de Confidențialitate constituie acceptarea politicii actualizate."
+      },
+      "contact": {
+        "title": "12. Contactează-ne",
+        "content": "Dacă ai întrebări, preocupări sau solicitări cu privire la această Politică de Confidențialitate sau la practicile noastre privind datele, te rugăm să ne contactezi:",
+        "email": "Email:"
+      }
+    },
+    "alsoSee": "Vezi și",
+    "termsOfService": "Termenii și Condițiile"
   }
 }

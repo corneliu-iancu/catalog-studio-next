@@ -18,7 +18,7 @@ export async function Footer() {
             <ul className="space-y-3">
               <li><Link href="/plans" className="text-sm hover:text-primary transition-colors">{t('footer.product.plans')}</Link></li>
               <li><Link href="/auth/signup" className="text-sm hover:text-primary transition-colors">{t('footer.product.getStarted')}</Link></li>
-              <li><Link href="/tonys-pizza" className="text-sm hover:text-primary transition-colors">{t('footer.product.liveDemo')}</Link></li>
+              <li><Link href="/pizzeria-la-badiu" className="text-sm hover:text-primary transition-colors">{t('footer.product.demoMenu')}</Link></li>
               <li><Link href="/dashboard" className="text-sm hover:text-primary transition-colors">{t('footer.product.dashboard')}</Link></li>
             </ul>
           </div>

@@ -17,7 +17,7 @@ export default async function Home() {
 
   const sampleRestaurants = [
     {
-      slug: 'tonys-pizza',
+      slug: 'pizzeria-la-badiu',
       name: t('liveExamples.tonysPizza.name'),
       description: t('liveExamples.tonysPizza.description'),
       cuisine: t('liveExamples.italian')

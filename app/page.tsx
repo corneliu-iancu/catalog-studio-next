@@ -17,22 +17,16 @@ export default async function Home() {
 
   const sampleRestaurants = [
     {
-      slug: 'pizzeria-la-badiu',
-      name: t('liveExamples.tonysPizza.name'),
-      description: t('liveExamples.tonysPizza.description'),
+      slug: 'bella-luna',
+      name: t('liveExamples.bellaLuna.name'),
+      description: t('liveExamples.bellaLuna.description'),
       cuisine: t('liveExamples.italian')
     },
     {
-      slug: 'burger-palace',
-      name: t('liveExamples.burgerPalace.name'),
-      description: t('liveExamples.burgerPalace.description'),
-      cuisine: t('liveExamples.american')
-    },
-    {
-      slug: 'sushi-zen',
-      name: t('liveExamples.sushiZen.name'),
-      description: t('liveExamples.sushiZen.description'),
-      cuisine: t('liveExamples.japanese')
+      slug: 'pizzeria-la-badiu',
+      name: t('liveExamples.pizzeriaBadiu.name'),
+      description: t('liveExamples.pizzeriaBadiu.description'),
+      cuisine: t('liveExamples.italian')
     }
   ];
 
@@ -237,7 +231,7 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {sampleRestaurants.map((restaurant) => (
-            <Link key={restaurant.slug} href={`/${restaurant.slug}`} className="group">
+            <Link key={restaurant.slug} href={`/${restaurant.slug}`} target="_blank" rel="noopener noreferrer" className="group">
               <Card className="h-full transition-all duration-300 hover:shadow-xl group-hover:scale-[1.03]">
                 <CardHeader className="space-y-4">
                   <div className="w-full aspect-video bg-muted rounded-md flex items-center justify-center">

@@ -1,4 +1,8 @@
 {
+  "header": {
+    "signIn": "Login",
+    "getStarted": "Înregistrare"
+  },
   "navigation": {
     "overview": "Prezentare generală",
     "restaurantProfile": "Profilul Restaurantului", 
@@ -372,20 +376,14 @@
       "title": "Vezi în acțiune",
       "subtitle": "Meniuri reale de la restaurante reale care folosesc Catalog Studio",
       "viewLiveMenu": "Vezi meniul live",
-      "italian": "Italian",
-      "american": "American",
-      "japanese": "Japonez",
-      "tonysPizza": {
-        "name": "Tony's Pizza",
-        "description": "Pizza și paste italiene autentice"
+      "italian": "Italienesc",
+      "bellaLuna": {
+        "name": "Bella Luna",
+        "description": "Bucătărie italiană autentică și fine dining"
       },
-      "burgerPalace": {
-        "name": "Burger Palace",
-        "description": "Burgeri și cartofi prăjiți gourmet"
-      },
-      "sushiZen": {
-        "name": "Sushi Zen",
-        "description": "Sushi proaspăt și bucătărie japoneză"
+      "pizzeriaBadiu": {
+        "name": "Pizzeria La Badiu",
+        "description": "Pizza tradițională românească și specialități italiene"
       }
     },
     "finalCta": {

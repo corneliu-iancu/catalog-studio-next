@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { APP_CONFIG } from "@/lib/config";
+import { useTranslations } from 'next-intl';
 
 interface HeaderProps {
   currentLocale: string;
 }
 
 export function Header({ currentLocale }: HeaderProps) {
+  const t = useTranslations('header');
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -28,10 +31,10 @@ export function Header({ currentLocale }: HeaderProps) {
             
             <div className="hidden sm:flex items-center gap-2 ml-2">
               <Button variant="ghost" asChild size="sm">
-                <Link href="/auth/signin">Sign In</Link>
+                <Link href="/auth/signin">{t('signIn')}</Link>
               </Button>
               <Button asChild size="sm">
-                <Link href="/auth/signup">Get Started</Link>
+                <Link href="/auth/signup">{t('getStarted')}</Link>
               </Button>
             </div>
           </div>

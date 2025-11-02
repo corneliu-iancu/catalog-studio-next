@@ -1,4 +1,8 @@
 {
+  "header": {
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
   "navigation": {
     "overview": "Overview",
     "restaurantProfile": "Restaurant Profile", 
@@ -362,19 +366,13 @@
       "subtitle": "Real menus from real restaurants using Catalog Studio",
       "viewLiveMenu": "View live menu",
       "italian": "Italian",
-      "american": "American",
-      "japanese": "Japanese",
-      "tonysPizza": {
-        "name": "Tony's Pizza",
-        "description": "Authentic Italian pizza and pasta"
+      "bellaLuna": {
+        "name": "Bella Luna",
+        "description": "Authentic Italian cuisine and fine dining"
       },
-      "burgerPalace": {
-        "name": "Burger Palace",
-        "description": "Gourmet burgers and fries"
-      },
-      "sushiZen": {
-        "name": "Sushi Zen",
-        "description": "Fresh sushi and Japanese cuisine"
+      "pizzeriaBadiu": {
+        "name": "Pizzeria La Badiu",
+        "description": "Traditional Romanian pizza and Italian specialties"
       }
     },
     "finalCta": {

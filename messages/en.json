@@ -288,5 +288,443 @@
       "categoryDeleteError": "Failed to delete category",
       "csvImported": "CSV import completed successfully!"
     }
+  },
+  "home": {
+    "hero": {
+      "title": "Your menu, beautifully presented",
+      "subtitle": "The modern way for restaurants to showcase their cuisine. Update instantly, share everywhere, delight customers.",
+      "startFreeTrial": "Start free trial",
+      "seeLiveDemo": "See live demo"
+    },
+    "features": {
+      "updateInSeconds": {
+        "title": "Update in seconds",
+        "description": "Prices changed? New dish? Update your menu instantly from any device. No reprinting, no delays."
+      },
+      "contactlessModern": {
+        "title": "Contactless & modern",
+        "description": "Generate QR codes instantly. Customers scan and browse—no app downloads, no hassle."
+      },
+      "professionalDesign": {
+        "title": "Professional design",
+        "description": "Gorgeous menu layouts that work on any screen. Make your dishes look as good as they taste."
+      },
+      "knowWhatWorks": {
+        "title": "Know what works",
+        "description": "See which items get the most views. Understand customer behavior. Make data-driven menu decisions."
+      }
+    },
+    "showcase": {
+      "title": "From dashboard to diner in seconds",
+      "subtitle": "Manage your entire menu from one powerful dashboard. Customers see a beautiful, mobile-optimized experience.",
+      "youManage": "You manage",
+      "theyExperience": "They experience",
+      "dashboardScreenshot": "Dashboard Screenshot",
+      "mobileMenuScreenshot": "Mobile Menu Screenshot",
+      "dragAndDrop": "Drag & drop",
+      "quickEdit": "Quick edit",
+      "gorgeousDesign": "Gorgeous design",
+      "easyBrowsing": "Easy browsing"
+    },
+    "targetAudience": {
+      "title": "Built for modern restaurants",
+      "subtitle": "Whether you're a cozy café or a bustling bistro, Catalog Studio adapts to your needs.",
+      "independent": {
+        "title": "Independent & family-owned",
+        "description": "Stand out with professional menus without the enterprise price tag. Perfect for restaurants that value quality and control."
+      },
+      "cafes": {
+        "title": "Cafés & quick service",
+        "description": "Seasonal specials? Daily soups? Update your offerings as fast as you create them. Keep customers in the loop."
+      },
+      "fineDining": {
+        "title": "Upscale & fine dining",
+        "description": "Elegant presentation meets modern convenience. Detailed descriptions, allergen info, wine pairings—all beautifully displayed."
+      }
+    },
+    "howItWorks": {
+      "title": "Get online in minutes",
+      "step1": {
+        "title": "Sign up free",
+        "description": "Create your account and restaurant profile in under 2 minutes."
+      },
+      "step2": {
+        "title": "Add your menu",
+        "description": "Type it in, upload CSV, or import from existing files. Your choice."
+      },
+      "step3": {
+        "title": "Share & shine",
+        "description": "Get your QR code, share your link, watch customers engage."
+      }
+    },
+    "liveExamples": {
+      "title": "See it in action",
+      "subtitle": "Real menus from real restaurants using Catalog Studio",
+      "viewLiveMenu": "View live menu",
+      "italian": "Italian",
+      "american": "American",
+      "japanese": "Japanese",
+      "tonysPizza": {
+        "name": "Tony's Pizza",
+        "description": "Authentic Italian pizza and pasta"
+      },
+      "burgerPalace": {
+        "name": "Burger Palace",
+        "description": "Gourmet burgers and fries"
+      },
+      "sushiZen": {
+        "name": "Sushi Zen",
+        "description": "Fresh sushi and Japanese cuisine"
+      }
+    },
+    "finalCta": {
+      "title": "Ready to modernize your menu?",
+      "subtitle": "Join restaurants making the switch to digital. Start free, no credit card required.",
+      "startFreeTrial": "Start your free trial",
+      "contactSales": "Contact sales"
+    },
+    "footer": {
+      "brand": {
+        "name": "Catalog Studio",
+        "tagline": "Modern digital menus for restaurants. Update instantly, share everywhere."
+      },
+      "product": {
+        "title": "Product",
+        "plans": "Plans",
+        "getStarted": "Get Started",
+        "liveDemo": "Live Demo",
+        "dashboard": "Dashboard"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About",
+        "contact": "Contact",
+        "faq": "FAQ"
+      },
+      "legal": {
+        "title": "Legal",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service"
+      },
+      "copyright": "All rights reserved.",
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "About Us",
+      "description": "Discover the story behind Catalog Studio and our mission to transform restaurant menus."
+    },
+    "hero": {
+      "badge": "About Us",
+      "title": "Transforming how restaurants showcase their menus",
+      "subtitle": "We created Catalog Studio to give restaurants the power to present their cuisine in the best possible way - without the technical headaches."
+    },
+    "mission": {
+      "badge": "Our Mission",
+      "title": "Why Catalog Studio exists",
+      "problem": {
+        "title": "The Challenge",
+        "description": "The restaurant industry moves fast. Customers expect seamless digital experiences, and competition is fiercer than ever. Printed menus are expensive to update, QR codes often lead to ugly PDFs, and complex platforms eat up your valuable time."
+      },
+      "solution": {
+        "title": "Our Solution",
+        "description": "We built a platform that lets you create a professional digital menu in minutes and update it instantly from anywhere. We don't replace the traditional experience – we enhance it. Your customers get a beautiful showcase of your cuisine, while you gain complete control and save time and money."
+      },
+      "vision": {
+        "title": "The Vision",
+        "description": "We envision a future where every restaurant, from food trucks to fine dining, has the tools to stay competitive in the digital age – without sacrificing the charm and authenticity of the traditional dining experience."
+      }
+    },
+    "values": {
+      "badge": "Our Values",
+      "title": "Principles that guide us",
+      "items": {
+        "simplicity": {
+          "title": "Simplicity",
+          "description": "Technology should be intuitive. We build tools anyone can use, without steep learning curves or complicated manuals."
+        },
+        "speed": {
+          "title": "Speed",
+          "description": "Your time is valuable. Our platform is built for speed - from initial setup to daily menu updates."
+        },
+        "beauty": {
+          "title": "Beauty",
+          "description": "Your menu deserves to look great. We provide beautifully designed, professional templates that make your food stand out."
+        },
+        "reliability": {
+          "title": "Reliability",
+          "description": "Your customers depend on your menu. We build rock-solid infrastructure that works 24/7, so you don't have to worry."
+        }
+      }
+    },
+    "tech": {
+      "badge": "Technology",
+      "title": "Built with modern technology",
+      "subtitle": "We use the best tools to deliver a fast, secure, and scalable experience.",
+      "stack": {
+        "nextjs": {
+          "name": "Next.js 15",
+          "description": "React framework for lightning-fast web applications"
+        },
+        "supabase": {
+          "name": "Supabase",
+          "description": "Secure backend with real-time authentication and storage"
+        },
+        "vercel": {
+          "name": "Vercel",
+          "description": "Global hosting with top-tier performance and 99.9% uptime"
+        },
+        "typescript": {
+          "name": "TypeScript",
+          "description": "Type-safe, high-quality code for reliability"
+        }
+      },
+      "features": {
+        "performance": "⚡ Lightning-fast loading for your customers",
+        "security": "🔒 Enterprise-grade security for your data",
+        "uptime": "☁️ 99.9% uptime guaranteed",
+        "mobile": "📱 Perfectly optimized for mobile"
+      }
+    },
+    "cta": {
+      "badge": "Get Started Today",
+      "title": "Ready to transform your menu?",
+      "subtitle": "Join the restaurants that have already simplified their menu management with Catalog Studio.",
+      "startButton": "Start Free Trial",
+      "contactButton": "Contact Us",
+      "trial": "14-day free trial • No credit card required"
+    }
+  },
+  "plans": {
+    "meta": {
+      "title": "Pricing Plans",
+      "description": "Choose the perfect plan for your restaurant. Simple, transparent pricing with no hidden fees."
+    },
+    "hero": {
+      "badge": "Pricing",
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the perfect plan for your restaurant. Start free, upgrade anytime."
+    },
+    "earlyBird": {
+      "title": "🎉 Early Bird Special",
+      "description": "First 20 customers get 6 months of Basic plan free"
+    },
+    "billing": {
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "saveText": "Save up to {percentage}% with annual billing"
+    },
+    "plan": {
+      "free": {
+        "name": "Free",
+        "description": "Perfect for testing and small restaurants getting started",
+        "cta": "Start Free"
+      },
+      "basic": {
+        "name": "Basic",
+        "description": "Great for growing restaurants that need more flexibility",
+        "cta": "Get Started",
+        "highlight": "Most Popular"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "For restaurant groups and professionals who need it all",
+        "cta": "Go Premium"
+      },
+      "perMonth": "/month",
+      "perYear": "/year",
+      "orYearly": "or {price}/year (save {savings})",
+      "whatsIncluded": "What's included:"
+    },
+    "features": {
+      "restaurants": {
+        "one": "1 restaurant/menu",
+        "three": "Up to 3 restaurants/menus",
+        "unlimited": "Unlimited restaurants/menus"
+      },
+      "products": {
+        "twenty": "Up to 20 products",
+        "hundred": "Up to 100 products",
+        "unlimited": "Unlimited products"
+      },
+      "templates": {
+        "basic": "2 menu templates",
+        "premium": "10 premium templates",
+        "all": "All premium templates"
+      },
+      "images": {
+        "basic": "Basic image uploads (720p)",
+        "hd": "High-quality image uploads (1080p)",
+        "uhd": "Ultra HD image uploads (4K)"
+      },
+      "qrCode": "QR code generation",
+      "mobileResponsive": "Mobile-responsive design",
+      "basicAnalytics": "Basic analytics",
+      "advancedAnalytics": "Advanced analytics",
+      "customDomain": "Custom domain",
+      "removeBranding": "Remove branding",
+      "emailSupport": "Email support",
+      "prioritySupport": "Priority support",
+      "customThemes": "Custom themes",
+      "apiAccess": "API access"
+    },
+    "allPlans": {
+      "badge": "All Plans Include",
+      "title": "Everything you need to succeed",
+      "subtitle": "Every plan comes with these core features to help your restaurant thrive online",
+      "items": {
+        "templates": {
+          "title": "Beautiful Templates",
+          "description": "Professionally designed menu templates that make your food look amazing"
+        },
+        "mobile": {
+          "title": "Mobile-First Design",
+          "description": "Perfect viewing experience on any device, from phone to desktop"
+        },
+        "instant": {
+          "title": "Instant Updates",
+          "description": "Update your menu in seconds and see changes live immediately"
+        },
+        "qr": {
+          "title": "QR Code Generator",
+          "description": "Generate and download QR codes for easy customer access"
+        },
+        "multilang": {
+          "title": "Multi-Language Support",
+          "description": "Serve international customers with multi-language menus"
+        },
+        "analytics": {
+          "title": "Analytics Dashboard",
+          "description": "Track views, popular items, and customer engagement"
+        }
+      }
+    },
+    "faq": {
+      "badge": "FAQ",
+      "title": "Frequently asked questions",
+      "items": {
+        "switch": {
+          "question": "Can I switch plans later?",
+          "answer": "Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any charges."
+        },
+        "limit": {
+          "question": "What happens when I reach my product limit?",
+          "answer": "You'll be notified when you're approaching your limit. You can either upgrade to a higher plan or remove some products to stay within your current limit."
+        },
+        "refunds": {
+          "question": "Do you offer refunds?",
+          "answer": "We offer a 14-day money-back guarantee on all paid plans. If you're not satisfied, we'll refund your payment, no questions asked."
+        },
+        "domain": {
+          "question": "Can I use my own domain?",
+          "answer": "Yes! Basic and Premium plans include custom domain support. You can connect your own domain (e.g., menu.yourrestaurant.com)."
+        },
+        "payment": {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept all major credit cards (Visa, Mastercard, American Express) and process payments securely through Stripe."
+        },
+        "setup": {
+          "question": "Is there a setup fee?",
+          "answer": "No setup fees, ever. You only pay the monthly or annual subscription price for your chosen plan."
+        }
+      },
+      "contact": {
+        "text": "Still have questions?",
+        "link": "Contact our team"
+      }
+    },
+    "cta": {
+      "badge": "Get Started Today",
+      "title": "Ready to transform your menu?",
+      "subtitle": "Join hundreds of restaurants creating beautiful digital menus with Catalog Studio",
+      "startButton": "Start Free Trial",
+      "contactButton": "Talk to Sales",
+      "trial": "No credit card required · Cancel anytime · 14-day money-back guarantee"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact Us",
+      "description": "Get in touch with the Catalog Studio team. We're here to help with questions, support, or feedback."
+    },
+    "hero": {
+      "badge": "Contact",
+      "title": "We're here to help",
+      "subtitle": "Have a question or need assistance? Our team is ready to help you succeed with Catalog Studio."
+    },
+    "methods": {
+      "badge": "Get in Touch",
+      "title": "Choose your preferred way to reach us",
+      "subtitle": "We're available through multiple channels to provide you the best support experience",
+      "email": {
+        "title": "Email Us",
+        "description": "For detailed inquiries and support requests",
+        "value": "hello@catalogstudio.com"
+      },
+      "phone": {
+        "title": "Call Us",
+        "description": "Speak directly with our team",
+        "value": "+40 123 456 789"
+      }
+    },
+    "responseTime": {
+      "title": "Fast response time",
+      "description": "We typically respond within 2-4 hours during business hours (Mon-Fri, 9AM-6PM EET)"
+    },
+    "form": {
+      "badge": "Send a Message",
+      "title": "Drop us a line",
+      "subtitle": "Fill out the form below and we'll get back to you as soon as possible",
+      "cardTitle": "Contact form",
+      "cardDescription": "We'll respond to your message within 24 hours",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "subject": "Subject",
+        "message": "Message"
+      },
+      "placeholders": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john@example.com",
+        "subject": "How can we help?",
+        "message": "Tell us more about your inquiry..."
+      },
+      "submit": "Send Message",
+      "privacy": "We respect your privacy and will never share your information"
+    },
+    "faq": {
+      "badge": "Quick Answers",
+      "title": "Common questions",
+      "subtitle": "Find quick answers to frequently asked questions",
+      "items": {
+        "sales": {
+          "question": "How can I speak to sales?",
+          "answer": "Email us at hello@catalogstudio.com or call +40 123 456 789. Our sales team is available Monday-Friday, 9AM-6PM EET."
+        },
+        "support": {
+          "question": "What support options are available?",
+          "answer": "All plans include email support. Basic and Premium plans get priority support with faster response times. We also have extensive documentation and video tutorials."
+        },
+        "demo": {
+          "question": "Can I schedule a demo?",
+          "answer": "Absolutely! Contact us via email or phone to schedule a personalized demo. We'll show you how Catalog Studio can work for your restaurant."
+        },
+        "pricing": {
+          "question": "Have questions about pricing?",
+          "answer": "Check out our pricing page for detailed plan information. For custom enterprise solutions or volume discounts, contact our sales team."
+        }
+      }
+    },
+    "cta": {
+      "badge": "Ready to Start?",
+      "title": "Start creating beautiful menus today",
+      "subtitle": "Join hundreds of restaurants already using Catalog Studio",
+      "startButton": "Start Free Trial",
+      "plansButton": "View Pricing"
+    }
   }
 }

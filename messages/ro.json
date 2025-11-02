@@ -299,5 +299,443 @@
       "customizeTheme": "Personalizează Tema",
       "viewPublicMenu": "Vezi Meniul Public"
     }
+  },
+  "home": {
+    "hero": {
+      "title": "Meniul tău, prezentat frumos",
+      "subtitle": "Modul modern prin care restaurantele își prezintă bucătăria. Actualizează instant, distribuie peste tot, încântă clienții.",
+      "startFreeTrial": "Începe perioada gratuită",
+      "seeLiveDemo": "Vezi demo live"
+    },
+    "features": {
+      "updateInSeconds": {
+        "title": "Actualizare în secunde",
+        "description": "S-au schimbat prețurile? Un fel nou? Actualizează meniul instant de pe orice dispozitiv. Fără retipărire, fără întârzieri."
+      },
+      "contactlessModern": {
+        "title": "Contactless & modern",
+        "description": "Generează coduri QR instant. Clienții scanează și răsfoiesc—fără descărcări de aplicații, fără bătăi de cap."
+      },
+      "professionalDesign": {
+        "title": "Design profesional",
+        "description": "Layout-uri de meniu superbe care funcționează pe orice ecran. Fă felurile să arate la fel de bine pe cât gust."
+      },
+      "knowWhatWorks": {
+        "title": "Știi ce funcționează",
+        "description": "Vezi care articole primesc cele mai multe vizualizări. Înțelege comportamentul clienților. Ia decizii bazate pe date."
+      }
+    },
+    "showcase": {
+      "title": "De la panou la client în secunde",
+      "subtitle": "Gestionează întregul meniu dintr-un singur panou puternic. Clienții văd o experiență frumoasă, optimizată pentru mobil.",
+      "youManage": "Tu gestionezi",
+      "theyExperience": "Ei experimentează",
+      "dashboardScreenshot": "Captură de ecran panou",
+      "mobileMenuScreenshot": "Captură de ecran meniu mobil",
+      "dragAndDrop": "Drag & drop",
+      "quickEdit": "Editare rapidă",
+      "gorgeousDesign": "Design superb",
+      "easyBrowsing": "Navigare ușoară"
+    },
+    "targetAudience": {
+      "title": "Construit pentru restaurante moderne",
+      "subtitle": "Fie că ești o cafenea primitoare sau un bistro aglomerat, Catalog Studio se adaptează nevoilor tale.",
+      "independent": {
+        "title": "Independent & de familie",
+        "description": "Evidențiază-te cu meniuri profesionale fără prețul enterprise. Perfect pentru restaurante care prețuiesc calitatea și controlul."
+      },
+      "cafes": {
+        "title": "Cafenele & servicii rapide",
+        "description": "Oferte sezoniere? Supe zilnice? Actualizează-ți ofertele la fel de repede cum le creezi. Ține clienții informați."
+      },
+      "fineDining": {
+        "title": "Upscale & fine dining",
+        "description": "Prezentare elegantă întâlnește confortul modern. Descrieri detaliate, informații despre alergeni, perechi de vinuri—toate afișate frumos."
+      }
+    },
+    "howItWorks": {
+      "title": "Fii online în câteva minute",
+      "step1": {
+        "title": "Înscrie-te gratuit",
+        "description": "Creează-ți contul și profilul restaurantului în mai puțin de 2 minute."
+      },
+      "step2": {
+        "title": "Adaugă meniul",
+        "description": "Tastează-l, încarcă CSV sau importă din fișiere existente. Tu alegi."
+      },
+      "step3": {
+        "title": "Distribuie & strălucește",
+        "description": "Obține codul QR, distribuie link-ul, urmărește implicarea clienților."
+      }
+    },
+    "liveExamples": {
+      "title": "Vezi în acțiune",
+      "subtitle": "Meniuri reale de la restaurante reale care folosesc Catalog Studio",
+      "viewLiveMenu": "Vezi meniul live",
+      "italian": "Italian",
+      "american": "American",
+      "japanese": "Japonez",
+      "tonysPizza": {
+        "name": "Tony's Pizza",
+        "description": "Pizza și paste italiene autentice"
+      },
+      "burgerPalace": {
+        "name": "Burger Palace",
+        "description": "Burgeri și cartofi prăjiți gourmet"
+      },
+      "sushiZen": {
+        "name": "Sushi Zen",
+        "description": "Sushi proaspăt și bucătărie japoneză"
+      }
+    },
+    "finalCta": {
+      "title": "Pregătit să-ți modernizezi meniul?",
+      "subtitle": "Alătură-te restaurantelor care fac trecerea la digital. Începe gratuit, fără card de credit necesar.",
+      "startFreeTrial": "Începe perioada gratuită",
+      "contactSales": "Contactează vânzările"
+    },
+    "footer": {
+      "brand": {
+        "name": "Catalog Studio",
+        "tagline": "Meniuri digitale moderne pentru restaurante. Actualizează instant, distribuie peste tot."
+      },
+      "product": {
+        "title": "Produs",
+        "plans": "Planuri",
+        "getStarted": "Începe",
+        "liveDemo": "Demo Live",
+        "dashboard": "Panou"
+      },
+      "company": {
+        "title": "Companie",
+        "about": "Despre",
+        "contact": "Contact",
+        "faq": "Întrebări frecvente"
+      },
+      "legal": {
+        "title": "Legal",
+        "privacy": "Politica de confidențialitate",
+        "terms": "Termeni și condiții"
+      },
+      "copyright": "Toate drepturile rezervate.",
+      "signIn": "Autentificare",
+      "signUp": "Înregistrare"
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "Despre Noi",
+      "description": "Descoperă povestea din spatele Catalog Studio și misiunea noastră de a transforma meniurile restaurantelor."
+    },
+    "hero": {
+      "badge": "Despre Noi",
+      "title": "Transformăm felul în care restaurantele își prezintă meniurile",
+      "subtitle": "Am creat Catalog Studio pentru a oferi restaurantelor puterea de a-și prezenta bucătăria în cel mai bun mod posibil - fără complicații tehnice."
+    },
+    "mission": {
+      "badge": "Misiunea noastră",
+      "title": "De ce există Catalog Studio",
+      "problem": {
+        "title": "Provocarea",
+        "description": "Industria restaurantelor evoluează rapid. Clienții se așteaptă la experiențe digitale rapide, iar concurența este mai acerbă ca niciodată. Meniurile tipărite costă mult de actualizat, codurile QR duc adesea la PDF-uri neatractive, iar platformele complexe îți consumă timpul prețios."
+      },
+      "solution": {
+        "title": "Soluția noastră",
+        "description": "Am construit o platformă care îți permite să creezi un meniu digital profesional în câteva minute și să-l actualizezi instant de oriunde. Nu înlocuim experiența tradițională – o îmbunătățim. Clienții tăi primesc o prezentare frumoasă a bucătăriei tale, iar tu câștigi control total și economisești timp și bani."
+      },
+      "vision": {
+        "title": "Viziunea",
+        "description": "Vedem un viitor în care fiecare restaurant, de la food truck-uri la fine dining, are instrumentele pentru a rămâne competitiv în era digitală – fără a sacrifica farmecul și autenticitatea experienței tradiționale de dining."
+      }
+    },
+    "values": {
+      "badge": "Valorile noastre",
+      "title": "Principiile care ne ghidează",
+      "items": {
+        "simplicity": {
+          "title": "Simplitate",
+          "description": "Tehnologia ar trebui să fie intuitivă. Construim instrumente pe care oricine le poate folosi, fără curbe de învățare abrupte sau manuale complicate."
+        },
+        "speed": {
+          "title": "Rapiditate",
+          "description": "Timpul tău este prețios. Platforma noastră este construită pentru rapiditate - de la configurarea inițială până la actualizările zilnice ale meniului."
+        },
+        "beauty": {
+          "title": "Frumusețe",
+          "description": "Meniul tău merită să arate grozav. Oferim șabloane frumoase, proiectate profesional, care fac mâncarea ta să iasă în evidență."
+        },
+        "reliability": {
+          "title": "Fiabilitate",
+          "description": "Clienții tăi se bazează pe meniul tău. Construim infrastructură solidă care funcționează 24/7, astfel încât tu să nu trebuie să te îngrijorezi."
+        }
+      }
+    },
+    "tech": {
+      "badge": "Tehnologie",
+      "title": "Construită cu tehnologii moderne",
+      "subtitle": "Folosim cele mai bune instrumente pentru a oferi o experiență rapidă, sigură și scalabilă.",
+      "stack": {
+        "nextjs": {
+          "name": "Next.js 15",
+          "description": "Framework React pentru aplicații web ultra-rapide"
+        },
+        "supabase": {
+          "name": "Supabase",
+          "description": "Backend securizat cu autentificare și stocare în timp real"
+        },
+        "vercel": {
+          "name": "Vercel",
+          "description": "Hosting global cu performanță de top și uptime de 99.9%"
+        },
+        "typescript": {
+          "name": "TypeScript",
+          "description": "Cod sigur și de înaltă calitate pentru fiabilitate"
+        }
+      },
+      "features": {
+        "performance": "⚡ Încărcare ultra-rapidă pentru clienții tăi",
+        "security": "🔒 Securitate enterprise pentru datele tale",
+        "uptime": "☁️ 99.9% uptime garantat",
+        "mobile": "📱 Optimizat perfect pentru mobil"
+      }
+    },
+    "cta": {
+      "badge": "Începe astăzi",
+      "title": "Gata să îți transformi meniul?",
+      "subtitle": "Alătură-te restaurantelor care și-au simplificat deja gestionarea meniurilor cu Catalog Studio.",
+      "startButton": "Începe gratuit",
+      "contactButton": "Contactează-ne",
+      "trial": "Încercare gratuită de 14 zile • Fără card de credit necesar"
+    }
+  },
+  "plans": {
+    "meta": {
+      "title": "Planuri de prețuri",
+      "description": "Alege planul perfect pentru restaurantul tău. Prețuri simple, transparente, fără taxe ascunse."
+    },
+    "hero": {
+      "badge": "Prețuri",
+      "title": "Prețuri simple și transparente",
+      "subtitle": "Alege planul perfect pentru restaurantul tău. Începe gratuit, upgrade oricând."
+    },
+    "earlyBird": {
+      "title": "🎉 Ofertă specială pentru primii clienți",
+      "description": "Primii 20 de clienți primesc 6 luni de plan Basic gratuit"
+    },
+    "billing": {
+      "monthly": "Lunar",
+      "annual": "Anual",
+      "saveText": "Economisește până la {percentage}% cu facturare anuală"
+    },
+    "plan": {
+      "free": {
+        "name": "Gratuit",
+        "description": "Perfect pentru testare și restaurante mici care încep",
+        "cta": "Începe gratuit"
+      },
+      "basic": {
+        "name": "Basic",
+        "description": "Ideal pentru restaurante în creștere care au nevoie de mai multă flexibilitate",
+        "cta": "Începe acum",
+        "highlight": "Cel mai popular"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Pentru grupuri de restaurante și profesioniști care au nevoie de tot",
+        "cta": "Treci la Premium"
+      },
+      "perMonth": "/lună",
+      "perYear": "/an",
+      "orYearly": "sau {price}/an (economisești {savings})",
+      "whatsIncluded": "Ce include:"
+    },
+    "features": {
+      "restaurants": {
+        "one": "1 restaurant/meniu",
+        "three": "Până la 3 restaurante/meniuri",
+        "unlimited": "Restaurante/meniuri nelimitate"
+      },
+      "products": {
+        "twenty": "Până la 20 de produse",
+        "hundred": "Până la 100 de produse",
+        "unlimited": "Produse nelimitate"
+      },
+      "templates": {
+        "basic": "2 șabloane de meniu",
+        "premium": "10 șabloane premium",
+        "all": "Toate șabloanele premium"
+      },
+      "images": {
+        "basic": "Încărcări imagini de bază (720p)",
+        "hd": "Încărcări imagini de înaltă calitate (1080p)",
+        "uhd": "Încărcări imagini Ultra HD (4K)"
+      },
+      "qrCode": "Generare cod QR",
+      "mobileResponsive": "Design responsive pentru mobil",
+      "basicAnalytics": "Statistici de bază",
+      "advancedAnalytics": "Statistici avansate",
+      "customDomain": "Domeniu personalizat",
+      "removeBranding": "Eliminare branding",
+      "emailSupport": "Suport prin email",
+      "prioritySupport": "Suport prioritar",
+      "customThemes": "Teme personalizate",
+      "apiAccess": "Acces API"
+    },
+    "allPlans": {
+      "badge": "Toate planurile includ",
+      "title": "Tot ce ai nevoie pentru succes",
+      "subtitle": "Fiecare plan vine cu aceste funcționalități esențiale pentru ca restaurantul tău să prospere online",
+      "items": {
+        "templates": {
+          "title": "Șabloane frumoase",
+          "description": "Șabloane de meniu proiectate profesional care fac mâncarea ta să arate uimitor"
+        },
+        "mobile": {
+          "title": "Design Mobile-First",
+          "description": "Experiență de vizualizare perfectă pe orice dispozitiv, de la telefon la desktop"
+        },
+        "instant": {
+          "title": "Actualizări instant",
+          "description": "Actualizează meniul în câteva secunde și vezi modificările live imediat"
+        },
+        "qr": {
+          "title": "Generator cod QR",
+          "description": "Generează și descarcă coduri QR pentru acces ușor al clienților"
+        },
+        "multilang": {
+          "title": "Suport multi-limbă",
+          "description": "Servește clienți internaționali cu meniuri în mai multe limbi"
+        },
+        "analytics": {
+          "title": "Panou de statistici",
+          "description": "Urmărește vizualizările, produsele populare și implicarea clienților"
+        }
+      }
+    },
+    "faq": {
+      "badge": "Întrebări frecvente",
+      "title": "Întrebări frecvente",
+      "items": {
+        "switch": {
+          "question": "Pot schimba planul mai târziu?",
+          "answer": "Da! Poți face upgrade sau downgrade oricând dorești. Modificările au efect imediat și vom factura proporțional."
+        },
+        "limit": {
+          "question": "Ce se întâmplă când ating limita de produse?",
+          "answer": "Vei fi notificat când te apropii de limită. Poți fie să faci upgrade la un plan superior, fie să elimini câteva produse pentru a rămâne în limita planului curent."
+        },
+        "refunds": {
+          "question": "Oferiți rambursări?",
+          "answer": "Oferim o garanție de returnare a banilor de 14 zile pentru toate planurile plătite. Dacă nu ești mulțumit, îți returnăm plata, fără întrebări."
+        },
+        "domain": {
+          "question": "Pot folosi propriul meu domeniu?",
+          "answer": "Da! Planurile Basic și Premium includ suport pentru domeniu personalizat. Poți conecta propriul tău domeniu (ex: menu.restaurantultau.ro)."
+        },
+        "payment": {
+          "question": "Ce metode de plată acceptați?",
+          "answer": "Acceptăm toate cardurile majore de credit (Visa, Mastercard, American Express) și procesăm plățile securizat prin Stripe."
+        },
+        "setup": {
+          "question": "Există o taxă de configurare?",
+          "answer": "Nicio taxă de configurare, niciodată. Plătești doar prețul abonamentului lunar sau anual pentru planul ales."
+        }
+      },
+      "contact": {
+        "text": "Mai ai întrebări?",
+        "link": "Contactează echipa noastră"
+      }
+    },
+    "cta": {
+      "badge": "Începe astăzi",
+      "title": "Gata să îți transformi meniul?",
+      "subtitle": "Alătură-te sutelor de restaurante care creează meniuri digitale frumoase cu Catalog Studio",
+      "startButton": "Începe perioada gratuită",
+      "contactButton": "Vorbește cu vânzările",
+      "trial": "Fără card necesar · Anulare oricând · Garanție de returnare a banilor 14 zile"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contactează-ne",
+      "description": "Ia legătura cu echipa Catalog Studio. Suntem aici să te ajutăm cu întrebări, suport sau feedback."
+    },
+    "hero": {
+      "badge": "Contact",
+      "title": "Suntem aici să te ajutăm",
+      "subtitle": "Ai o întrebare sau ai nevoie de asistență? Echipa noastră este pregătită să te ajute să reușești cu Catalog Studio."
+    },
+    "methods": {
+      "badge": "Contactează-ne",
+      "title": "Alege modalitatea ta preferată de a ne contacta",
+      "subtitle": "Suntem disponibili prin multiple canale pentru a-ți oferi cea mai bună experiență de suport",
+      "email": {
+        "title": "Trimite Email",
+        "description": "Pentru solicitări detaliate și cereri de suport",
+        "value": "hello@catalogstudio.com"
+      },
+      "phone": {
+        "title": "Sună-ne",
+        "description": "Vorbește direct cu echipa noastră",
+        "value": "+40 123 456 789"
+      }
+    },
+    "responseTime": {
+      "title": "Timp de răspuns rapid",
+      "description": "De obicei răspundem în 2-4 ore în timpul programului (Luni-Vineri, 9:00-18:00 EET)"
+    },
+    "form": {
+      "badge": "Trimite un Mesaj",
+      "title": "Scrie-ne",
+      "subtitle": "Completează formularul de mai jos și îți vom răspunde cât mai curând posibil",
+      "cardTitle": "Formular de contact",
+      "cardDescription": "Vom răspunde la mesajul tău în 24 de ore",
+      "fields": {
+        "firstName": "Prenume",
+        "lastName": "Nume",
+        "email": "Email",
+        "subject": "Subiect",
+        "message": "Mesaj"
+      },
+      "placeholders": {
+        "firstName": "Ion",
+        "lastName": "Popescu",
+        "email": "ion@exemplu.ro",
+        "subject": "Cum te putem ajuta?",
+        "message": "Spune-ne mai multe despre solicitarea ta..."
+      },
+      "submit": "Trimite Mesajul",
+      "privacy": "Respectăm confidențialitatea ta și nu vom împărtăși niciodată informațiile tale"
+    },
+    "faq": {
+      "badge": "Răspunsuri Rapide",
+      "title": "Întrebări frecvente",
+      "subtitle": "Găsește răspunsuri rapide la întrebările frecvente",
+      "items": {
+        "sales": {
+          "question": "Cum pot vorbi cu departamentul de vânzări?",
+          "answer": "Trimite-ne email la hello@catalogstudio.com sau sună la +40 123 456 789. Echipa noastră de vânzări este disponibilă Luni-Vineri, 9:00-18:00 EET."
+        },
+        "support": {
+          "question": "Ce opțiuni de suport sunt disponibile?",
+          "answer": "Toate planurile includ suport prin email. Planurile Basic și Premium primesc suport prioritar cu timp de răspuns mai rapid. Avem și documentație extinsă și tutoriale video."
+        },
+        "demo": {
+          "question": "Pot programa o demonstrație?",
+          "answer": "Absolut! Contactează-ne prin email sau telefon pentru a programa o demonstrație personalizată. Îți vom arăta cum poate funcționa Catalog Studio pentru restaurantul tău."
+        },
+        "pricing": {
+          "question": "Ai întrebări despre prețuri?",
+          "answer": "Verifică pagina noastră de prețuri pentru informații detaliate despre planuri. Pentru soluții enterprise personalizate sau reduceri pentru volume mari, contactează echipa de vânzări."
+        }
+      }
+    },
+    "cta": {
+      "badge": "Gata să Începi?",
+      "title": "Începe să creezi meniuri frumoase astăzi",
+      "subtitle": "Alătură-te sutelor de restaurante care folosesc deja Catalog Studio",
+      "startButton": "Începe perioada gratuită",
+      "plansButton": "Vezi Prețurile"
+    }
   }
 }

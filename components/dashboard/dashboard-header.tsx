@@ -18,6 +18,7 @@ import { LanguageSelector } from './language-selector';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
+import { APP_CONFIG } from '@/lib/config';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -69,7 +70,7 @@ export function DashboardHeader({ user, onToggleSidebar }: DashboardHeaderProps)
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">CS</span>
             </div>
-            <span className="font-semibold text-lg hidden sm:inline">Catalog Studio</span>
+            <span className="font-semibold text-lg hidden sm:inline">{APP_CONFIG.APP_NAME}</span>
             <span className="font-semibold text-base sm:hidden">CS</span>
           </div>
           

@@ -4,6 +4,7 @@ import { Plus, Store, UtensilsCrossed, Palette, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import { APP_CONFIG } from '@/lib/config';
 
 // No props needed - using router navigation
 type EmptyStateProps = Record<string, never>;
@@ -49,7 +50,7 @@ export function EmptyState({}: EmptyStateProps) {
 
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
-              Welcome to Catalog Studio!
+              Welcome to {APP_CONFIG.APP_NAME}!
             </h1>
             <p className="text-lg text-muted-foreground max-w-md mx-auto">
               Create your first restaurant to start building your beautiful digital menu catalog.
@@ -71,7 +72,7 @@ export function EmptyState({}: EmptyStateProps) {
 
         {/* Features Preview */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">What you can do with Catalog Studio</h2>
+          <h2 className="text-xl font-semibold">What you can do with {APP_CONFIG.APP_NAME}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {features.map((feature, index) => (
